@@ -110,6 +110,10 @@ describe('Kraft-Dosis laut 4.5/4.6', () => {
   it('Standing Neutral ab Woche 4', () => {
     expect(dose('A', 3, 'A8')).toBeUndefined();
     expect(dose('A', 4, 'A8').hold).toBe(120);
+    expect(dose('A', 5, 'A8')).toBeUndefined();
+    expect(dose('B', 5, 'B6q').doseText).toBe('2×8 je Seite');
+    expect(dose('B', 10, 'B5b')).toBeTruthy();
+    expect(dose('B', 1, 'B6').holds).toEqual([30, 20, 20]);
   });
   it('Mini-Version', () => {
     expect(strengthSession('A', 2, { mini: true }).items.map((i) => i.exId)).toEqual(['A0', 'A2', 'A3', 'A6']);

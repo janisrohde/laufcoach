@@ -48,7 +48,12 @@ const fmtSec = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 
 // ---------- Timer (Pause + Halten) ----------
 let timer = null;
-function startTimer(seconds, label) {
+const SEQ_LABELS = ['Unterarmstütz', 'Seitstütz links', 'Seitstütz rechts'];
+function startTimerSeq(list, i = 0) {
+  if (i >= list.length) { toast('Runde geschafft!'); return; }
+  startTimer(list[i], SEQ_LABELS[i] || 'Halten', () => { beep(1); startTimerSeq(list, i + 1); });
+}
+function startTimer(seconds, label, onDone) {
   stopTimer();
   try { audioCtx ||= new (window.AudioContext || window.webkitAudioContext)(); audioCtx.resume(); } catch { /* egal */ }
   const el = document.createElement('div');
@@ -61,7 +66,11 @@ function startTimer(seconds, label) {
   const iv = setInterval(() => {
     left = Math.max(0, Math.round((end - Date.now()) / 1000));
     el.querySelector('.t').textContent = fmtSec(left);
-    if (left <= 0) { beep(3); stopTimer(); toast(label === 'Pause' ? 'Pause vorbei – nächster Satz!' : 'Geschafft!'); }
+    if (left <= 0) {
+      stopTimer();
+      if (onDone) { onDone(); return; }
+      beep(3); toast(label === 'Pause' ? 'Pause vorbei – nächster Satz!' : 'Geschafft!');
+    }
   }, 250);
   timer = { el, iv };
 }
@@ -178,7 +187,7 @@ function exerciseCard(it, idx, done, fb) {
         <div class="collapse-when-done">
           <div class="why">${esc(it.why)}</div>
           ${it.sets > 1 ? `<div class="sets">${Array.from({ length: it.sets }, (_, k) => `<button class="set ${k < setsDone ? 'on' : ''}" data-set="${k + 1}">${k + 1}</button>`).join('')}</div>` : ''}
-          ${it.hold ? `<div class="row"><button class="btn small hold" data-hold="${it.hold}">⏱ ${fmtSec(it.hold)} halten</button></div>` : ''}
+          ${it.holds ? `<div class="row"><button class="btn small hold" data-holds="${it.holds.join(',')}">⏱ Runde starten (${it.holds.join(' / ')} s)</button></div>` : it.hold ? `<div class="row"><button class="btn small hold" data-hold="${it.hold}">⏱ ${fmtSec(it.hold)} halten</button></div>` : ''}
           <details class="how"><summary>So geht's</summary><div class="how-body">
             <h4>Startposition</h4><div>${esc(it.start)}</div>
             <h4>Bewegung</h4><ol>${(it.steps || []).map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
@@ -381,7 +390,7 @@ function bindToday(day, done) {
         if (next > cur && next < it.sets) startTimer(60, 'Pause');
         renderToday();
       });
-      card.querySelectorAll('.hold').forEach((h) => h.onclick = () => startTimer(+h.dataset.hold, 'Halten'));
+      card.querySelectorAll('.hold').forEach((h) => h.onclick = () => (h.dataset.holds ? startTimerSeq(h.dataset.holds.split(',').map(Number)) : startTimer(+h.dataset.hold, 'Halten')));
       card.querySelectorAll('[data-fb]').forEach((b) => b.onclick = async () => {
         try {
           await api('/feedback', { method: 'POST', body: { date: state.date, ex_id: it.exId, value: b.dataset.fb } });

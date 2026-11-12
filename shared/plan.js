@@ -78,6 +78,7 @@ export function pickDose(ex, week, { fpFree = 10, level1 = false } = {}) {
 
 function buildExercise(ex, week, ctx, prefix) {
   if (ex.fromWeek && week < ex.fromWeek) return null;
+  if (ex.untilWeek && week > ex.untilWeek) return null;
   if (ex.jumps && (week < 5 || weekInfo(week).easy || ctx.noJumps)) return null;
   const shift = (ctx.exShift && ctx.exShift[ex.id]) || 0;
   const wkEx = shift ? Math.max(0, Math.min(12, week + shift * 4)) : week;
@@ -92,13 +93,14 @@ function buildExercise(ex, week, ctx, prefix) {
     why: ex.why,
     start: v.start || ex.start,
     steps: v.steps || ex.steps,
-    watch: ex.watch,
+    watch: v.watch || ex.watch,
     mistake: v.mistake || ex.mistake,
     tool: v.tool || ex.tool,
     focus: ex.focus || [],
     doseText: dose.text,
     sets: ctx.probe ? 1 : dose.sets,
-    hold: dose.hold || null,
+    hold: dose.holds ? dose.holds[0] : dose.hold || null,
+    holds: dose.holds || null,
     weight: dose.weight || 'ohne Gewicht',
     perSide: !!dose.perSide,
     fp: !!dose.fp,
@@ -106,9 +108,21 @@ function buildExercise(ex, week, ctx, prefix) {
   };
   if (shift > 0) item.shiftNote = 'Du fandest das zweimal zu leicht – darum jetzt die nächste Stufe.';
   if (shift < 0) item.shiftNote = 'Du fandest das zu schwer – darum jetzt die leichtere Stufe.';
-  if (ctx.probe) item.doseText = `Probe: 1 Satz (${dose.text})`;
+  if (ctx.probe) item.doseText = `Probe: ${probeText(dose.text)}`;
   return item;
 }
+
+/** „2×15 beidbeinig“ → „1×15 beidbeinig“, „2 Runden: …“ → „1 Runde: …“ */
+export function probeText(t) {
+  return t.replace(/^\d\s?×\s?/, '1× ').replace(/^\d Runden/, '1 Runde').replace(/^1× (\d)/, '1×$1');
+}
+
+const SPOT_DE = {
+  'Gluteus Medius': 'Po seitlich oben (Gluteus Medius): seitlich auf den Ball legen, Stelle zwischen Hüftknochen und Po',
+  Waden: 'Waden auf Ball oder Rolle',
+  Innenwade: 'Innenwade auf dem Ball',
+  'Fußsohle': 'Fußsohle im Stehen auf dem Ball',
+};
 
 function midweekSpots(week) {
   const f = fpPlanFor(week);
@@ -127,7 +141,11 @@ export function strengthSession(key, week, ctx = {}) {
   let items = def.exercises.map((ex) => buildExercise(ex, week, c, prefix)).filter(Boolean);
   const spots = midweekSpots(week);
   if (spots && items[0] && items[0].exId.endsWith('0')) {
-    items[0] = { ...items[0], steps: [...items[0].steps, `Functional Patterns diese Woche: ${spots.join(' und ')} rollen, je Seite 1 min.`] };
+    items[0] = {
+      ...items[0],
+      name: items[0].name.replace(/\((\d+) min\)/, (_, m) => `(ca. ${Number(m) + 4} min)`),
+      steps: [...items[0].steps, `Functional Patterns diese Woche: ${spots.map((s) => SPOT_DE[s] || s).join(' · ')} – je Seite 1 min. Nicht direkt hinter dem Innenknöchel und nicht auf der Schienbeinkante.`],
+    };
   }
   if (ctx.mini) {
     items = items.filter((it) => def.mini.includes(it.exId)).map((it) => (it.exId.endsWith('0') ? it : { ...it, sets: Math.min(it.sets, 2) }));
@@ -256,6 +274,7 @@ export function getDay(date, ctx = {}) {
   } else if (type === 'strength') {
     const s = strengthSession(strengthKey, Math.max(week, 0), { fpFree, probe, mini: ctx.mini, level1: ov.level1, noJumps: ov.noJumps, extras: ov.extras, exShift: ov.exShift });
     title = probe ? title : s.title; minutes = s.minutes; items = s.items; extra.general = s.general; extra.strengthKey = strengthKey;
+    if (strengthKey === 'B' && week >= 11 && week <= 12) extra.general += ' Woche 11–12: Du darfst bei Übung 4–6 auch deine Lieblings-FP-Übungen aus Woche 5–10 nehmen (z. B. One Arm Row, The Press, Plank with Hip Extension).';
     extra.hasMini = !probe;
   } else if (type === 'fp') {
     const fp = fpMonday(week, fpFree);
