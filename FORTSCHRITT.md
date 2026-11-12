@@ -2,6 +2,18 @@
 
 Auftrag: Obsidian `Projekte/Laufcoach-App Auftrag.md` · Projektordner: `Desktop\Lauftraining`
 
+## ⏸ Wiedereinstieg (Pause am 12.11.2026 abends, Janis bei seinem Vater)
+- **Stand:** App live (https://janisrohde.github.io/laufcoach/), Phase 1 + 2 fertig, 61 Tests grün, Worker deployt, alles committet und gepusht.
+- **Tabs öffnen:** `weiter.ps1` (App, Strava-Login, Strava-API, GitHub, Cloudflare).
+- **Zuerst Janis fragen:**
+  1. Zugangscode gespeichert? (Sonst `npm run code` → neuer Code im Terminal.)
+  2. App auf dem iPhone: Safari → Teilen → Zum Home-Bildschirm → von dort öffnen → Benachrichtigungen erlauben → Mehr → Test-Benachrichtigung → kommt sie auf der Uhr an?
+  3. Kraft-A-Probe vom 12.11. gemacht? Probelauf am Sa 14.11. eintragen.
+- **Dann Phase 3:**
+  1. Janis loggt sich im Chrome bei Strava ein (Code-Mail kam am 12.11. nicht an → Spam prüfen oder „Mit Google/Apple anmelden“).
+  2. Claude legt unter strava.com/settings/api die API-App an (Callback-Domain `laufcoach-api.janis-rohde.workers.dev`), setzt STRAVA_CLIENT_ID/SECRET als Worker-Secrets, registriert den Webhook (`/strava/webhook`, Verify-Token = Secret STRAVA_VERIFY_TOKEN neu setzen und merken), Janis tippt in der App Mehr → „Mit Strava verbinden“.
+  3. Neuen COACH_TOKEN erzeugen und eine Claude-Cloud-Routine einrichten (abends: `/coach/summary` lesen, Notizen auswerten, Kraft-Fokus erklären, `/coach/note` schreiben).
+
 ## Start
 - [x] Start-Check (Node, Git, Wrangler eingeloggt, GitHub im Chrome eingeloggt)
 - [x] Skills gesucht (find-skills): cloudflare/skills, progressive-web-app, frontend-design
