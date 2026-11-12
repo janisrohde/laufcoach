@@ -1,0 +1,16 @@
+name = "laufcoach-api"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "laufcoach-db"
+database_id = "5e4407ec-7e6a-4e68-a42d-162556773322"
+migrations_dir = "migrations"
+
+[triggers]
+crons = ["*/15 * * * *"]
+
+[vars]
+ALLOWED_ORIGIN = "https://janisrohde.github.io"

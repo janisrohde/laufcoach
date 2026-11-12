@@ -1,0 +1,22 @@
+{
+  "name": "laufcoach",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vitest run",
+    "code": "node scripts/code.mjs",
+    "deploy:worker": "cd worker && npx wrangler deploy",
+    "deploy": "npm test && npm run build && npm run deploy:worker"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0",
+    "vitest": "^2.1.0"
+  },
+  "allowScripts": {
+    "esbuild@0.25.12": true,
+    "esbuild@0.21.5": true
+  }
+}

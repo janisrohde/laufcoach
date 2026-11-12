@@ -1,0 +1,447 @@
+{
+  "version": 1,
+  "planStart": "2026-11-16",
+  "week0Start": "2026-11-12",
+  "planEndExclusive": "2027-02-08",
+  "weeks": [
+    { "n": 1, "level": 1, "easy": false, "tue": "Di Steigerungen", "thu": "Locker (frei)", "sun": "Lang 10 km" },
+    { "n": 2, "level": 1, "easy": false, "tue": "Di Zügig 3x6 min", "thu": "Locker (frei)", "sun": "Lang 11 km" },
+    { "n": 3, "level": 1, "easy": false, "tue": "Di Schnell 8x1 min", "thu": "Locker (frei)", "sun": "Lang 12 km" },
+    { "n": 4, "level": 1, "easy": true, "tue": "Di Steigerungen", "thu": "Do Puls-Pace-Check", "sun": "Lang 9 km" },
+    { "n": 5, "level": 2, "easy": false, "tue": "Di Schwelle 3x6 min", "thu": "Locker (frei)", "sun": "Lang 12 km" },
+    { "n": 6, "level": 2, "easy": false, "tue": "Di Schnell 5x2 min", "thu": "Locker (frei)", "sun": "Lang 13 km" },
+    { "n": 7, "level": 2, "easy": false, "tue": "Di Schwelle 2x10 min (Check)", "thu": "Locker (frei)", "sun": "Lang 13 km" },
+    { "n": 8, "level": 2, "easy": true, "tue": "Di Steigerungen", "thu": "Do Puls-Pace-Check", "sun": "Lang 10 km" },
+    { "n": 9, "level": 3, "easy": false, "tue": "Di Schwelle 4x5 min", "thu": "Locker (frei)", "sun": "Lang 13 km" },
+    { "n": 10, "level": 3, "easy": false, "tue": "Di Schnell 4x2:30 min", "thu": "Locker (frei)", "sun": "Lang 14 km" },
+    { "n": 11, "level": 3, "easy": false, "tue": "Di Schwelle 20 min", "thu": "Locker (frei)", "sun": "Lang 14 km" },
+    { "n": 12, "level": 3, "easy": true, "tue": "Di Test 5 km", "thu": "Locker (frei)", "sun": "Lang 10 km" }
+  ],
+  "week0": {
+    "2026-11-12": { "type": "strengthA", "probe": true, "title": "Kraft-A-Probe", "minutes": 15, "note": "Probe: von jeder Übung nur 1 Satz. Du lernst die Übungen kennen, mehr nicht." },
+    "2026-11-13": { "type": "rest", "title": "Ruhetag" },
+    "2026-11-14": { "type": "run", "workout": "Locker (frei)", "title": "Probelauf locker", "note": "5–6 km flach. Teste, ob die Uhr piept, wenn dein Puls über 164 geht." },
+    "2026-11-15": { "type": "rest", "title": "Ruhetag" }
+  },
+  "workouts": {
+    "Locker (frei)": {
+      "kind": "easy",
+      "summary": "Ein Schritt bis zur Runden-Taste, Puls 140–164. Strecke frei, meist 6–8 km.",
+      "steps": ["Laufen bis du die Runden-Taste drückst", "Puls 140–164 (Uhr piept über 164)"]
+    },
+    "Lang 9 km": { "kind": "long", "km": 9, "summary": "9 km flach, Schnitt-Puls höchstens 160.", "steps": ["1 km Einlaufen, Puls 120–162", "7,5 km Hauptteil, Puls 140–162", "0,5 km Auslaufen"] },
+    "Lang 10 km": { "kind": "long", "km": 10, "summary": "10 km flach, Schnitt-Puls höchstens 160.", "steps": ["1 km Einlaufen, Puls 120–162", "8,5 km Hauptteil, Puls 140–162", "0,5 km Auslaufen"] },
+    "Lang 11 km": { "kind": "long", "km": 11, "summary": "11 km flach, Schnitt-Puls höchstens 160.", "steps": ["1 km Einlaufen, Puls 120–162", "9,5 km Hauptteil, Puls 140–162", "0,5 km Auslaufen"] },
+    "Lang 12 km": { "kind": "long", "km": 12, "summary": "12 km flach, Schnitt-Puls höchstens 160.", "steps": ["1 km Einlaufen, Puls 120–162", "10,5 km Hauptteil, Puls 140–162", "0,5 km Auslaufen"] },
+    "Lang 13 km": { "kind": "long", "km": 13, "summary": "13 km flach, Schnitt-Puls höchstens 160.", "steps": ["1 km Einlaufen, Puls 120–162", "11,5 km Hauptteil, Puls 140–162", "0,5 km Auslaufen"] },
+    "Lang 14 km": { "kind": "long", "km": 14, "summary": "14 km flach, Schnitt-Puls höchstens 160.", "steps": ["1 km Einlaufen, Puls 120–162", "12,5 km Hauptteil, Puls 140–162", "0,5 km Auslaufen"] },
+    "Di Steigerungen": { "kind": "tempo", "reps": 6, "summary": "Locker laufen, dann 6 kurze Steigerungen.", "steps": ["12 min Einlaufen, Puls 120–162", "20 min locker, Puls 140–164", "6× (20 s Steigerung + 60 s traben)", "5 min Auslaufen"] },
+    "Di Zügig 3x6 min": { "kind": "tempo", "reps": 3, "summary": "3 zügige Stücke à 6 min.", "steps": ["12 min Einlaufen", "3× (6 min Pace 5:40–6:00 + 2 min traben)", "8 min Auslaufen"] },
+    "Di Schnell 8x1 min": { "kind": "tempo", "reps": 8, "summary": "8 schnelle Minuten.", "steps": ["12 min Einlaufen", "8× (1 min Pace 4:30–4:45 + 90 s traben)", "8 min Auslaufen"] },
+    "Di Schwelle 3x6 min": { "kind": "tempo", "reps": 3, "summary": "3 Schwellen-Stücke à 6 min.", "steps": ["12 min Einlaufen", "3× (6 min Pace 5:15–5:30 + 2 min traben)", "8 min Auslaufen"] },
+    "Di Schnell 5x2 min": { "kind": "tempo", "reps": 5, "summary": "5 schnelle Stücke à 2 min.", "steps": ["12 min Einlaufen", "5× (2 min Pace 4:30–4:45 + 2 min traben)", "8 min Auslaufen"] },
+    "Di Schwelle 2x10 min (Check)": { "kind": "tempo", "reps": 2, "test": "threshold", "testLabel": "Puls der letzten 2 min (2. Stück)", "summary": "2 × 10 min Schwelle. Danach den Puls der letzten 2 min eintragen.", "steps": ["15 min Einlaufen", "2× (10 min Pace 5:15–5:30 + 2 min traben)", "8 min Auslaufen"] },
+    "Di Schwelle 4x5 min": { "kind": "tempo", "reps": 4, "summary": "4 Schwellen-Stücke à 5 min.", "steps": ["12 min Einlaufen", "4× (5 min Pace 5:15–5:30 + 90 s traben)", "8 min Auslaufen"] },
+    "Di Schnell 4x2:30 min": { "kind": "tempo", "reps": 4, "summary": "4 schnelle Stücke à 2:30 min.", "steps": ["12 min Einlaufen", "4× (2:30 min Pace 4:30–4:45 + 2:30 min traben)", "8 min Auslaufen"] },
+    "Di Schwelle 20 min": { "kind": "tempo", "reps": 1, "summary": "20 min am Stück an der Schwelle.", "steps": ["15 min Einlaufen", "20 min Pace 5:15–5:30", "10 min Auslaufen"] },
+    "Di Test 5 km": { "kind": "tempo", "reps": 1, "test": "5k", "testLabel": "5-km-Zeit (mm:ss)", "summary": "5 km so schnell wie gleichmäßig möglich. Zeit eintragen.", "steps": ["15 min Einlaufen", "5 km so schnell wie gleichmäßig möglich", "10 min Auslaufen"] },
+    "Do Puls-Pace-Check": { "kind": "easy", "test": "hrpace", "testLabel": "Schnitt-Pace der 20 min (m:ss)", "summary": "20 min bei Puls 158–162. Danach die Schnitt-Pace eintragen.", "steps": ["10 min Einlaufen", "20 min Puls 158–162", "Auslaufen"] }
+  },
+  "zones": [
+    { "z": "Z1", "name": "Erholung", "hr": "120–153", "pace": "langsamer als locker", "feel": "Traben" },
+    { "z": "Z2", "name": "Locker", "hr": "154–162 (Alarm 164)", "pace": "6:05–6:45", "feel": "ganze Sätze reden" },
+    { "z": "Z3", "name": "Zügig", "hr": "163–171", "pace": "5:40–6:00", "feel": "kurze Sätze" },
+    { "z": "Z4", "name": "Schwelle", "hr": "172–180", "pace": "5:15–5:30", "feel": "angenehm hart" },
+    { "z": "Z5", "name": "Schnell", "hr": "ab 181", "pace": "4:30–4:45", "feel": "hart, kurz" }
+  ],
+  "zonesNote": "HFmax ≈ 200, Schwelle ≈ 181, Ruhepuls 54. Bergauf zählt nur der Puls, Gehen ist richtig. Bei Tempo-Stücken liegt der Puls oft eine Zone höher, das ist normal.",
+  "runCards": {
+    "tempo": ["Auf der Uhr: Laufen → Up halten → Training → Trainingskalender → heutiges Training → Training ausführen.", "Erst locker einlaufen, die Uhr sagt dir, wann es losgeht.", "Schnelle Stücke flach laufen (Nidda-Radweg). Im Dunkeln Stirnlampe oder beleuchtete Strecke.", "Pausen traben oder gehen.", "Polar-Sensor tragen, wenn du ihn dabei hast."],
+    "easy": ["Auf der Uhr: Laufen → Up halten → Training → Trainingskalender → heutiges Training → Training ausführen.", "Strecke frei, meist 6–8 km.", "Uhr piept über 164: langsamer laufen oder gehen.", "Ab Woche 3: Schrittfrequenz 170–172 im Blick (kurze, leise Schritte).", "Mit Freunden laufen oder Fußball zählt auch."],
+    "long": ["Auf der Uhr: Laufen → Up halten → Training → Trainingskalender → heutiges Training → Training ausführen.", "Flache Strecke (Nidda-Radweg), Puls 140–162.", "Langsamer als sonst ist richtig.", "Bergab kurze Schritte."],
+    "rest": "Heute Pause. Pause macht dich schneller. Spazieren gehen ist okay."
+  },
+  "strength": {
+    "A": {
+      "title": "Kraft A – Beine & Fuß",
+      "minutes": 35,
+      "general": "Am Ende jedes Satzes wären noch 2–3 Wiederholungen gegangen. 1 min Pause zwischen den Sätzen. Bei einbeinigen Übungen ist die andere Seite die Pause.",
+      "mini": ["A0", "A2", "A3", "A6"],
+      "exercises": [
+        {
+          "id": "A0", "name": "Start (4 min)", "why": "Füße und Waden aufwecken, bevor es losgeht.",
+          "start": "Du sitzt auf der Matte, Rolle und Ball liegen neben dir.",
+          "steps": ["Wade auf die große Rolle legen und langsam rollen, je Seite 1 min.", "Im Stehen die Fußsohle auf dem Ball rollen, je Seite 1 min.", "Zehen-Yoga: nur die Großzehe heben, dann nur die anderen Zehen – je 10×.", "Großzehe 5× für 5 s fest in den Boden drücken."],
+          "watch": "Rollen ist höchstens „angenehm weh“ (4–5 von 10).", "mistake": "Zu schnell rollen – langsam ist besser.",
+          "tool": "Große Rolle, Ball", "focus": ["wade", "fuss", "grosszehe"],
+          "dose": [{ "from": 0, "sets": 1, "text": "1 Durchgang", "weight": "ohne Gewicht" }]
+        },
+        {
+          "id": "A1", "name": "Pogo-Hüpfer", "why": "Sehnen werden federnd, du läufst leichter.", "jumps": true,
+          "start": "Aufrecht stehen, Füße hüftbreit, Knie fast gestreckt.",
+          "steps": ["Kleine, schnelle Hüpfer nur aus den Füßen.", "Knie bleiben fast gestreckt.", "Leise landen, auf dem Vorfuß."],
+          "watch": "Leise landen. Nur wenn der Hüpftest grün ist: 10 Hüpfer je Bein ohne Schmerz, Hocke ohne Schmerz, Schienbein und Knöchel 2 Wochen ruhig.",
+          "mistake": "Hohe Sprünge mit viel Kniebeugen – es sollen kleine Hüpfer sein.",
+          "tool": "Nichts", "focus": ["wade", "schienbein"],
+          "dose": [
+            { "from": 5, "sets": 2, "text": "2×10 beidbeinig", "weight": "ohne Gewicht" },
+            { "from": 6, "sets": 3, "text": "3×12 beidbeinig", "weight": "ohne Gewicht" },
+            { "from": 7, "sets": 3, "text": "3×15 beidbeinig", "weight": "ohne Gewicht" },
+            { "from": 9, "sets": 3, "text": "3×15 beidbeinig + kleine einbeinige Hüpfer, insgesamt höchstens 60", "weight": "ohne Gewicht" }
+          ]
+        },
+        {
+          "id": "A2", "name": "Wadenheben mit Ball zwischen den Fersen", "why": "Stärkt die Wade und den Muskel hinter dem Innenknöchel.",
+          "start": "Fußballen auf die Stufenkante, eine Hand am Geländer, Ball zwischen die Fersen klemmen.",
+          "steps": ["Auf die Zehen hochdrücken.", "Oben 1 s halten.", "In 3 s langsam runter, Fersen nur knapp unter die Stufe."],
+          "watch": "Gewicht auf dem Großzehenballen. Der Ball bleibt drin.", "mistake": "Füße kippen nach außen und der Ball fällt raus.",
+          "tool": "Treppenstufe mit Geländer, Ball", "focus": ["wade", "innenknoechel"],
+          "dose": [
+            { "from": 0, "sets": 2, "text": "2×15 beidbeinig", "weight": "ohne Gewicht" },
+            { "from": 3, "sets": 3, "text": "3×15 beidbeinig", "weight": "ohne Gewicht" },
+            { "from": 5, "sets": 3, "text": "3×12 einbeinig, ohne Ball", "weight": "ohne Gewicht", "perSide": true },
+            { "from": 9, "sets": 3, "text": "3×15 einbeinig, Hantel in der Hand auf der Seite vom Standbein, andere Hand am Geländer", "weight": "1 × 3 kg", "perSide": true }
+          ]
+        },
+        {
+          "id": "A3", "name": "Knie-Übung", "why": "Macht den Oberschenkel stark und das Knie ruhig – hilft aus der Hocke und bergab.",
+          "watch": "Knie zeigt über den zweiten Zeh, nicht nach innen. Höchstens leichtes Ziehen (bis 3 von 10).",
+          "tool": "Wand", "focus": ["knie", "oberschenkel"],
+          "dose": [
+            { "from": 0, "sets": 3, "text": "3× 30–45 s halten", "hold": 40, "weight": "ohne Gewicht",
+              "variant": { "name": "Knie-Übung: Wandsitz", "start": "Rücken an die Wand, Füße etwa 50 cm vor der Wand.", "steps": ["An der Wand runterrutschen, bis die Knie halb gebeugt sind.", "So halten, ruhig atmen.", "Langsam wieder hochschieben."], "mistake": "Zu tief runter – halb gebeugt reicht." } },
+            { "from": 5, "sets": 2, "text": "2×8 je Seite, halbe Tiefe", "weight": "ohne Gewicht", "perSide": true,
+              "variant": { "name": "Knie-Übung: Ausfallschritt im Stand", "start": "Großer Schritt nach vorn, beide Füße bleiben am Boden stehen.", "steps": ["Hinteres Knie langsam Richtung Boden senken.", "Erst nur halbe Tiefe.", "Mit dem vorderen Bein wieder hochdrücken."], "mistake": "Vorderes Knie fällt nach innen.", "tool": "Nichts" } },
+            { "from": 6, "sets": 3, "text": "3×10 je Seite", "weight": "ohne Gewicht", "perSide": true,
+              "variant": { "name": "Knie-Übung: Ausfallschritt im Stand", "start": "Großer Schritt nach vorn, beide Füße bleiben am Boden stehen.", "steps": ["Hinteres Knie langsam Richtung Boden senken.", "So tief, wie es sauber geht.", "Mit dem vorderen Bein wieder hochdrücken."], "mistake": "Vorderes Knie fällt nach innen.", "tool": "Nichts" } },
+            { "from": 7, "sets": 3, "text": "3×10 je Seite, Arme hängen locker mit Hanteln", "weight": "2 × 2 kg", "perSide": true,
+              "variant": { "name": "Knie-Übung: Ausfallschritt mit Hanteln", "start": "In jeder Hand eine 2-kg-Hantel, großer Schritt nach vorn.", "steps": ["Hinteres Knie langsam Richtung Boden senken.", "Arme hängen locker.", "Mit dem vorderen Bein wieder hochdrücken."], "mistake": "Oberkörper kippt nach vorn.", "tool": "Kurzhanteln 2 kg" } },
+            { "from": 9, "sets": 3, "text": "3×10 je Seite. Geht es sauber und leicht: je eine 2-kg-Hantel in jeder Hand.", "weight": "ohne Gewicht, später 2 × 2 kg", "perSide": true,
+              "variant": { "name": "Knie-Übung: Step-Down", "start": "Auf einer niedrigen Stufe stehen (zuerst ein dickes Buch, etwa 10 cm).", "steps": ["Standbein langsam beugen.", "Freies Bein gestreckt nach vorn absenken, bis die Ferse den Boden antippt.", "Mit dem Standbein wieder hochdrücken."], "mistake": "Knie vom Standbein fällt nach innen.", "tool": "Dickes Buch oder Stufe" } }
+          ]
+        },
+        {
+          "id": "A4", "name": "Brücke", "why": "Der Po arbeitet mehr, das Knie trägt weniger.",
+          "start": "Rückenlage, Knie gebeugt, Füße flach aufgestellt.",
+          "steps": ["Becken hochdrücken, bis Knie, Hüfte und Schultern eine Linie sind.", "Oben 2 s halten.", "Langsam wieder ablegen."],
+          "watch": "Po fest anspannen, kein Hohlkreuz.", "mistake": "Rücken drückt hoch statt der Po.",
+          "tool": "Matte", "focus": ["knie", "huefte"],
+          "dose": [
+            { "from": 0, "sets": 2, "text": "2×12", "weight": "ohne Gewicht" },
+            { "from": 5, "sets": 3, "text": "3×10 einbeinig", "weight": "ohne Gewicht", "perSide": true },
+            { "from": 8, "sets": 3, "text": "3×10 einbeinig – jetzt als FP Supine Bridge / Bilateral Hip Extension (wie im Kurs Woche 8)", "weight": "ohne Gewicht", "perSide": true, "fp": 8 },
+            { "from": 9, "sets": 3, "text": "3×12 einbeinig, oben 3 s halten", "weight": "ohne Gewicht", "perSide": true }
+          ]
+        },
+        {
+          "id": "A5", "name": "Seitliche Bandschritte", "why": "Stärkt die Hüfte außen – das Knie bleibt stabil.",
+          "start": "Kleines Band um die Knöchel, Knie leicht gebeugt, Füße hüftbreit.",
+          "steps": ["10 kleine Schritte zur Seite.", "Dann 10 Schritte zurück.", "Das ist 1 Satz."],
+          "watch": "Füße und Knie zeigen nach vorn, das Band bleibt gespannt.", "mistake": "Oberkörper wackelt hin und her.",
+          "tool": "Kleines Band", "focus": ["knie", "huefte"],
+          "dose": [
+            { "from": 0, "sets": 2, "text": "2×10 je Richtung", "weight": "ohne Gewicht" },
+            { "from": 5, "sets": 3, "text": "3×12 je Richtung", "weight": "ohne Gewicht" },
+            { "from": 9, "sets": 3, "text": "3×15 je Richtung, stärkeres Band", "weight": "ohne Gewicht" }
+          ]
+        },
+        {
+          "id": "A6", "name": "Schienbein-Heben an der Wand", "why": "Der Muskel vorn am Schienbein fängt jeden Schritt ab.",
+          "start": "Rücken an die Wand, Fersen etwa 30 cm vor der Wand.",
+          "steps": ["Fußspitzen so hoch ziehen, wie es geht.", "Kurz halten.", "Langsam wieder absenken."],
+          "watch": "Die Fersen bleiben am Boden.", "mistake": "Hüfte rutscht von der Wand weg.",
+          "tool": "Wand", "focus": ["schienbein"],
+          "dose": [
+            { "from": 0, "sets": 2, "text": "2×15", "weight": "ohne Gewicht" },
+            { "from": 5, "sets": 3, "text": "3×15", "weight": "ohne Gewicht" },
+            { "from": 9, "sets": 3, "text": "3×20", "weight": "ohne Gewicht" }
+          ]
+        },
+        {
+          "id": "A7", "name": "Fuß nach innen gegen das Band", "why": "Macht die Sehne am Innenknöchel ausdauernd.",
+          "start": "Auf dem Boden sitzen. Band an einem Tischbein, das außen neben dem Fuß steht. Schlaufe um den Vorfuß.",
+          "steps": ["Fußspitze leicht nach unten strecken.", "Fuß gegen das Band nach innen ziehen.", "In 3 s langsam zurück."],
+          "watch": "Nur der Fuß bewegt sich, das Bein bleibt ruhig.", "mistake": "Das ganze Bein dreht mit.",
+          "tool": "Band, Tischbein", "focus": ["innenknoechel"],
+          "dose": [
+            { "from": 0, "sets": 2, "text": "2×15 je Seite", "weight": "ohne Gewicht", "perSide": true },
+            { "from": 5, "sets": 3, "text": "3×15 je Seite", "weight": "ohne Gewicht", "perSide": true },
+            { "from": 9, "sets": 3, "text": "3×15 je Seite, stärkeres Band", "weight": "ohne Gewicht", "perSide": true }
+          ]
+        },
+        {
+          "id": "A8", "name": "Standing Neutral (FP)", "why": "Du übst, gerade und entspannt zu stehen.", "fromWeek": 4,
+          "start": "Barfuß stehen, Füße hüftbreit.",
+          "steps": ["Gewicht gleich auf beide Füße verteilen.", "Becken neutral, Rippen locker nach unten.", "Ruhig durch die Nase atmen."],
+          "watch": "So wie im FP-Kurs Woche 4 gezeigt.", "mistake": "Ins Hohlkreuz drücken.",
+          "tool": "Nichts", "focus": [],
+          "dose": [{ "from": 4, "sets": 1, "text": "2 min", "hold": 120, "weight": "ohne Gewicht" }]
+        }
+      ]
+    },
+    "B": {
+      "title": "Kraft B – Hüfte, Rumpf, Oberkörper",
+      "minutes": 35,
+      "general": "Am Ende jedes Satzes wären noch 2–3 Wiederholungen gegangen. 1 min Pause zwischen den Sätzen.",
+      "mini": ["B0", "B1", "B4", "B6"],
+      "exercises": [
+        {
+          "id": "B0", "name": "Start (4 min)", "why": "Hüfte, Schultern und Füße warm machen.",
+          "start": "Auf einem Stuhl sitzen, kleiner Ball liegt bereit.",
+          "steps": ["Mit dem Po auf den kleinen Ball setzen, je Seite 1 min.", "10 Armkreise, 10 halbe Kniebeugen, 10 Hüftkreise.", "Kurzer Fuß: Gewölbe hochziehen, Zehen bleiben lang am Boden – 5× 5 s je Fuß."],
+          "watch": "Rollen höchstens „angenehm weh“.", "mistake": "Beim kurzen Fuß die Zehen krallen.",
+          "tool": "Kleiner Ball", "focus": ["huefte", "fuss"],
+          "dose": [
+            { "from": 0, "sets": 1, "text": "1 Durchgang", "weight": "ohne Gewicht" },
+            { "from": 6, "sets": 1, "text": "1 Durchgang + FP Thoracic Spine Mobility (Besenstiel) und Wall Retractions je 1 min", "weight": "ohne Gewicht", "fp": 6 }
+          ]
+        },
+        {
+          "id": "B1", "name": "Einbeinstand mit kurzem Fuß", "why": "Fuß und Hüfte bleiben bei jedem Schritt stabil.",
+          "start": "Barfuß auf einem Bein stehen.",
+          "steps": ["Kurzer Fuß machen: Gewölbe hoch.", "Großzehe drückt leicht in den Boden.", "Halten, bis der Timer piept, dann Seite wechseln."],
+          "watch": "Becken bleibt gerade.", "mistake": "Hüfte vom Standbein schiebt zur Seite raus.",
+          "tool": "Nichts", "focus": ["fuss", "huefte", "grosszehe"],
+          "dose": [
+            { "from": 0, "sets": 3, "text": "3× 30 s je Seite", "hold": 30, "weight": "ohne Gewicht", "perSide": true },
+            { "from": 5, "sets": 3, "text": "3× 45 s je Seite", "hold": 45, "weight": "ohne Gewicht", "perSide": true },
+            { "from": 7, "sets": 3, "text": "3× 45 s je Seite – das ist FP Unilateral Stance (Kurs Woche 7)", "hold": 45, "weight": "ohne Gewicht", "perSide": true, "fp": 7 },
+            { "from": 9, "sets": 3, "text": "3× 45 s je Seite, Augen zu oder auf einem Kissen", "hold": 45, "weight": "ohne Gewicht", "perSide": true }
+          ]
+        },
+        {
+          "id": "B2", "name": "Wadenheben mit gebeugtem Knie", "why": "Stärkt den tiefen Wadenmuskel und schützt das Schienbein.",
+          "start": "Rücken an die Wand, Knie leicht gebeugt.",
+          "steps": ["Auf die Zehen hochdrücken.", "Knie bleiben gebeugt.", "In 3 s runter."],
+          "watch": "Knie bleiben die ganze Zeit gebeugt.", "mistake": "Beine strecken sich beim Hochgehen.",
+          "tool": "Wand", "focus": ["wade", "schienbein"],
+          "dose": [
+            { "from": 0, "sets": 2, "text": "2×15", "weight": "ohne Gewicht" },
+            { "from": 5, "sets": 3, "text": "3×15", "weight": "ohne Gewicht" },
+            { "from": 9, "sets": 3, "text": "3×15 einbeinig", "weight": "ohne Gewicht", "perSide": true }
+          ]
+        },
+        {
+          "id": "B3", "name": "Einbeiniges Kreuzheben", "why": "Stärkt Beinrückseite, Po und Gleichgewicht.",
+          "start": "Auf einem Bein stehen, Finger an der Wand.",
+          "steps": ["Oberkörper nach vorn kippen.", "Freies Bein gerade nach hinten strecken.", "Wieder hochkommen."],
+          "watch": "Rücken bleibt gerade, das Becken dreht nicht auf.", "mistake": "Hüfte vom freien Bein dreht nach oben.",
+          "tool": "Wand", "focus": ["huefte", "oberschenkel", "knie"],
+          "dose": [
+            { "from": 0, "sets": 2, "text": "2×8 je Seite", "weight": "ohne Gewicht", "perSide": true },
+            { "from": 5, "sets": 3, "text": "3×10 je Seite, ohne Wand, Hantel in der Hand gegenüber vom Standbein", "weight": "1 × 2 kg", "perSide": true },
+            { "from": 9, "sets": 3, "text": "3×10 je Seite, Hantel gegenüber vom Standbein", "weight": "1 × 3 kg", "perSide": true }
+          ]
+        },
+        {
+          "id": "B4", "name": "Rudern", "why": "Gute Haltung und lockere Schultern – gegen das Schulter-Zwicken.",
+          "watch": "Schultern bleiben unten, weg von den Ohren.", "focus": ["schulter"],
+          "dose": [
+            { "from": 0, "sets": 2, "text": "2×12", "weight": "ohne Gewicht",
+              "variant": { "name": "Rudern mit Band", "start": "Großes Band um die Klimmzugstange, beide Enden in den Händen.", "steps": ["Ellbogen eng am Körper nach hinten ziehen.", "Schulterblätter zusammen.", "Langsam wieder nach vorn."], "mistake": "Schultern ziehen hoch.", "tool": "Großes Band, Klimmzugstange" } },
+            { "from": 5, "sets": 3, "text": "3×12 je Seite", "weight": "1 × 3 kg", "perSide": true,
+              "variant": { "name": "Einarmiges Rudern mit Hantel", "start": "Eine Hand und ein Knie auf Stuhl oder Sofa, Rücken gerade wie ein Tisch.", "steps": ["Hantel zur Hüfte ziehen.", "Oben kurz halten.", "Langsam runterlassen."], "mistake": "Oberkörper dreht beim Ziehen auf.", "tool": "Kurzhantel 3 kg, Stuhl" } },
+            { "from": 9, "sets": 3, "text": "3×3–5 langsam vom Klimmzug runterlassen + 2×12 einarmiges Rudern je Seite", "weight": "1 × 3 kg (Rudern)",
+              "variant": { "name": "Klimmzug runterlassen + Rudern", "start": "Stuhl unter der Klimmzugstange.", "steps": ["Mit den Beinen vom Stuhl hochdrücken, bis das Kinn über der Stange ist.", "In 3–5 s langsam runterlassen.", "Danach 2×12 einarmiges Rudern mit der 3-kg-Hantel."], "mistake": "Unten einfach fallen lassen.", "tool": "Klimmzugstange, Stuhl, Kurzhantel 3 kg" } },
+            { "from": 9, "sets": 3, "text": "FP One Arm Row mit Band + Türanker, 3×12 je Seite (Kurs Woche 9)", "weight": "ohne Gewicht", "perSide": true, "fp": 9,
+              "variant": { "name": "FP One Arm Row (Band)", "start": "Band im Türanker auf Brusthöhe, Schrittstellung.", "steps": ["Mit einem Arm das Band zur Hüfte ziehen.", "Rumpf bleibt fest, Becken dreht nicht.", "Langsam zurück."], "mistake": "Schulter zieht hoch.", "tool": "Band + Türanker" } },
+            { "from": 10, "sets": 3, "text": "FP Unilateral Row mit Band, 3×12 je Seite (Kurs Woche 10)", "weight": "ohne Gewicht", "perSide": true, "fp": 10,
+              "variant": { "name": "FP Unilateral Row (Band)", "start": "Band im Türanker, auf einem Bein oder in Schrittstellung.", "steps": ["Band mit einem Arm nach hinten ziehen.", "Gleichgewicht halten.", "Langsam zurück."], "mistake": "Becken kippt weg.", "tool": "Band + Türanker" } }
+          ]
+        },
+        {
+          "id": "B5", "name": "Liegestütz", "why": "Oberkörperkraft für einen ruhigen Armschwung.", "fromWeek": 2,
+          "start": "Hände auf eine Stufe oder das Sofa, Körper gerade wie ein Brett.",
+          "steps": ["Brust langsam zur Kante senken.", "Kurz unten.", "Wieder wegdrücken."],
+          "watch": "Körper bleibt ein Brett.", "mistake": "Po hängt durch.",
+          "tool": "Stufe oder Sofa", "focus": ["schulter"],
+          "dose": [
+            { "from": 2, "sets": 2, "text": "2×8–10 erhöht", "weight": "ohne Gewicht" },
+            { "from": 5, "sets": 3, "text": "3×10 erhöht", "weight": "ohne Gewicht" },
+            { "from": 9, "sets": 3, "text": "3× so viele saubere wie möglich auf dem Boden", "weight": "ohne Gewicht" },
+            { "from": 9, "sets": 3, "text": "FP The Press mit Band + Türanker, 3×10 je Seite (Kurs Woche 9)", "weight": "ohne Gewicht", "perSide": true, "fp": 9,
+              "variant": { "name": "FP The Press (Band)", "start": "Rücken zum Türanker, Band in einer Hand auf Brusthöhe, Schrittstellung.", "steps": ["Band nach vorn wegdrücken.", "Rumpf bleibt fest.", "Langsam zurück."], "mistake": "Hohlkreuz beim Drücken.", "tool": "Band + Türanker" } },
+            { "from": 10, "sets": 3, "text": "FP Unilateral Press + Contralateral Step Press and Row, je 2×10 je Seite (Kurs Woche 10)", "weight": "ohne Gewicht", "perSide": true, "fp": 10,
+              "variant": { "name": "FP Unilateral Press + Step Press and Row", "start": "Band im Türanker, Schrittstellung.", "steps": ["Unilateral Press: mit einem Arm nach vorn drücken.", "Step Press and Row: Schritt nach vorn und drücken, zurück und ziehen – gegengleich Arm und Bein.", "Ruhig und kontrolliert."], "mistake": "Zu schnell, Rumpf wackelt.", "tool": "Band + Türanker" } }
+          ]
+        },
+        {
+          "id": "B6", "name": "Stütz-Runde", "why": "Fester Rumpf, weniger Wackeln im Becken.",
+          "start": "Auf der Matte im Unterarmstütz.",
+          "steps": ["Unterarmstütz: Körper gerade wie ein Brett, halten.", "Seitstütz links: Hüfte oben, halten.", "Seitstütz rechts. Das ist 1 Runde."],
+          "watch": "Bauch und Po fest, weiter atmen.", "mistake": "Luft anhalten oder Po zu hoch.",
+          "tool": "Matte", "focus": ["huefte", "ruecken"],
+          "dose": [
+            { "from": 0, "sets": 2, "text": "2 Runden: 30 s Unterarmstütz + 20 s Seitstütz je Seite, Knie gebeugt", "hold": 30, "weight": "ohne Gewicht" },
+            { "from": 5, "sets": 3, "text": "3 Runden à 40 s, beim Unterarmstütz abwechselnd ein Bein heben", "hold": 40, "weight": "ohne Gewicht" },
+            { "from": 5, "sets": 3, "text": "3 Runden à 40 s als FP Plank / Elevated Plank / Plank with Hip Extension + Quad Ped 2×8 je Seite (Kurs Woche 5)", "hold": 40, "weight": "ohne Gewicht", "fp": 5 },
+            { "from": 9, "sets": 3, "text": "3 Runden à 45 s, Seitstütz mit gestreckten Beinen", "hold": 45, "weight": "ohne Gewicht" },
+            { "from": 9, "sets": 3, "text": "3 Runden à 45 s als FP Plank-Varianten, Seitstütz gestreckt + Quad Ped 2×8 je Seite", "hold": 45, "weight": "ohne Gewicht", "fp": 5 }
+          ]
+        },
+        {
+          "id": "B7", "name": "Großzehe gegen das Band", "why": "Stärkt den Muskel, der die Großzehe runterdrückt – wichtig für den Abstoß.",
+          "start": "Sitzen, kleines Band um die Großzehe, Ende in der Hand.",
+          "steps": ["Mit der Hand das Band zu dir ziehen (zieht die Zehe hoch).", "Großzehe dagegen nach unten drücken, 3 s halten.", "Langsam lösen."],
+          "watch": "Nur die Großzehe bewegt sich.", "mistake": "Der ganze Fuß drückt mit.",
+          "tool": "Kleines Band", "focus": ["grosszehe", "fuss"],
+          "dose": [
+            { "from": 0, "sets": 2, "text": "2×12 je Fuß", "weight": "ohne Gewicht", "perSide": true },
+            { "from": 5, "sets": 3, "text": "3×12 je Fuß", "weight": "ohne Gewicht", "perSide": true },
+            { "from": 9, "sets": 3, "text": "3×15 je Fuß", "weight": "ohne Gewicht", "perSide": true }
+          ]
+        },
+        {
+          "id": "B8", "name": "Standing Neutral (FP)", "why": "Du übst, gerade und entspannt zu stehen.", "fromWeek": 4,
+          "start": "Barfuß stehen, Füße hüftbreit.",
+          "steps": ["Gewicht gleich auf beide Füße verteilen.", "Becken neutral, Rippen locker nach unten.", "Ruhig durch die Nase atmen."],
+          "watch": "So wie im FP-Kurs Woche 4 gezeigt.", "mistake": "Ins Hohlkreuz drücken.",
+          "tool": "Nichts", "focus": [],
+          "dose": [{ "from": 4, "sets": 1, "text": "2 min", "hold": 120, "weight": "ohne Gewicht" }]
+        }
+      ]
+    }
+  },
+  "extraExercises": {
+    "knie": [
+      { "id": "X-knie-1", "name": "Step-Down langsam", "why": "Knie lernt, beim Absenken ruhig zu bleiben.", "start": "Auf einem dicken Buch (10 cm) stehen.", "steps": ["Standbein langsam in 3 s beugen.", "Freies Bein vorn, Ferse tippt kurz.", "Hoch."], "watch": "Knie über dem zweiten Zeh.", "mistake": "Knie fällt nach innen.", "tool": "Dickes Buch", "dose": { "sets": 2, "text": "2×8 nur auf der betroffenen Seite extra", "weight": "ohne Gewicht", "perSide": false } },
+      { "id": "X-knie-2", "name": "Seitlich liegend Bein heben", "why": "Hüfte außen stark – das Knie fällt weniger nach innen.", "start": "Seitlage, unteres Bein gebeugt, oberes gestreckt.", "steps": ["Oberes Bein leicht nach hinten und hoch heben.", "1 s halten.", "Langsam ab."], "watch": "Fußspitze zeigt nach vorn, nicht nach oben.", "mistake": "Becken kippt nach hinten.", "tool": "Matte", "dose": { "sets": 2, "text": "2×15 je Seite, betroffene Seite 1 Satz mehr", "weight": "ohne Gewicht", "perSide": true } }
+    ],
+    "schienbein": [
+      { "id": "X-schien-1", "name": "Fersengang", "why": "Muskel vorn am Schienbein wird ausdauernd.", "start": "Barfuß stehen.", "steps": ["Fußspitzen hochziehen.", "Nur auf den Fersen 20 Schritte gehen.", "Kurz Pause."], "watch": "Kleine Schritte.", "mistake": "Hüfte knickt nach hinten.", "tool": "Nichts", "dose": { "sets": 2, "text": "2×20 Schritte", "weight": "ohne Gewicht" } }
+    ],
+    "innenknoechel": [
+      { "id": "X-innen-1", "name": "Einbeinstand auf Kissen", "why": "Fuß und Knöchel lernen, sich zu stabilisieren.", "start": "Auf einem Kissen auf einem Bein stehen.", "steps": ["Kurzer Fuß machen.", "Halten.", "Seite wechseln."], "watch": "Fuß knickt nicht nach innen.", "mistake": "Am Tisch festhalten.", "tool": "Kissen", "dose": { "sets": 2, "text": "2× 30 s je Seite", "hold": 30, "weight": "ohne Gewicht", "perSide": true } }
+    ],
+    "grosszehe": [
+      { "id": "X-zeh-1", "name": "Großzehe 5 s drücken", "why": "Großzehe wird stark für den Abstoß.", "start": "Barfuß stehen.", "steps": ["Großzehe fest in den Boden drücken.", "5 s halten.", "Lösen."], "watch": "Andere Zehen bleiben locker.", "mistake": "Zehen krallen.", "tool": "Nichts", "dose": { "sets": 2, "text": "2×8 je Fuß", "weight": "ohne Gewicht", "perSide": true } }
+    ],
+    "wade": [
+      { "id": "X-wade-1", "name": "Wadenheben langsam", "why": "Wade wird belastbarer.", "start": "Auf der Stufe, Hand am Geländer.", "steps": ["Hoch in 1 s.", "Oben halten.", "In 4 s runter."], "watch": "Gewicht auf der Großzehe.", "mistake": "Wippen.", "tool": "Stufe", "dose": { "sets": 2, "text": "2×12 beidbeinig", "weight": "ohne Gewicht" } }
+    ],
+    "huefte": [
+      { "id": "X-huefte-1", "name": "Clamshell mit Band", "why": "Hüfte außen stark.", "start": "Seitlage, Knie gebeugt, kleines Band über den Knien.", "steps": ["Oberes Knie öffnen, Füße bleiben zusammen.", "Kurz halten.", "Langsam schließen."], "watch": "Becken bleibt still.", "mistake": "Becken kippt nach hinten.", "tool": "Kleines Band", "dose": { "sets": 2, "text": "2×15 je Seite", "weight": "ohne Gewicht", "perSide": true } }
+    ],
+    "schulter": [
+      { "id": "X-schulter-1", "name": "Band auseinanderziehen", "why": "Schultern hinten stark, Haltung gerade.", "start": "Stehen, großes Band vor der Brust, Arme gestreckt.", "steps": ["Band auseinanderziehen bis zur Brust.", "Schulterblätter zusammen.", "Langsam zurück."], "watch": "Schultern unten.", "mistake": "Hohlkreuz.", "tool": "Großes Band", "dose": { "sets": 2, "text": "2×15", "weight": "ohne Gewicht" } }
+    ]
+  },
+  "fp": {
+    "courseUrl": "https://learning.functionalpatterns.app/courses/142637",
+    "lessonUrl": "https://learning.functionalpatterns.app/courses/142637/lessons/",
+    "classUrl": "https://learning.functionalpatterns.app/courses/142637/classes/",
+    "explain": "Functional Patterns hat 3 Teile. Erst lockerst du mit Ball und Rolle verspannte Stellen. Dann lernst du, wie du gerade stehst. Danach kommen Übungen für Rumpf, Hüfte und Schultern. Rollen macht dich nicht stärker, aber lockerer und beweglicher. Darum ist es bei dir das Aufwärmen vor der Kraft. Die Übungen aus Teil 3 werden Teil deiner Kraft-Einheiten.",
+    "rollRules": "1–2 min pro Seite, langsam rollen, auf einem festen Punkt 20–30 s liegen bleiben, ruhig durch die Nase atmen, höchstens „angenehm weh“ (4–5 von 10). Nie auf Schienbeinkante, Kniescheibe, die Stelle direkt hinter dem Innenknöchel oder Stellen, die richtig wehtun.",
+    "unlockNote": "Im Kurs wird die nächste Lektion erst frei, wenn die vorige erledigt ist. Darum jede Lektion einmal ansehen und im Kurs als erledigt markieren – auch die, die du nur ansiehst.",
+    "weeks": {
+      "1": { "title": "Lockern (Teil 1)", "done": true, "lessons": [] },
+      "2": { "title": "Longitudinal Compression – Lockern", "goal": "Stellen lockern, die durch Sitzen und Stauchung fest werden.", "tools": "Tennis- oder Lacrosseball, größerer Ball", "lessons": [
+        { "id": 12, "name": "Introduction", "mode": "ansehen", "how": "Nur ansehen." },
+        { "id": 13, "name": "Tensor Fascia Latae (Hüfte vorne außen)", "mode": "machen", "how": "Bauchlage, leicht zur Seite gedreht. Ball unter die Stelle vorn außen neben dem Hüftknochen." },
+        { "id": 14, "name": "Gluteus Medius (Po seitlich oben)", "mode": "machen", "how": "Seitlich auf den Ball legen oder setzen – Stelle zwischen Hüftknochen und Po." },
+        { "id": 15, "name": "Anterior 45 & Posterior 45 (Oberschenkel schräg vorn und hinten außen)", "mode": "machen", "how": "Sanft auf dem Ball oder der Rolle, schräg vorn und schräg hinten außen am Oberschenkel." },
+        { "id": 16, "name": "Gluteal Fold (Pofalte)", "mode": "machen", "how": "Auf den Ball setzen, genau am Übergang Po zu Oberschenkel, Bein locker." },
+        { "id": 17, "name": "Calves (Wade)", "mode": "machen", "how": "Wade auf Ball oder Rolle. Nicht auf die Schienbeinkante." },
+        { "id": 18, "name": "Upper Abdominals", "mode": "ansehen", "how": "Nur ansehen – Ball in den Bauch lassen wir weg." },
+        { "id": 19, "name": "Pectoralis Major (Brust)", "mode": "machen", "how": "Ball zwischen Brust und Wand, langsam bewegen." },
+        { "id": 20, "name": "Latissimus Dorsi (seitlicher Rücken)", "mode": "machen", "how": "Seitlage auf der großen Rolle, Stelle unter der Achsel." },
+        { "id": 21, "name": "Upper Trapezius (Schulter oben)", "mode": "machen", "how": "Sanft, Ball an der Wand. Kann gegen das Schulter-Zwicken beim Laufen helfen." },
+        { "id": 22, "name": "Follow Along", "mode": "ansehen", "how": "Nur ansehen zum Freischalten. Samstags freiwillig mitmachen." }
+      ], "midweek": ["Gluteus Medius", "Waden"] },
+      "3": { "title": "Tissue Hydration – Lockern", "goal": "Gewebe weicher machen, gezielter mit kleinerem Werkzeug.", "tools": "Ball, Besenstiel", "lessons": [
+        { "id": 23, "name": "Introduction", "mode": "ansehen", "how": "Nur ansehen." },
+        { "id": 24, "name": "Iliacus", "mode": "ansehen", "how": "Nur ansehen (Bauch)." },
+        { "id": 25, "name": "Upper Abdominals", "mode": "ansehen", "how": "Nur ansehen (Bauch)." },
+        { "id": 26, "name": "Lateral Obliques (seitliche Taille)", "mode": "freiwillig", "how": "Freiwillig, sanft." },
+        { "id": 27, "name": "Inner Calves (Innenwade)", "mode": "machen", "how": "Innenseite der Wade auf dem Ball. Nicht direkt hinter dem Innenknöchel. Gut für den Knöchel." },
+        { "id": 28, "name": "Plantar Fascia (Fußsohle)", "mode": "machen", "how": "Im Stehen mit dem Fuß auf dem Ball rollen. Gut für Großzehe und Fuß." },
+        { "id": 29, "name": "Subscapularis (Achsel)", "mode": "ansehen", "how": "Nur ansehen." },
+        { "id": 30, "name": "Upper Pectoralis (Brust oben)", "mode": "machen", "how": "Ball an der Wand, Brust oben." },
+        { "id": 31, "name": "Hamstrings (Oberschenkel hinten)", "mode": "machen", "how": "Sitzend, Ball oder Besenstiel unter dem Oberschenkel." },
+        { "id": 32, "name": "Suboccipital (Nacken)", "mode": "ansehen", "how": "Nur ansehen." },
+        { "id": 33, "name": "Follow Along", "mode": "ansehen", "how": "Nur ansehen. Samstags freiwillig mitmachen." }
+      ], "midweek": ["Innenwade", "Fußsohle"] },
+      "4": { "title": "Haltung", "goal": "Lernen, wie man gerade steht.", "tools": "Nichts", "lessons": [
+        { "id": 34, "name": "Why Posture Is Vital", "mode": "ansehen", "how": "Ansehen." },
+        { "id": 35, "name": "Dysfunctional Posture Overview", "mode": "ansehen", "how": "Ansehen." },
+        { "id": 36, "name": "Standing Neutral Position", "mode": "machen", "how": "Ansehen und mitmachen. Danach täglich 1 min, z. B. beim Zähneputzen." },
+        { "id": 37, "name": "Standing Neutral with Naudi", "mode": "machen", "how": "Ansehen und mitmachen." }
+      ], "midweek": ["Fußsohle", "Waden"] },
+      "5": { "title": "Rumpf", "goal": "Plank-Varianten und Quad Ped lernen.", "tools": "Matte (Hanteln aus dem Kurs brauchst du nicht)", "lessons": [
+        { "id": 38, "name": "Introduction", "mode": "ansehen", "how": "Ansehen." },
+        { "id": 39, "name": "Plank", "mode": "machen", "how": "Ansehen und einmal probieren." },
+        { "id": 40, "name": "Elevated Plank", "mode": "machen", "how": "Ansehen und einmal probieren." },
+        { "id": 41, "name": "Plank With Hip Extension", "mode": "machen", "how": "Ansehen und einmal probieren." },
+        { "id": 42, "name": "Quad Ped", "mode": "machen", "how": "Vierfüßlerstand. Ansehen und einmal probieren." }
+      ], "midweek": ["Waden", "Gluteus Medius"] },
+      "6": { "title": "Atmung und Brustwirbelsäule", "goal": "Besser atmen, Oberkörper beweglich.", "tools": "Besenstiel, großer Ball, Rolle", "lessons": [
+        { "id": 43, "name": "Introduction", "mode": "ansehen", "how": "Ansehen." },
+        { "id": 44, "name": "Diaphragm Exercise (Atmung)", "mode": "machen", "how": "Ansehen und ausprobieren." },
+        { "id": 45, "name": "Thoracic Spine Mobility with Pipe", "mode": "machen", "how": "Mit dem Besenstiel ausprobieren." },
+        { "id": 46, "name": "Modified Prone Cobra", "mode": "machen", "how": "Bauchlage, Oberkörper leicht anheben. Probieren." },
+        { "id": 47, "name": "Wall Retractions", "mode": "machen", "how": "Schulterblätter an der Wand zusammenziehen. Probieren." }
+      ], "midweek": ["Waden", "Fußsohle"] },
+      "7": { "title": "Hüfte und Stand", "goal": "Beinrückseite dehnen, Becken steuern, einbeinig stehen.", "tools": "Matte", "lessons": [
+        { "id": 48, "name": "Introduction", "mode": "ansehen", "how": "Ansehen." },
+        { "id": 49, "name": "Posterior Chain Stretch", "mode": "machen", "how": "Probieren. Ab jetzt 2 min nach dem langen Lauf." },
+        { "id": 50, "name": "Anterior Tilt Exercise", "mode": "machen", "how": "Probieren." },
+        { "id": 51, "name": "Unilateral Stance", "mode": "machen", "how": "Probieren. Ist ab Mittwoch Übung 1 in Kraft B." }
+      ], "midweek": ["Waden", "Gluteus Medius"] },
+      "8": { "title": "Hüftstreckung", "goal": "Po und Hüfte strecken lernen.", "tools": "Matte", "lessons": [
+        { "id": 52, "name": "Introduction", "mode": "ansehen", "how": "Ansehen." },
+        { "id": 53, "name": "Plank with Hip Extension", "mode": "machen", "how": "Probieren." },
+        { "id": 54, "name": "Bilateral Hip Extension", "mode": "machen", "how": "Probieren." },
+        { "id": 55, "name": "Supine Bridge", "mode": "machen", "how": "Probieren. Ist ab Mittwoch Übung 4 in Kraft A." }
+      ], "midweek": ["Waden", "Fußsohle"] },
+      "9": { "title": "Ziehen und Drücken", "goal": "Ziehen, Drücken und Rumpf drehen – mit Band.", "tools": "Band + Türanker (statt Kabelzug)", "lessons": [
+        { "id": 56, "name": "Introduction", "mode": "ansehen", "how": "Ansehen." },
+        { "id": 57, "name": "One Arm Row", "mode": "machen", "how": "Mit Band + Türanker probieren." },
+        { "id": 58, "name": "The Press", "mode": "machen", "how": "Mit Band + Türanker probieren." },
+        { "id": 59, "name": "Transverse Hold", "mode": "machen", "how": "Mit Band probieren." }
+      ], "midweek": ["Waden", "Gluteus Medius"] },
+      "10": { "title": "Einseitig ziehen und drücken", "goal": "Alles einarmig und gegengleich.", "tools": "Band + Türanker", "lessons": [
+        { "id": 60, "name": "Introduction", "mode": "ansehen", "how": "Ansehen." },
+        { "id": 61, "name": "Unilateral Press", "mode": "machen", "how": "Mit Band probieren." },
+        { "id": 62, "name": "Unilateral Row", "mode": "machen", "how": "Mit Band probieren." },
+        { "id": 63, "name": "Contralateral Step Press and Row", "mode": "machen", "how": "Mit Band probieren." }
+      ], "midweek": ["Waden", "Fußsohle"] }
+    },
+    "byPlanWeek": {
+      "1": { "fpWeek": 2, "monday": "Videos von Woche 2 der Reihe nach ansehen. Rollen: Hüfte vorne außen (TFL), Gluteus Medius, Waden, Latissimus." },
+      "2": { "fpWeek": 3, "monday": "Videos von Woche 3 ansehen. Rollen: Innenwade (nie direkt hinter dem Innenknöchel), Fußsohle, Beinrückseite, Brust oben." },
+      "3": { "fpWeek": null, "repeat": true, "monday": "Wiederholung: Follow-Along von Woche 2 oder 3 und nur die „Machen“-Stellen. Lieblingsstellen: Waden, Fußsohle, Gluteus Medius, Oberschenkel innen.", "midweek": ["Waden", "Gluteus Medius"] },
+      "4": { "fpWeek": 4, "monday": "Alle 4 Haltungs-Videos ansehen. Rollen: Waden, Gluteus Medius. Ab heute jeden Tag 1 min Standing Neutral (Zähneputzen)." },
+      "5": { "fpWeek": 5, "monday": "Videos ansehen und je einmal probieren. Danach 4 Lieblingsstellen rollen." },
+      "6": { "fpWeek": 6, "monday": "Videos ansehen. Diaphragm Exercise und Wall Retractions ausprobieren." },
+      "7": { "fpWeek": 7, "monday": "Videos ansehen. 4 Lieblingsstellen rollen." },
+      "8": { "fpWeek": 8, "monday": "Videos ansehen.", "shopping": "Einkaufsliste: Türanker für Bänder (ca. 5–10 €). Brauchst du ab Woche 9." },
+      "9": { "fpWeek": 9, "monday": "Videos ansehen und mit Band + Türanker probieren." },
+      "10": { "fpWeek": 10, "monday": "Videos ansehen und mit Band probieren." },
+      "11": { "fpWeek": null, "repeat": true, "monday": "Follow-Along einer Woche aus 1–3 und 4 Lieblingsstellen rollen.", "midweek": ["Waden", "Fußsohle"] },
+      "12": { "fpWeek": null, "repeat": true, "monday": "Follow-Along einer Woche aus 1–3 und 4 Lieblingsstellen rollen.", "midweek": ["Waden", "Fußsohle"] }
+    }
+  },
+  "equipment": {
+    "have": ["Widerstandsbänder (groß + klein)", "Faszienrollen (klein, groß, große dicke)", "Bälle (Tennisball-Größe + größerer Ball)", "Klimmzugstange", "Matte", "Yogablöcke", "Treppenstufe mit Geländer", "Besenstiel", "Kurzhanteln: je 2 Stück mit 1 kg, 2 kg und 3 kg"],
+    "rules": ["Hanteln nur dort, wo es in der Übung steht.", "Erst die Technik ohne Gewicht, dann mit Gewicht.", "Mehr Gewicht nur, wenn alle Sätze sauber gehen und noch 2–3 Wiederholungen möglich wären."],
+    "missing": "Türanker für Bänder (ca. 5–10 €) – erst ab Woche 9 nötig."
+  },
+  "rules": {
+    "morningCheck": ["Tief in die Hocke und wieder hoch.", "Schienbein mit den Fingern abdrücken.", "Vor Tempo und Lang: 10 Hüpfer je Bein."],
+    "ampel": {
+      "gruen": "0–2 und wird nicht schlimmer → Plan normal.",
+      "gelb": "3–4, oder Schmerz erst am Ende vom Lauf, oder Ruhepuls-7-Tage-Schnitt ≥ 59 → nächster Lauf ein Drittel kürzer, flach, Puls nur bis 158, keine Sprünge, Kraft leichtere Variante.",
+      "rot": "≥ 5, Hinken, ein Punkt am Knochen tut beim Drücken weh, oder einbeiniges Hüpfen tut weh → nicht laufen, bis 2 Tage grün. Oberkörper und Rumpf sind okay. Danach 2/3 vom Umfang. Punkt am Knochen: kein Laufen, keine Sprünge, bis 7 Tage schmerzfrei beim Drücken, dann mit der Hälfte neu starten.",
+      "kraft": "Beim Machen darf es bis 3 von 10 ziehen, danach nicht schlimmer werden."
+    },
+    "long": "Nie mehr als 10 % länger als der längste Lauf der letzten 30 Tage. Zwei Läufe über 10 km nie innerhalb von 3 Tagen. +1 km nur, wenn die Hocke am Montagmorgen danach grün ist.",
+    "swap": ["Termin höchstens 1 Tag schieben.", "Tempo und Lang nie an zwei Tagen hintereinander.", "Sturm oder Glätte → Lauf auf den nächsten Ruhetag oder Mini-Version.", "Beinkraft nie am Tag vor Tempo oder Lang.", "Krank → Pause, danach erst 1 lockerer Lauf.", "Verpasst → nicht nachholen."],
+    "weekDone": "Woche geschafft: 4 von 5 Einheiten.",
+    "food": "Nach jedem Training innerhalb 1 h ein Snack mit Eiweiß (Skyr, Quark, Tofu, Linsen). An Lauftagen eine Mahlzeit mehr."
+  },
+  "recovery": {
+    "title": "Plan geschafft! Erholungswoche",
+    "days": { "1": "rest", "2": "easy", "3": "strengthA", "4": "easy", "5": "strengthB", "6": "rest", "0": "easy" },
+    "easyNote": "Locker 30–40 min, Puls unter 162."
+  }
+}

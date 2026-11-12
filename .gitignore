@@ -1,0 +1,9 @@
+node_modules/
+.wrangler/
+worker/node_modules/
+worker/.dev.vars
+.env
+*.local
+ANLEITUNG-START.html
+.claude/
+*.log
