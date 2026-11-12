@@ -16,8 +16,8 @@ Auftrag: Obsidian `Projekte/Laufcoach-App Auftrag.md` · Projektordner: `Desktop
 - [x] Timer (Pause 60 s, Halten), Satz-Punkte, Mini-Version, Verschieben, Konfetti
 - [x] Unit-Tests für jeden Tag 12.11.2026–07.02.2027 + FP-Montage
 - [x] Klicktest bei 375 px (Kraft-Tag, Lauf-Tag, FP-Montag, Lauf eintragen)
-- [ ] Kraft-Check durch Sub-Agent und Korrekturen
-- [ ] Live auf GitHub Pages
+- [x] Kraft-Check durch Sub-Agent und Korrekturen (24 Punkte)
+- [x] Live auf GitHub Pages (janisrohde.github.io/laufcoach)
 - [ ] Janis: App auf dem iPhone installieren
 
 ## Phase 2 – Push + Trainer-Logik
@@ -37,4 +37,4 @@ Auftrag: Obsidian `Projekte/Laufcoach-App Auftrag.md` · Projektordner: `Desktop
 - [ ] Geplante Claude-Aufgabe (Cloud-Routine) einrichten
 
 ## Abschluss
-- [ ] START-HIER.md, Gehirn aktualisieren, Daten-und-Zugänge-Notiz
+- [x] START-HIER.md, Gehirn aktualisieren, Daten-und-Zugänge-Notiz
