@@ -9,7 +9,8 @@
     "test": "vitest run",
     "code": "node scripts/code.mjs",
     "deploy:worker": "cd worker && npx wrangler deploy",
-    "deploy": "npm test && npm run build && npm run deploy:worker"
+    "deploy": "npm test && npm run build && npm run deploy:worker",
+    "coach-token": "node scripts/coach-token.mjs"
   },
   "devDependencies": {
     "vite": "^6.0.0",
