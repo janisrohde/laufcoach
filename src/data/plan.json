@@ -103,25 +103,24 @@
   ],
   "week0": {
     "2026-11-12": {
-      "type": "strengthA",
-      "probe": true,
-      "title": "Kraft-A-Probe",
-      "minutes": 15,
-      "note": "Probe: von jeder Übung nur 1 Satz. Du lernst die Übungen kennen, mehr nicht."
+      "type": "rest",
+      "title": "Frei – Plan startet Mo 16.11.",
+      "note": "Diese Woche ist noch frei: Die App wird fertig gebaut. Dein Plan startet am Montag, 16.11."
     },
     "2026-11-13": {
       "type": "rest",
-      "title": "Ruhetag"
+      "title": "Frei – Plan startet Mo 16.11.",
+      "note": "Diese Woche ist noch frei: Die App wird fertig gebaut. Dein Plan startet am Montag, 16.11."
     },
     "2026-11-14": {
-      "type": "run",
-      "workout": "Locker (frei)",
-      "title": "Probelauf locker",
-      "note": "5–6 km flach. Teste, ob die Uhr piept, wenn dein Puls über 164 geht."
+      "type": "rest",
+      "title": "Frei – Plan startet Mo 16.11.",
+      "note": "Diese Woche ist noch frei: Die App wird fertig gebaut. Dein Plan startet am Montag, 16.11."
     },
     "2026-11-15": {
       "type": "rest",
-      "title": "Ruhetag"
+      "title": "Frei – Plan startet Mo 16.11.",
+      "note": "Diese Woche ist noch frei: Die App wird fertig gebaut. Dein Plan startet am Montag, 16.11."
     }
   },
   "workouts": {
@@ -2236,13 +2235,13 @@
   "recovery": {
     "title": "Plan geschafft! Erholungswoche",
     "days": {
+      "0": "easy",
       "1": "rest",
       "2": "easy",
       "3": "strengthA",
       "4": "easy",
       "5": "strengthB",
-      "6": "rest",
-      "0": "easy"
+      "6": "rest"
     },
     "easyNote": "Locker 30–40 min, Puls unter 162."
   }

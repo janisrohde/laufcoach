@@ -21,11 +21,10 @@ const FP_IDS = { 2: [12, 22], 3: [23, 33], 4: [34, 37], 5: [38, 42], 6: [43, 47]
 
 describe('Woche 0', () => {
   it('12.–15.11. stimmen', () => {
-    expect(getDay('2026-11-12')).toMatchObject({ week: 0, type: 'strength', title: 'Kraft-A-Probe', minutes: 15 });
-    expect(getDay('2026-11-12').items.every((i) => i.sets === 1)).toBe(true);
-    expect(getDay('2026-11-13').type).toBe('rest');
-    expect(getDay('2026-11-14')).toMatchObject({ type: 'run', workout: 'Locker (frei)' });
-    expect(getDay('2026-11-15').type).toBe('rest');
+    for (const d of ['2026-11-12', '2026-11-13', '2026-11-14', '2026-11-15']) {
+      expect(getDay(d)).toMatchObject({ week: 0, type: 'rest', minutes: 0 });
+      expect(getDay(d).note).toContain('16.11.');
+    }
   });
 });
 

@@ -10,7 +10,7 @@ Auftrag: Obsidian `Projekte/Laufcoach-App Auftrag.md` · Projektordner: `Desktop
   2. Janis folgt MORGEN.html Abschnitt 1: Cloud-Umgebung „Default“ → Umgebungsvariable `LAUFCOACH_TOKEN=` + Strg+V → Netzwerkzugriff Domain `laufcoach-api.janis-rohde.workers.dev`. Er schreibt „erledigt“ oder „Hänge fest“.
   3. Testlauf: RemoteTrigger `run` → `list_runs` → `get_run_log`. Prüfen: Läufe importiert, Analysen und Notiz in der App.
   4. Uhr: nur Laufcoach-Nachrichten (Garmin Connect Smart Notifications, iPhone Mitteilungen pro App), Schritt für Schritt.
-  5. Sa 14.11. Probelauf. iPhone-Schritte (Home-Bildschirm, Push, Test-Push) ggf. noch offen, nachfragen.
+  5. Woche 0 (12.–15.11.) ist auf Wunsch von Janis frei, Plan startet Mo 16.11. (Probe-Einheiten gestrichen). iPhone-Schritte (Home-Bildschirm, Push, Test-Push) ggf. noch offen, nachfragen.
 
 ## Alter Wiedereinstieg (12.11., erledigt bzw. ersetzt – Strava wird nicht mehr gebraucht)
 - **Stand:** App live (https://janisrohde.github.io/laufcoach/), Phase 1 + 2 fertig, 61 Tests grün, Worker deployt, alles committet und gepusht.
