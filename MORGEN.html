@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Laufcoach – weiter</title>
+<style>
+  :root { --bg:#f6f7f9; --card:#fff; --text:#1b1f24; --muted:#5b6470; --accent:#0a7d5a; --warn:#b45309; --line:#e3e6ea; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#111418; --card:#1a1f25; --text:#e8ebef; --muted:#9aa4b0; --accent:#3ccf98; --warn:#f0a44b; --line:#2a3038; } }
+  body { margin:0; background:var(--bg); color:var(--text); font:16px/1.55 system-ui, -apple-system, Segoe UI, sans-serif; }
+  main { max-width:760px; margin:0 auto; padding:28px 16px 60px; }
+  h1 { font-size:26px; margin:0 0 4px; }
+  .sub { color:var(--muted); margin:0 0 24px; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:16px; }
+  h2 { font-size:18px; margin:0 0 10px; }
+  ol { margin:0; padding-left:22px; }
+  li { margin:7px 0; }
+  code { background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:1px 6px; font-size:15px; word-break:break-all; }
+  .tag { display:inline-block; font-size:12px; font-weight:600; padding:2px 8px; border-radius:99px; background:var(--accent); color:#fff; margin-right:6px; vertical-align:2px; }
+  .warn { color:var(--warn); font-weight:600; }
+  .done { color:var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Laufcoach – hier geht's weiter</h1>
+  <p class="sub">Stand: 13.11.2026 abends. App läuft, Läufe sind drin, der Trainer (Claude) ist eingerichtet. Es fehlen nur noch 2 Einträge, dann ist er wirklich aktiv.</p>
+
+  <section>
+    <h2><span class="tag">0</span>Zuerst</h2>
+    <ol>
+      <li>In Claude Code (Ordner <code>Desktop\Lauftraining</code>) schreiben: <b>„ich bin wieder da“</b>.</li>
+      <li>Claude legt dir dann den <b>Trainer-Schlüssel in die Zwischenablage</b>. Warte, bis er „liegt in der Zwischenablage“ sagt.</li>
+      <li class="warn">Danach bis Schritt 7 unten nichts anderes kopieren!</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2><span class="tag">1</span>Schlüssel und Adresse eintragen (ca. 3 Minuten)</h2>
+    <ol>
+      <li>Geh in Chrome auf den Tab <b>„Claude Code“</b> (claude.ai/code).</li>
+      <li>Wenn ein weißes Fenster offen ist: oben rechts auf <b>X</b> klicken.</li>
+      <li>Ganz unten links, unter dem Eingabefeld „Beschreibe eine Aufgabe …“, steht ein kleines Wort mit Wolken-Symbol: <b>„Automatisch“</b>. Darauf klicken.</li>
+      <li>Fahr mit der Maus über <b>„Default“</b>. Rechts daneben erscheint ein kleines <b>Zahnrad ⚙</b>. Darauf klicken.</li>
+      <li>Es öffnet sich „Cloud-Umgebung bearbeiten“ mit 4 Zeilen. Klick auf die unterste: <b>„Umgebungsvariablen“</b>.</li>
+      <li>Ins Textfeld klicken und <b>tippen</b>: <code>LAUFCOACH_TOKEN=</code></li>
+      <li>Direkt dahinter, ohne Leerzeichen, <b>Strg+V</b> drücken. Danach steht hinter dem „=“ eine lange Zeichenkette.</li>
+      <li>Unten auf <b>„Änderungen speichern“</b> klicken.</li>
+      <li>Jetzt die oberste Zeile anklicken: <b>„Netzwerkzugriff“</b>. „Eingeschränkt“ bleibt so.</li>
+      <li>Ins graue Feld unter <b>„Erlaubte Domains“</b> schreiben: <code>laufcoach-api.janis-rohde.workers.dev</code></li>
+      <li><b>„Änderungen speichern“</b> klicken, dann bei den 4 Zeilen noch einmal <b>„Änderungen speichern“</b>.</li>
+      <li>In Claude Code <b>„erledigt“</b> schreiben. Steht bei Schritt 7 nichts da, schreib <b>„Hänge fest“</b>.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2><span class="tag">2</span>Claude macht dann (du musst nichts tun)</h2>
+    <ol>
+      <li>Testlauf vom Trainer starten.</li>
+      <li>Prüfen, ob deine Läufe ankommen und die Analyse in der App erscheint.</li>
+      <li>Dir sagen, ob alles klappt.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2><span class="tag">3</span>Danach: Uhr nur für den Laufcoach</h2>
+    <ol>
+      <li>Claude erklärt dir das Schritt für Schritt am iPhone (Garmin Connect und iPhone-Mitteilungen).</li>
+      <li>Ziel: Auf der Uhr erscheinen nur Laufcoach-Nachrichten, sonst nichts.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Gut zu wissen</h2>
+    <ol>
+      <li><b>Sa 14.11.:</b> Probelauf, danach in der App eintragen (oder warten, der Trainer holt ihn sich von Garmin).</li>
+      <li>Schmerz oder ein komisches Gefühl? In der App unter „Sag deinem Coach, wie's dir geht“ reinschreiben. Die Kraftübungen passen sich sofort an.</li>
+      <li class="done">App: janisrohde.github.io/laufcoach · Trainer läuft um 7, 13, 18, 20, 22 Uhr.</li>
+    </ol>
+  </section>
+</main>
+</body>
+</html>

@@ -2,7 +2,17 @@
 
 Auftrag: Obsidian `Projekte/Laufcoach-App Auftrag.md` · Projektordner: `Desktop\Lauftraining`
 
-## ⏸ Wiedereinstieg (Pause am 12.11.2026 abends, Janis bei seinem Vater)
+## ⏸ Wiedereinstieg (Pause am 13.11.2026 abends) – DAS GILT
+- **Stand:** App live, 15 Läufe über Tredict importiert, Lauf-Analyse, Coach-Nachricht, Verschieben-Fix, Auto-Update, neue Diagramme. Claude-Routine `trig_01J4pL9GAaocm5yPvZoNAnLE` läuft 5× täglich (07/13/18/20/22 Uhr), aber **ohne Schlüssel und Netzwerk-Freigabe kann sie den Worker noch nicht erreichen**.
+- **Tabs:** `weiter.ps1` öffnet MORGEN.html (Anleitung für Janis), claude.ai/code, die Routine und die App.
+- **Ablauf:**
+  1. `npm run coach-token` im Terminal ausführen (neuer COACH_TOKEN als Worker-Secret + in die Zwischenablage, nicht anzeigen). Janis sagen: „Schlüssel liegt in der Zwischenablage“.
+  2. Janis folgt MORGEN.html Abschnitt 1: Cloud-Umgebung „Default“ → Umgebungsvariable `LAUFCOACH_TOKEN=` + Strg+V → Netzwerkzugriff Domain `laufcoach-api.janis-rohde.workers.dev`. Er schreibt „erledigt“ oder „Hänge fest“.
+  3. Testlauf: RemoteTrigger `run` → `list_runs` → `get_run_log`. Prüfen: Läufe importiert, Analysen und Notiz in der App.
+  4. Uhr: nur Laufcoach-Nachrichten (Garmin Connect Smart Notifications, iPhone Mitteilungen pro App), Schritt für Schritt.
+  5. Sa 14.11. Probelauf. iPhone-Schritte (Home-Bildschirm, Push, Test-Push) ggf. noch offen, nachfragen.
+
+## Alter Wiedereinstieg (12.11., erledigt bzw. ersetzt – Strava wird nicht mehr gebraucht)
 - **Stand:** App live (https://janisrohde.github.io/laufcoach/), Phase 1 + 2 fertig, 61 Tests grün, Worker deployt, alles committet und gepusht.
 - **Tabs öffnen:** `weiter.ps1` (App, Strava-Login, Strava-API, GitHub, Cloudflare).
 - **Zuerst Janis fragen:**
