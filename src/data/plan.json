@@ -1653,6 +1653,49 @@
           "weight": "ohne Gewicht"
         }
       }
+    ],
+    "aussenknoechel": [
+      {
+        "id": "X-aussen-1",
+        "name": "Fuß nach außen gegen das Band",
+        "why": "Stärkt die Muskeln außen am Unterschenkel – sie schützen vor dem Umknicken.",
+        "start": "Auf dem Boden sitzen, Band an einem Tischbein, das innen neben dem Fuß steht. Schlaufe um den Vorfuß.",
+        "steps": [
+          "Fußspitze leicht nach unten strecken.",
+          "Fuß gegen das Band nach außen drehen.",
+          "In 3 s langsam zurück."
+        ],
+        "watch": "Nur der Fuß bewegt sich, das Knie bleibt ruhig.",
+        "mistake": "Das ganze Bein dreht mit.",
+        "tool": "Band, Tischbein",
+        "dose": {
+          "sets": 2,
+          "text": "2×15 je Seite",
+          "weight": "ohne Gewicht",
+          "perSide": true
+        }
+      },
+      {
+        "id": "X-aussen-2",
+        "name": "Einbeinstand mit Kopfdrehen",
+        "why": "Der Knöchel lernt, kleine Wackler sofort abzufangen.",
+        "start": "Barfuß auf einem Bein stehen, Hände an der Hüfte.",
+        "steps": [
+          "Kurzer Fuß machen.",
+          "Kopf langsam nach links und rechts drehen.",
+          "Halten, bis der Timer piept, dann Seite wechseln."
+        ],
+        "watch": "Der Fuß kippt nicht auf die Außenkante.",
+        "mistake": "Am Tisch festhalten.",
+        "tool": "Nichts",
+        "dose": {
+          "sets": 2,
+          "text": "2× 30 s je Seite",
+          "hold": 30,
+          "weight": "ohne Gewicht",
+          "perSide": true
+        }
+      }
     ]
   },
   "fp": {

@@ -59,3 +59,11 @@ describe('Plan von Claude', () => {
     expect(dayWith('2026-11-17', data).workout).toBe('Locker (frei)');
   });
 });
+
+describe('Nachricht an den Coach', () => {
+  it('„Knöchel komisch nach außen“ → Extra-Übungen Außenknöchel', () => {
+    const data = { athleteNotes: [{ date: '2026-11-18', text: 'Knöchel heute komisch, wenn ich nach außen biege' }] };
+    const d = dayWith('2026-11-20', data);
+    expect(d.items.some((i) => i.extra && i.area === 'aussenknoechel')).toBe(true);
+  });
+});

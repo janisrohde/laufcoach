@@ -6,6 +6,7 @@ export const AREAS = {
   knie: { label: 'Knie', extras: ['knie', 'huefte'] },
   schienbein: { label: 'Schienbein', extras: ['schienbein', 'wade'] },
   innenknoechel: { label: 'Innenknöchel', extras: ['innenknoechel', 'wade'] },
+  aussenknoechel: { label: 'Außenknöchel', extras: ['aussenknoechel', 'wade'] },
   grosszehe: { label: 'Großzehe', extras: ['grosszehe'] },
   wade: { label: 'Wade', extras: ['wade'] },
   huefte: { label: 'Hüfte', extras: ['huefte'] },
@@ -13,14 +14,18 @@ export const AREAS = {
 };
 
 const KEYWORDS = [
-  [/knie/i, 'knie'], [/schienbein|shin/i, 'schienbein'], [/kn[öo]chel|sprunggelenk/i, 'innenknoechel'],
+  [/knie/i, 'knie'], [/schienbein|shin/i, 'schienbein'], [/au(ß|ss)en\S*\s*\S*\s*kn[öo]chel|kn[öo]chel.{0,40}au(ß|ss)en|umknick|umgeknickt/i, 'aussenknoechel'], [/innen\S*\s*\S*\s*kn[öo]chel|kn[öo]chel.{0,40}innen/i, 'innenknoechel'], [/kn[öo]chel|sprunggelenk/i, 'knoechel'],
   [/zeh/i, 'grosszehe'], [/wade/i, 'wade'], [/h[üu]fte|leiste|po\b/i, 'huefte'], [/schulter|nacken/i, 'schulter'],
 ];
 
 /** Stelle(n) und Seite aus Freitext lesen, z. B. „rechtes Knie gezwickt“. */
 export function parseNote(text = '') {
   const areas = [];
-  for (const [re, a] of KEYWORDS) if (re.test(text) && !areas.includes(a)) areas.push(a);
+  for (const [re, a] of KEYWORDS) {
+    if (!re.test(text) || areas.includes(a)) continue;
+    if (a === 'knoechel') { if (!areas.includes('aussenknoechel') && !areas.includes('innenknoechel')) areas.push('innenknoechel'); continue; }
+    areas.push(a);
+  }
   let side = null;
   if (/recht/i.test(text)) side = 'rechte';
   else if (/link/i.test(text)) side = 'linke';
@@ -260,7 +265,7 @@ export function adjust(date, data = {}) {
   }
 
   // ---------- Schwachstellen → gezieltes Krafttraining ----------
-  const focus = weakSpots(date, runs, checks);
+  const focus = weakSpots(date, runs, checks, data.athleteNotes || []);
   if (focus.length) {
     const extras = [];
     for (const f of focus) {
@@ -335,7 +340,7 @@ export function adjust(date, data = {}) {
 }
 
 /** Stellen, die in den letzten 21 Tagen gezwickt haben (Lauf-Eintrag, Notiz oder Morgen-Check). */
-export function weakSpots(date, runs = [], checks = []) {
+export function weakSpots(date, runs = [], checks = [], notes = []) {
   const hits = {};
   const add = (area, side, d) => {
     if (!AREAS[area]) return;
@@ -350,6 +355,11 @@ export function weakSpots(date, runs = [], checks = []) {
     const side = sideWord(r.pain_side) || fromNote.side;
     if ((r.pain ?? 0) >= 2 && r.pain_where) for (const w of String(r.pain_where).split(',')) add(w.trim(), side, r.date);
     else if (fromNote.areas.length && /zwick|schmerz|weh|zieh|stech|drück/i.test(r.note || '')) for (const a of fromNote.areas) add(a, side, r.date);
+  }
+  for (const n of notes) {
+    if (n.date > date || diffDays(date, n.date) > 21) continue;
+    const pn = parseNote(n.text || '');
+    if (pn.areas.length && /zwick|schmerz|weh|zieh|stech|drück|komisch|instabil|knick|fest|hart/i.test(n.text || '')) for (const a of pn.areas) add(a, pn.side, n.date);
   }
   for (const c of checks) {
     if (c.date > date || diffDays(date, c.date) > 21) continue;

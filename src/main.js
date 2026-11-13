@@ -342,6 +342,13 @@ async function renderToday() {
   if (day.optional) html += `<div class="card note info">${esc(day.optional)}</div>`;
   if (day.type === 'rest' && !day.optional && day.week >= 0) html += `<div class="card note info small">${esc(PLAN.rules.food)}</div>`;
 
+  if (state.date <= today()) {
+    html += `<div class="card" id="coachnote"><div class="label">Sag deinem Coach, wie's dir geht</div>
+      ${(data.myNotes || []).map((n) => `<p class="small" style="margin:4px 0">💬 ${esc(n.text)}</p>`).join('')}
+      <textarea class="in" id="cn-text" placeholder="z. B. „Knöchel heute komisch, wenn ich ihn nach außen biege“ oder „Beine schwer, schlecht geschlafen“"></textarea>
+      <button class="btn primary block" id="cn-send" style="margin-top:10px">An den Coach senden</button>
+      <div id="cn-reply"></div></div>`;
+  }
   if (allDone) html += `<div class="card finished"><div class="big">Erledigt ✓</div><div class="muted" id="weekprog">Stark gemacht!</div><p class="small">${esc(PLAN.rules.food)}</p></div>`;
   if (day.type === 'strength' || day.type === 'run') {
     html += `<div class="row" style="margin-top:4px">${day.hasMini ? `<button class="btn" id="mini">${state.mini ? 'Ganze Einheit zeigen' : 'Mini-Version (15 min)'}</button>` : ''}${isToday ? '<button class="btn" id="move">Heute verschieben</button>' : ''}</div>`;
@@ -418,6 +425,19 @@ function bindToday(day, done) {
       });
     }
   });
+  const cn = document.getElementById('cn-send');
+  if (cn) cn.onclick = async () => {
+    const text = document.getElementById('cn-text').value.trim();
+    if (!text) return toast('Schreib kurz, wie es dir geht.');
+    cn.disabled = true;
+    try {
+      const r = await api('/note', { method: 'POST', body: { date: state.date, text } });
+      const NAMES = { knie: 'Knie', schienbein: 'Schienbein', innenknoechel: 'Innenknöchel', aussenknoechel: 'Außenknöchel', grosszehe: 'Großzehe', wade: 'Wade', huefte: 'Hüfte', schulter: 'Schulter' };
+      document.getElementById('cn-reply').innerHTML = `<div class="card note good" style="margin:12px 0 0">${r.areas.length ? `Verstanden: <b>${r.areas.map((a) => NAMES[a] || a).join(', ')}</b>. ` : 'Danke, ist angekommen. '}${r.upcoming.length ? r.upcoming.map((u) => `${esc(u.label)}: Extra-Übungen ${esc(u.extras.join(', '))}.`).join(' ') : ''} Heute Abend schaut sich Claude das genau an und passt deinen Plan an.</div>`;
+      document.getElementById('cn-text').value = '';
+    } catch (e) { toast(e.message); }
+    cn.disabled = false;
+  };
   const mini = document.getElementById('mini');
   if (mini) mini.onclick = () => { state.mini = !state.mini; renderToday(); };
   const move = document.getElementById('move');
@@ -428,7 +448,7 @@ function bindToday(day, done) {
 }
 
 // ---------- Lauf eintragen ----------
-const SPOTS = [['knie', 'Knie'], ['schienbein', 'Schienbein'], ['innenknoechel', 'Innenknöchel'], ['grosszehe', 'Großzehe'], ['wade', 'Wade'], ['huefte', 'Hüfte'], ['schulter', 'Schulter'], ['sonstiges', 'Sonstiges']];
+const SPOTS = [['knie', 'Knie'], ['schienbein', 'Schienbein'], ['innenknoechel', 'Innenknöchel'], ['aussenknoechel', 'Außenknöchel'], ['grosszehe', 'Großzehe'], ['wade', 'Wade'], ['huefte', 'Hüfte'], ['schulter', 'Schulter'], ['sonstiges', 'Sonstiges']];
 async function renderRunForm() {
   nav('heute');
   let data = state.data;
@@ -714,7 +734,7 @@ async function checkUpdate() {
 function softRefresh() {
   const h = (location.hash || '#heute').slice(1);
   const typing = document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
-  if (typing || timer || document.querySelector('details[open]') || h === 'lauf') return;
+  if (typing || timer || document.querySelector('details[open]') || h === 'lauf' || document.getElementById('cn-text')?.value) return;
   if (h === 'heute' || h.startsWith('tag/')) renderToday();
   else if (['woche', 'verlauf', 'bericht'].includes(h)) route();
 }
