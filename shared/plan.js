@@ -208,7 +208,7 @@ function runItems(date, workoutName, week, ctx) {
  * Inhalt eines Tages.
  * ctx: { fpFree, overrides: {workout, pause, level1, noJumps, extras, runNote, reason[]}, mini }
  */
-export function getDay(date, ctx = {}) {
+function getDayBase(date, ctx = {}) {
   const week = planWeek(date);
   const info = weekInfo(week);
   const wd = weekday(date);
@@ -290,6 +290,20 @@ export function getDay(date, ctx = {}) {
   if (week === 8 && wd === 1) extra.shopping = PLAN.fp.byPlanWeek['8'].shopping;
 
   return { ...base, type, title, workout, minutes: Math.round(minutes), note, items, ...extra };
+}
+
+export function getDay(date, ctx = {}) {
+  const d = getDayBase(date, ctx);
+  const ov = ctx.overrides || {};
+  const add = ov.addSession;
+  if (!add || d.type === 'before' || !PLAN.strength[add.key]) return d;
+  const s = strengthSession(add.key, Math.max(d.week, 0), { fpFree: d.fpFree, probe: add.probe, level1: ov.level1, noJumps: ov.noJumps, extras: ov.extras, exShift: ov.exShift });
+  const title = add.probe ? 'Kraft-A-Probe' : s.title;
+  if (d.type === 'rest') {
+    return { ...d, type: 'strength', strengthKey: add.key, title: `${title} (verschoben)`, minutes: add.probe ? 15 : s.minutes, items: s.items, general: s.general, hasMini: false, adjusted: true, note: null };
+  }
+  const extraItems = s.items.map((it) => ({ ...it, id: `plus:${it.id}` }));
+  return { ...d, items: [...d.items, { id: 'plus:section', kind: 'section', name: `Dazu heute: ${title} (von gestern verschoben)`, general: s.general }, ...extraItems], minutes: d.minutes + (add.probe ? 15 : s.minutes), adjusted: true };
 }
 
 /** Zählt, ob eine Einheit als „Training“ zählt (für 4 von 5). */

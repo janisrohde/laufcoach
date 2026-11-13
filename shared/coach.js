@@ -276,6 +276,36 @@ export function adjust(date, data = {}) {
     }
   }
 
+  // ---------- Plan von Claude (Coach-Routine) ----------
+  const isStrengthDay = getDay(date).type === 'strength';
+  for (const c of data.coachPlan || []) {
+    let d;
+    try { d = typeof c.data === 'string' ? JSON.parse(c.data) : c.data; } catch { continue; }
+    if (c.kind === 'focus' && c.date <= date && diffDays(date, c.date) <= (d.days || 7)) {
+      ov.extras = ov.extras || [];
+      for (const a of d.areas || []) {
+        if (AREAS[a.area] || PLAN.extraExercises[a.area]) {
+          const ex = ov.extras.find((e) => e.area === a.area);
+          if (ex) ex.count = Math.max(ex.count, a.count || 1);
+          else ov.extras.push({ area: a.area, side: sideWord(a.side) || null, count: a.count || 1 });
+        }
+      }
+      ov.extras = ov.extras.slice(0, 5);
+      if (isStrengthDay && d.reason) ov.reasons.push(`Coach: ${d.reason}`);
+    }
+    if (c.date !== date) continue;
+    if (c.kind === 'run') {
+      if (d.workout && PLAN.workouts[d.workout]) ov.workout = d.workout;
+      if (d.runNote) ov.runNote = d.runNote;
+      if (d.pause) ov.pause = true;
+      if (d.reason) ov.reasons.push(`Coach: ${d.reason}`);
+    }
+    if (c.kind === 'strength') {
+      if (d.exShift) ov.exShiftCoach = d.exShift;
+      if (d.reason) ov.reasons.push(`Coach: ${d.reason}`);
+    }
+  }
+
   // ---------- Übungs-Feedback zu leicht / zu schwer ----------
   const exShift = {};
   const byEx = {};
@@ -285,6 +315,8 @@ export function adjust(date, data = {}) {
     if (vals[vals.length - 1] === 'schwer') exShift[ex] = -1;
     else if (last.length === 2 && last.every((v) => v === 'leicht')) exShift[ex] = 1;
   }
+  Object.assign(exShift, ov.exShiftCoach || {});
+  delete ov.exShiftCoach;
   if (Object.keys(exShift).length) ov.exShift = exShift;
 
   // ---------- Manuelle Overrides (Verschieben, Claude) ----------
@@ -292,6 +324,7 @@ export function adjust(date, data = {}) {
     if (m.field === 'workout') ov.workout = m.value;
     if (m.field === 'pause') ov.pause = m.value === '1';
     if (m.field === 'moved') ov.moved = true;
+    if (m.field === 'addSession') { try { ov.addSession = JSON.parse(m.value); } catch { /* alt */ } }
     if (m.field === 'runNote') ov.runNote = m.value;
     if (m.field === 'swapTo') ov.swapTo = m.value;
     if (m.field === 'skip') ov.skip = true;

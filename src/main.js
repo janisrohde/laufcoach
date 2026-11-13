@@ -234,12 +234,25 @@ function watchCard(it, day) {
     <details class="how"><summary>So startest du es auf der Uhr</summary><div class="how-body"><ol>${it.howto.map((s) => `<li>${esc(s)}</li>`).join('')}</ol></div></details>
   </div>`;
 }
+function analysisHtml(r) {
+  const a = r.auto;
+  if (!a && !r.analysis) return '';
+  const cls = a ? (a.verdict === 'gut' ? 'good' : a.verdict === 'achtung' ? 'warn' : 'info') : 'info';
+  return `<div class="card note ${cls}"><div class="label">Coach-Auswertung · ${esc(r.workout || 'Lauf')}</div>
+    ${a ? `<h3 style="margin-bottom:6px">${esc(a.title)}</h3>${a.points.map((p) => `<p style="margin:4px 0">${p.icon} ${esc(p.text)}</p>`).join('')}${a.tip ? `<p style="margin-top:8px"><b>Tipp:</b> ${esc(a.tip)}</p>` : ''}` : ''}
+    ${r.analysis ? `<div class="label" style="margin-top:12px">Nachricht von Claude</div><p style="margin:0">${esc(r.analysis)}</p>` : ''}
+  </div>`;
+}
+function runSummary(r) {
+  const pace = r.distance_m && r.duration_s ? r.duration_s / (r.distance_m / 1000) : null;
+  return [r.distance_m ? (r.distance_m / 1000).toFixed(1) + ' km' : null, r.duration_s ? fmtSec(r.duration_s) + ' min' : null, pace ? fmtSec(Math.round(pace)) + ' /km' : null, r.hr_avg ? 'Ø ' + r.hr_avg + ' Puls' : null, r.cadence ? r.cadence + ' Schritte/min' : null, r.source === 'garmin' ? 'von Garmin' : r.source === 'strava' ? 'von Strava' : null].filter(Boolean).join(' · ');
+}
 function runlogCard(it, runs) {
   const r = runs[0];
   return `<div class="card ${r && r.rpe ? 'done' : ''}" data-id="run:log"><div class="ex"><div class="num">📝</div><div>
     <h3>${esc(it.name)}</h3>
-    ${r ? `<div class="dose">${r.distance_m ? (r.distance_m / 1000).toFixed(1) + ' km · ' : ''}${r.duration_s ? fmtSec(r.duration_s) + ' min · ' : ''}${r.hr_avg ? 'Ø ' + r.hr_avg + ' Puls' : ''}${r.source === 'strava' ? ' · von Strava' : ''}</div>` : ''}
-    <div class="why">${r && r.rpe ? 'Eingetragen ✓ – antippen zum Ändern.' : r ? 'Strava hat die Werte geschickt. Trag noch ein, wie es sich angefühlt hat.' : 'Dauer, Puls, Gefühl, Schmerz – dauert 1 Minute.'}</div>
+    ${r ? `<div class="dose">${esc(runSummary(r))}</div>` : ''}
+    <div class="why">${r && r.rpe ? 'Eingetragen ✓ – antippen zum Ändern.' : r ? 'Die Uhr hat die Werte geschickt. Trag noch ein, wie es sich angefühlt hat und ob etwas gezwickt hat.' : 'Kommt nach dem Lauf automatisch von der Uhr. Oder selbst eintragen – dauert 1 Minute.'}</div>
     <div class="row"><a class="btn primary" href="#lauf">${r && r.rpe ? 'Ändern' : 'Jetzt eintragen'}</a></div>
   </div><div></div></div></div>`;
 }
@@ -294,7 +307,7 @@ async function renderToday() {
   const typeIcon = { run: '🏃', strength: '💪', fp: '🧘', rest: '😴', before: '⏳' }[day.type] || '';
   const ampelPill = ampel ? `<span class="pill ${ampel}">${ampel === 'gruen' ? 'Grün' : ampel === 'gelb' ? 'Gelb' : 'Rot'}</span>` : '';
 
-  const counted = day.items.filter((it) => it.kind !== 'watch');
+  const counted = day.items.filter((it) => it.kind !== 'watch' && it.kind !== 'section');
   const doneCount = counted.filter((it) => isItemDone(it, done, runs, check)).length;
   const allDone = counted.length > 0 && doneCount === counted.length;
 
@@ -319,7 +332,12 @@ async function renderToday() {
     if (it.kind === 'exercise') html += exerciseCard(it, idx++, done, feedback || {});
     else if (it.kind === 'check') html += checkCard(it, check);
     else if (it.kind === 'watch') html += watchCard(it, day);
-    else if (it.kind === 'runlog') html += runlogCard(it, runs);
+    else if (it.kind === 'runlog') { html += runlogCard(it, runs); for (const r of runs) html += analysisHtml(r); }
+    else if (it.kind === 'section') { html += `<div class="label" style="margin:22px 4px 8px;font-size:14px;color:var(--accent)">${esc(it.name)}</div>`; if (it.general) html += `<div class="card note info small">${esc(it.general)}</div>`; idx = 0; }
+  }
+  if (!day.items.some((it) => it.kind === 'runlog') && runs.length) {
+    html += '<div class="label" style="margin:18px 4px 8px">Dein Lauf heute</div>';
+    for (const r of runs) html += `<div class="card"><h3>${esc(r.workout || 'Lauf')}</h3><div class="dose">${esc(runSummary(r))}</div><div class="row"><a class="btn small" href="#lauf">${r.rpe ? 'Ändern' : 'Gefühl und Schmerz eintragen'}</a></div></div>` + analysisHtml(r);
   }
   if (day.optional) html += `<div class="card note info">${esc(day.optional)}</div>`;
   if (day.type === 'rest' && !day.optional && day.week >= 0) html += `<div class="card note info small">${esc(PLAN.rules.food)}</div>`;
@@ -556,7 +574,8 @@ async function renderHistory() {
     <div class="card"><div class="label">Alle Läufe (${runs.length})</div>
       ${runs.length ? runs.map((r) => `<div class="run-item"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(r.workout || 'Lauf')}</b><span class="muted small">${+r.date.slice(8)}.${+r.date.slice(5, 7)}.</span></div>
         <div class="small">${[r.distance_m ? (r.distance_m / 1000).toFixed(1) + ' km' : null, r.duration_s ? fmtSec(r.duration_s) + ' min' : null, r.hr_avg ? 'Ø ' + r.hr_avg : null, r.rpe ? 'Gefühl ' + r.rpe : null, r.pain ? `Schmerz ${r.pain}${r.pain_where ? ' (' + r.pain_where + (r.pain_side ? ', ' + r.pain_side : '') + ')' : ''}` : null, r.source === 'strava' ? 'Strava' : null].filter(Boolean).join(' · ')}</div>
-        ${r.note ? `<div class="small muted">${esc(r.note)}</div>` : ''}</div>`).join('') : '<p class="muted">Noch keine Läufe eingetragen.</p>'}
+        ${r.note ? `<div class="small muted">${esc(r.note)}</div>` : ''}
+        ${r.auto ? `<details class="how"><summary>${r.auto.verdict === 'gut' ? '🟢' : r.auto.verdict === 'achtung' ? '🟠' : '⚪'} Coach-Auswertung</summary><div class="how-body">${r.auto.points.map((p) => `<p style="margin:4px 0">${p.icon} ${esc(p.text)}</p>`).join('')}${r.auto.tip ? `<p><b>Tipp:</b> ${esc(r.auto.tip)}</p>` : ''}${r.analysis ? `<p><b>Claude:</b> ${esc(r.analysis)}</p>` : ''}</div></details>` : ''}</div>`).join('') : '<p class="muted">Noch keine Läufe eingetragen.</p>'}
     </div>`;
 }
 
@@ -682,6 +701,26 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 state.lastToday = today();
+
+// ---------- Automatisch aktualisieren ----------
+const BUILD = typeof __BUILD__ !== 'undefined' ? __BUILD__ : 'dev';
+async function checkUpdate() {
+  if (BUILD === 'dev') return;
+  try {
+    const v = await fetch('./version.json?t=' + Date.now(), { cache: 'no-store' }).then((r) => r.json());
+    if (v.build && v.build !== BUILD) location.reload();
+  } catch { /* offline */ }
+}
+function softRefresh() {
+  const h = (location.hash || '#heute').slice(1);
+  const typing = document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+  if (typing || timer || document.querySelector('details[open]') || h === 'lauf') return;
+  if (h === 'heute' || h.startsWith('tag/')) renderToday();
+  else if (['woche', 'verlauf', 'bericht'].includes(h)) route();
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { checkUpdate(); softRefresh(); } });
+setInterval(() => { if (document.visibilityState === 'visible') { checkUpdate(); softRefresh(); } }, 60000);
+checkUpdate();
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 route();
 window.__API = API;

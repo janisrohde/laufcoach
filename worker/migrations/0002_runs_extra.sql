@@ -1,0 +1,3 @@
+ALTER TABLE runs ADD COLUMN ascent_m INTEGER;
+ALTER TABLE runs ADD COLUMN analysis TEXT;
+CREATE TABLE IF NOT EXISTS coach_plan (date TEXT NOT NULL, kind TEXT NOT NULL, data TEXT NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY (date, kind));

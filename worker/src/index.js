@@ -2,6 +2,7 @@
 import { buildPushPayload } from '@block65/webcrypto-web-push';
 import { getDay, berlinDate, berlinTime, addDays, diffDays, morningText, previewText, weekday, planWeek, PLAN } from '../../shared/plan.js';
 import { adjust, weekReport, parseNote } from '../../shared/coach.js';
+import { analyzeRun } from '../../shared/analysis.js';
 
 const enc = new TextEncoder();
 const now = () => new Date().toISOString();
@@ -56,13 +57,14 @@ const str = (v, max = 2000) => (v == null || v === '' ? null : String(v).slice(0
 // ---------- Daten laden ----------
 async function loadData(env, until) {
   const from = addDays(until, -60);
-  const [checks, runs, feedback, manual] = await Promise.all([
+  const [checks, runs, feedback, manual, coachPlan] = await Promise.all([
     env.DB.prepare('SELECT * FROM checks WHERE date >= ? ORDER BY date').bind(from).all(),
     env.DB.prepare('SELECT * FROM runs WHERE date >= ? ORDER BY date, id').bind(from).all(),
     env.DB.prepare('SELECT * FROM feedback WHERE date >= ? ORDER BY date, id').bind(from).all(),
     env.DB.prepare('SELECT * FROM overrides WHERE date >= ? ORDER BY id').bind(from).all(),
+    env.DB.prepare('SELECT * FROM coach_plan WHERE date >= ? ORDER BY date').bind(from).all(),
   ]);
-  return { checks: checks.results, runs: runs.results, feedback: feedback.results, manual: manual.results };
+  return { checks: checks.results, runs: runs.results, feedback: feedback.results, manual: manual.results, coachPlan: coachPlan.results };
 }
 async function getSettings(env) {
   const { results } = await env.DB.prepare('SELECT key, value FROM settings').all();
@@ -251,7 +253,8 @@ async function handle(req, env, ctx) {
       const next = [];
       for (let i = 1; i <= 7; i++) { const d = addDays(date, i); const x = await dayFor(env, d, data, settings); next.push({ date: d, type: x.day.type, title: x.day.title, workout: x.day.workout, reasons: x.day.reasons }); }
       return reply({ today: date, week: planWeek(date), ampel: today.ampel, todayPlan: { type: today.day.type, title: today.day.title, workout: today.day.workout, reasons: today.day.reasons }, messages: today.messages, next7: next,
-        runs: data.runs.filter((r) => r.date >= from), checks: data.checks.filter((c) => c.date >= from), feedback: data.feedback.filter((f) => f.date >= from), overrides: data.manual.filter((m) => m.date >= from), done, notes });
+        runs: data.runs.filter((r) => r.date >= from).map((r) => ({ ...r, auto: analyzeRun(r, data.runs) })), coachPlan: data.coachPlan.filter((c) => c.date >= addDays(date, -7)),
+        allowed: { focusAreas: Object.keys(PLAN.extraExercises), workouts: Object.keys(PLAN.workouts), exerciseIds: [...PLAN.strength.A.exercises, ...PLAN.strength.B.exercises].map((e) => `${e.id} ${e.name}`) }, checks: data.checks.filter((c) => c.date >= from), feedback: data.feedback.filter((f) => f.date >= from), overrides: data.manual.filter((m) => m.date >= from), done, notes });
     }
     if (path === '/coach/note' && req.method === 'POST') {
       const b = await req.json().catch(() => ({}));
@@ -259,6 +262,44 @@ async function handle(req, env, ctx) {
       if (!text) return reply({ error: 'text fehlt' }, 400);
       await env.DB.prepare("INSERT INTO coach_notes (date, text, author, created_at) VALUES (?, ?, 'claude', ?)").bind(isDate(b.date) ? b.date : date, text, now()).run();
       if (b.push) await sendPush(env, { title: 'Nachricht von deinem Coach', body: text.slice(0, 120), url: './#heute' });
+      return reply({ ok: true });
+    }
+    if (path === '/coach/runs' && req.method === 'POST') {
+      // Läufe importieren (z. B. aus Garmin/Tredict durch die Claude-Routine)
+      const b = await req.json().catch(() => ({}));
+      let added = 0;
+      for (const r of (b.runs || []).slice(0, 50)) {
+        if (!isDate(r.date) || !r.ext_id) continue;
+        const planned = getDay(r.date);
+        const workout = r.workout && PLAN.workouts[r.workout] ? r.workout : planned.type === 'run' ? planned.workout : 'Locker (frei)';
+        const ext = `ext:${String(r.ext_id).slice(0, 80)}`;
+        const known = await env.DB.prepare('SELECT id FROM runs WHERE strava_id = ?').bind(ext).first();
+        if (known) continue;
+        const appRun = await env.DB.prepare("SELECT id FROM runs WHERE date = ? AND strava_id IS NULL AND source = 'app' ORDER BY id DESC").bind(r.date).first();
+        const vals = [int(r.duration_s), int(r.distance_m), int(r.hr_avg), int(r.hr_max), int(r.cadence), int(r.ascent_m)];
+        if (appRun) {
+          await env.DB.prepare('UPDATE runs SET duration_s = COALESCE(duration_s, ?), distance_m = COALESCE(distance_m, ?), hr_avg = COALESCE(hr_avg, ?), hr_max = COALESCE(hr_max, ?), cadence = COALESCE(cadence, ?), ascent_m = COALESCE(ascent_m, ?), strava_id = ? WHERE id = ?').bind(...vals, ext, appRun.id).run();
+        } else {
+          await env.DB.prepare("INSERT OR IGNORE INTO runs (date, workout, duration_s, distance_m, hr_avg, hr_max, cadence, ascent_m, source, strava_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'garmin', ?, ?)").bind(r.date, workout, ...vals, ext, now()).run();
+        }
+        added++;
+      }
+      if (added && b.push) await sendPush(env, { title: 'Dein Lauf ist da 🏃', body: 'Trag kurz ein, wie es sich angefühlt hat.', url: './#lauf' });
+      return reply({ ok: true, added });
+    }
+    if (path === '/coach/analysis' && req.method === 'POST') {
+      const b = await req.json().catch(() => ({}));
+      const text = str(b.text, 1500);
+      if (!text || !b.run_id) return reply({ error: 'run_id und text nötig' }, 400);
+      await env.DB.prepare('UPDATE runs SET analysis = ? WHERE id = ?').bind(text, int(b.run_id)).run();
+      return reply({ ok: true });
+    }
+    if (path === '/coach/plan' && req.method === 'POST') {
+      // Personalisierte Anpassungen: kind = focus | run | strength
+      const b = await req.json().catch(() => ({}));
+      if (!isDate(b.date) || !['focus', 'run', 'strength'].includes(b.kind) || typeof b.data !== 'object') return reply({ error: 'date, kind (focus|run|strength), data nötig' }, 400);
+      if (b.kind === 'run' && b.data.workout && !PLAN.workouts[b.data.workout]) return reply({ error: 'unbekanntes Workout', allowed: Object.keys(PLAN.workouts) }, 400);
+      await env.DB.prepare('INSERT OR REPLACE INTO coach_plan (date, kind, data, created_at) VALUES (?, ?, ?, ?)').bind(b.date, b.kind, JSON.stringify(b.data).slice(0, 4000), now()).run();
       return reply({ ok: true });
     }
     if (path === '/coach/override' && req.method === 'POST') {
@@ -289,7 +330,7 @@ async function handle(req, env, ctx) {
     const { results: notes } = await env.DB.prepare('SELECT * FROM coach_notes WHERE date >= ? ORDER BY id DESC LIMIT 3').bind(addDays(date, -3)).all();
     const fb = data.feedback.filter((f) => f.date === date);
     return reply({ day, ampel, messages, done: Object.fromEntries(done.map((d) => [d.item_id, d.value])), check: data.checks.find((c) => c.date === date) || null,
-      runs: data.runs.filter((r) => r.date === date), notes, feedback: Object.fromEntries(fb.map((f) => [f.ex_id, f.value])), settings: { fpFree: settings.fpFree, fpLinks: settings.fpLinks, onboarded: settings.onboarded } });
+      runs: data.runs.filter((r) => r.date === date).map((r) => ({ ...r, auto: analyzeRun(r, data.runs) })), notes, feedback: Object.fromEntries(fb.map((f) => [f.ex_id, f.value])), settings: { fpFree: settings.fpFree, fpLinks: settings.fpLinks, onboarded: settings.onboarded } });
   }
   if (path === '/week' && req.method === 'GET') {
     const settings = await getSettings(env);
@@ -357,7 +398,8 @@ async function handle(req, env, ctx) {
   }
   if (path === '/history' && req.method === 'GET') {
     const { results } = await env.DB.prepare('SELECT * FROM runs ORDER BY date DESC, id DESC LIMIT 200').all();
-    return reply({ runs: results });
+    const asc = [...results].reverse();
+    return reply({ runs: results.map((r) => ({ ...r, auto: analyzeRun(r, asc) })) });
   }
   if (path === '/report' && req.method === 'GET') {
     const data = await loadData(env, addDays(date, 1));
@@ -385,7 +427,7 @@ async function handle(req, env, ctx) {
     }
     await env.DB.prepare('INSERT INTO overrides (date, field, value, reason, created_at) VALUES (?, ?, ?, ?, ?)').bind(date, 'moved', '1', `Auf morgen verschoben.`, now()).run();
     if (day.type === 'run') await env.DB.prepare('INSERT INTO overrides (date, field, value, reason, created_at) VALUES (?, ?, ?, ?, ?)').bind(tomorrow, 'workout', day.workout, `Von gestern verschoben: ${day.workout}.`, now()).run();
-    else await env.DB.prepare('INSERT INTO overrides (date, field, value, reason, created_at) VALUES (?, ?, ?, ?, ?)').bind(tomorrow, 'runNote', day.title, `Von gestern verschoben: ${day.title} heute zusätzlich machen.`, now()).run();
+    else await env.DB.prepare('INSERT INTO overrides (date, field, value, reason, created_at) VALUES (?, ?, ?, ?, ?)').bind(tomorrow, 'addSession', JSON.stringify({ key: day.strengthKey, probe: day.title === 'Kraft-A-Probe' }), `Von gestern verschoben: ${day.title}.`, now()).run();
     return reply({ ok: true });
   }
   if (path === '/settings') {
