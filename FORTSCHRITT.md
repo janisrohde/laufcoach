@@ -41,6 +41,17 @@ Auftrag: Obsidian `Projekte/Laufcoach-App Auftrag.md` · Projektordner: `Desktop
 - [x] 24 Coach-Tests grün
 - [ ] Test-Push auf iPhone + Uhr (Janis)
 
+## Stand 13.11.2026
+- [x] Garmin-Läufe über Tredict importiert (15 Läufe ab 14.10.), automatische Lauf-Analyse in der App
+- [x] Verschieben zeigt die ganze Einheit am neuen Tag (Bug behoben)
+- [x] App aktualisiert sich selbst (version.json, jede Minute neue Daten)
+- [x] „Sag deinem Coach, wie's dir geht“ + Außenknöchel als Stelle
+- [x] Verlauf: Diagramme mit Zielbereich, Werten, Achsen, Wochen-km als Balken
+- [x] Claude-Routine „Laufcoach – täglicher Trainer“ (trig_01J4pL9GAaocm5yPvZoNAnLE), 5× täglich 07/13/18/20/22 Uhr, nur Tredict-Connector
+- [ ] Janis: in claude.ai Cloud-Umgebung „Default“ → Umgebungsvariable LAUFCOACH_TOKEN (Strg+V aus `npm run coach-token`) + Netzwerkzugriff Domain laufcoach-api.janis-rohde.workers.dev
+- [ ] Testlauf der Routine prüfen (RemoteTrigger run + get_run_log)
+- [ ] Uhr: nur Laufcoach-Nachrichten (iPhone Mitteilungszentrale pro App aus, Garmin Smart Notifications an)
+
 ## Phase 3 – Claude als Trainer + Strava
 - [x] Coach-Schnittstelle `/coach/summary`, `/coach/note`, `/coach/override` (COACH_TOKEN)
 - [x] Strava-Import-Code (Webhook + OAuth + Sync)
