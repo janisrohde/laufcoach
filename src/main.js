@@ -561,20 +561,44 @@ function renderPlan() {
 }
 
 // ---------- Verlauf ----------
-function lineChart(points, { color = 'var(--accent)', unit = '' } = {}) {
+function lineChart(points, { color = 'var(--accent)', unit = '', band = null, yLabel = '' } = {}) {
   if (points.length < 2) return '<p class="small muted">Noch zu wenig Daten – nach ein paar Läufen erscheint hier ein Diagramm.</p>';
-  const W = 320, H = 130, P = 22;
+  const W = 340, H = 190, L = 34, R = 10, T = 18, B = 34;
   const vals = points.map((p) => p.v);
-  const min = Math.min(...vals) - 2, max = Math.max(...vals) + 2;
-  const x = (i) => P + (i * (W - 2 * P)) / (points.length - 1);
-  const y = (v) => H - P - ((v - min) / (max - min || 1)) * (H - 2 * P);
+  let min = Math.min(...vals, band ? band[0] : Infinity) - 3, max = Math.max(...vals, band ? band[1] : -Infinity) + 3;
+  min = Math.floor(min / 5) * 5; max = Math.ceil(max / 5) * 5;
+  const x = (i) => L + (i * (W - L - R)) / (points.length - 1);
+  const y = (v) => T + (1 - (v - min) / (max - min || 1)) * (H - T - B);
   const d = points.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p.v).toFixed(1)}`).join(' ');
-  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">
+  const grid = [];
+  for (let g = min; g <= max; g += (max - min) / 4) grid.push(Math.round(g));
+  const every = Math.ceil(points.length / 6);
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" style="height:auto">
+    ${band ? `<rect x="${L}" y="${y(band[1])}" width="${W - L - R}" height="${y(band[0]) - y(band[1])}" fill="var(--ok)" opacity=".13"/>
+      <text x="${W - R - 4}" y="${y(band[1]) + 12}" font-size="10" fill="var(--ok)" text-anchor="end">Ziel ${band[0]}–${band[1]}</text>` : ''}
+    ${grid.map((g) => `<line x1="${L}" x2="${W - R}" y1="${y(g)}" y2="${y(g)}" stroke="var(--line)" stroke-width="1"/><text x="${L - 6}" y="${y(g) + 4}" font-size="10" fill="var(--muted)" text-anchor="end">${g}</text>`).join('')}
+    <text x="4" y="10" font-size="10" fill="var(--muted)">${esc(yLabel)}</text>
     <path d="${d}" fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
-    ${points.map((p, i) => `<circle cx="${x(i)}" cy="${y(p.v)}" r="3.5" fill="${color}"/>`).join('')}
-    <text x="${P}" y="12" font-size="11" fill="var(--muted)">${Math.round(max - 2)}${unit}</text>
-    <text x="${P}" y="${H - 4}" font-size="11" fill="var(--muted)">${points[0].l}</text>
-    <text x="${W - P}" y="${H - 4}" font-size="11" fill="var(--muted)" text-anchor="end">${points[points.length - 1].l}</text>
+    ${points.map((p, i) => `<circle cx="${x(i)}" cy="${y(p.v)}" r="4" fill="${band ? (p.v > band[1] + 2 ? 'var(--bad)' : p.v >= band[0] - 10 ? 'var(--ok)' : 'var(--muted)') : color}"/><text x="${x(i)}" y="${y(p.v) - 8}" font-size="10" font-weight="700" fill="var(--text)" text-anchor="middle">${p.v}</text>`).join('')}
+    ${points.map((p, i) => (i % every === 0 || i === points.length - 1 ? `<text x="${x(i)}" y="${H - 14}" font-size="10" fill="var(--muted)" text-anchor="middle">${p.l}</text>` : '')).join('')}
+    <text x="${(W + L) / 2}" y="${H - 2}" font-size="10" fill="var(--muted)" text-anchor="middle">Datum des Laufs</text>
+  </svg>`;
+}
+function barChart(points, { color = 'var(--ok)', unit = '', highlightLast = false } = {}) {
+  if (!points.length) return '<p class="small muted">Noch keine Daten.</p>';
+  const W = 340, H = 190, L = 10, R = 10, T = 22, B = 34;
+  const max = Math.max(...points.map((p) => p.v), 1);
+  const bw = (W - L - R) / points.length;
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" style="height:auto">
+    ${points.map((p, i) => {
+      const h = ((H - T - B) * p.v) / max;
+      const cx = L + i * bw + bw / 2;
+      const last = highlightLast && i === points.length - 1;
+      return `<rect x="${L + i * bw + bw * 0.18}" y="${H - B - h}" width="${bw * 0.64}" height="${Math.max(h, 1)}" rx="5" fill="${color}" opacity="${last ? 0.55 : 1}"/>
+        <text x="${cx}" y="${H - B - h - 6}" font-size="11" font-weight="700" fill="var(--text)" text-anchor="middle">${p.v}${unit}</text>
+        <text x="${cx}" y="${H - B + 14}" font-size="10" fill="var(--muted)" text-anchor="middle">${p.l}</text>`;
+    }).join('')}
+    <text x="${W / 2}" y="${H - 2}" font-size="10" fill="var(--muted)" text-anchor="middle">Woche ab Montag${highlightLast ? ' (hell = diese Woche, läuft noch)' : ''}</text>
   </svg>`;
 }
 async function renderHistory() {
@@ -584,13 +608,32 @@ async function renderHistory() {
   try { h = await api('/history'); } catch (e) { if (e instanceof AuthError) return renderLogin(); app.innerHTML = `<p>${esc(e.message)}</p>`; return; }
   const runs = h.runs;
   const asc = [...runs].reverse();
-  const easy = asc.filter((r) => PLAN.workouts[r.workout]?.kind === 'easy' && r.hr_avg).map((r) => ({ v: r.hr_avg, l: `${+r.date.slice(8)}.${+r.date.slice(5, 7)}.` }));
+  const dd = (d) => `${+d.slice(8)}.${+d.slice(5, 7)}.`;
+  const easy = asc.filter((r) => ['easy', 'long'].includes(PLAN.workouts[r.workout]?.kind) && r.hr_avg && (r.distance_m || 0) > 3000).slice(-10).map((r) => ({ v: r.hr_avg, l: dd(r.date) }));
   const weeks = {};
-  for (const r of asc) { const mon = addDays(r.date, -((new Date(r.date + 'T12:00:00Z').getUTCDay() + 6) % 7)); weeks[mon] = (weeks[mon] || 0) + (r.distance_m || 0) / 1000; }
-  const km = Object.entries(weeks).map(([m, v]) => ({ v: Math.round(v * 10) / 10, l: `${+m.slice(8)}.${+m.slice(5, 7)}.` }));
+  const thisMon = addDays(today(), -((new Date(today() + 'T12:00:00Z').getUTCDay() + 6) % 7));
+  for (let i = 7; i >= 0; i--) weeks[addDays(thisMon, -7 * i)] = 0;
+  for (const r of asc) { const mon = addDays(r.date, -((new Date(r.date + 'T12:00:00Z').getUTCDay() + 6) % 7)); if (mon in weeks) weeks[mon] += (r.distance_m || 0) / 1000; }
+  const km = Object.entries(weeks).map(([m, v]) => ({ v: Math.round(v), l: dd(m) }));
+  const last5 = easy.slice(-5).map((p) => p.v);
+  const prev5 = easy.slice(-10, -5).map((p) => p.v);
+  const avgN = (a) => (a.length ? Math.round(a.reduce((x, y) => x + y, 0) / a.length) : null);
+  const trend = avgN(last5) && avgN(prev5) ? avgN(last5) - avgN(prev5) : null;
+  const weekKm = km[km.length - 1].v;
+  const monthRuns = runs.filter((r) => r.date >= addDays(today(), -30) && (r.distance_m || 0) > 2000).length;
   app.innerHTML = `<h2 class="sec">Verlauf</h2>
-    <div class="card"><div class="label">Puls bei lockeren Läufen</div>${lineChart(easy)}<p class="small muted">Wird der Puls bei gleichem Tempo niedriger, wird deine Ausdauer besser.</p></div>
-    <div class="card"><div class="label">Wochen-km</div>${lineChart(km, { color: 'var(--ok)', unit: ' km' })}</div>
+    <div class="card"><div class="grid2">
+      <div><div class="label">Diese Woche</div><div style="font-size:26px;font-weight:800">${weekKm} km</div></div>
+      <div><div class="label">Läufe (30 Tage)</div><div style="font-size:26px;font-weight:800">${monthRuns}</div></div>
+      <div><div class="label">Ø-Puls locker</div><div style="font-size:26px;font-weight:800">${avgN(last5) ?? '–'}</div><div class="small muted">letzte 5 Läufe · Ziel 154–162</div></div>
+      <div><div class="label">Trend</div><div style="font-size:26px;font-weight:800">${trend == null ? '–' : trend <= -2 ? '📈 besser' : trend >= 2 ? '📉 höher' : '➡️ gleich'}</div><div class="small muted">${trend == null ? 'braucht 10 Läufe' : `${trend > 0 ? '+' : ''}${trend} Schläge zu vorher`}</div></div>
+    </div></div>
+    <div class="card"><div class="label">Ø-Puls bei lockeren und langen Läufen</div>
+      <p class="small muted" style="margin:0 0 4px">Jeder Punkt = ein Lauf (über 3 km). Grüner Streifen = dein Ziel. 🟢 passt · 🔴 zu schnell gelaufen.</p>
+      ${lineChart(easy, { band: [154, 162], yLabel: 'Puls', color: 'var(--muted)' })}
+      <p class="small muted">Liegen die Punkte im grünen Streifen, läufst du wirklich locker. Wird der Puls bei gleichem Tempo niedriger, wird deine Ausdauer besser.</p></div>
+    <div class="card"><div class="label">Kilometer pro Woche</div>${barChart(km, { unit: '', highlightLast: true })}
+      <p class="small muted">Gleichmäßig ist besser als hohe Spitzen: höchstens etwa 10 % mehr pro Woche.</p></div>
     <div class="card"><div class="label">Alle Läufe (${runs.length})</div>
       ${runs.length ? runs.map((r) => `<div class="run-item"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(r.workout || 'Lauf')}</b><span class="muted small">${+r.date.slice(8)}.${+r.date.slice(5, 7)}.</span></div>
         <div class="small">${[r.distance_m ? (r.distance_m / 1000).toFixed(1) + ' km' : null, r.duration_s ? fmtSec(r.duration_s) + ' min' : null, r.hr_avg ? 'Ø ' + r.hr_avg : null, r.rpe ? 'Gefühl ' + r.rpe : null, r.pain ? `Schmerz ${r.pain}${r.pain_where ? ' (' + r.pain_where + (r.pain_side ? ', ' + r.pain_side : '') + ')' : ''}` : null, r.source === 'strava' ? 'Strava' : null].filter(Boolean).join(' · ')}</div>
