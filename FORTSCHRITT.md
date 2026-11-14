@@ -2,7 +2,9 @@
 
 Auftrag: Obsidian `Projekte/Laufcoach-App Auftrag.md` · Projektordner: `Desktop\Lauftraining`
 
-## ⏸ Wiedereinstieg (Pause am 13.11.2026 abends) – DAS GILT
+## Stand 14.11.: Trainer-Routine läuft echt (Schlüssel + Domain eingetragen). Offen: nur noch Uhr + iPhone-Schritte.
+
+## ⏸ Wiedereinstieg (Pause am 13.11.2026 abends)
 - **Stand:** App live, 15 Läufe über Tredict importiert, Lauf-Analyse, Coach-Nachricht, Verschieben-Fix, Auto-Update, neue Diagramme. Claude-Routine `trig_01J4pL9GAaocm5yPvZoNAnLE` läuft 5× täglich (07/13/18/20/22 Uhr), aber **ohne Schlüssel und Netzwerk-Freigabe kann sie den Worker noch nicht erreichen**.
 - **Tabs:** `weiter.ps1` öffnet MORGEN.html (Anleitung für Janis), claude.ai/code, die Routine und die App.
 - **Ablauf:**
@@ -58,8 +60,8 @@ Auftrag: Obsidian `Projekte/Laufcoach-App Auftrag.md` · Projektordner: `Desktop
 - [x] „Sag deinem Coach, wie's dir geht“ + Außenknöchel als Stelle
 - [x] Verlauf: Diagramme mit Zielbereich, Werten, Achsen, Wochen-km als Balken
 - [x] Claude-Routine „Laufcoach – täglicher Trainer“ (trig_01J4pL9GAaocm5yPvZoNAnLE), 5× täglich 07/13/18/20/22 Uhr, nur Tredict-Connector
-- [ ] Janis: in claude.ai Cloud-Umgebung „Default“ → Umgebungsvariable LAUFCOACH_TOKEN (Strg+V aus `npm run coach-token`) + Netzwerkzugriff Domain laufcoach-api.janis-rohde.workers.dev
-- [ ] Testlauf der Routine prüfen (RemoteTrigger run + get_run_log)
+- [x] (14.11.) Janis: in claude.ai Cloud-Umgebung „Default“ → Umgebungsvariable LAUFCOACH_TOKEN (Strg+V aus `npm run coach-token`) + Netzwerkzugriff Domain laufcoach-api.janis-rohde.workers.dev
+- [x] (14.11.) Testlauf erfolgreich: Lauf vom 14.11. importiert + ausgewertet, Kraft-Fokus Knie/Hüfte/Außenknöchel rechts, Nachricht mit Push. Dubletten-Bug (alte Kennung ohne „ext:“) in der DB behoben.
 - [ ] Uhr: nur Laufcoach-Nachrichten (iPhone Mitteilungszentrale pro App aus, Garmin Smart Notifications an)
 
 ## Phase 3 – Claude als Trainer + Strava
