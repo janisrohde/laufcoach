@@ -2,6 +2,12 @@
 
 Auftrag: Obsidian `Projekte/Laufcoach-App Auftrag.md` · Projektordner: `Desktop\Lauftraining`
 
+## Entscheidung 14.11. abends (Janis)
+- **Kein API-Schlüssel** (kostet extra, nicht über das Claude-Abo). Sofort-Coach-Code bleibt drin, macht ohne Schlüssel nichts; App sagt „Claude antwortet um X Uhr“.
+- Routine jetzt **6× täglich: 07, 10, 13, 18, 20, 22 Uhr** (cron 0 6,9,12,17,19,21 UTC), beantwortet jede neue Nachricht.
+- Pulszonen auf der Uhr bleiben vorerst wie sie sind.
+- Schlafdaten: offen (Tredict-Vollzugang ca. 49 € einmalig für 12 Monate, kein Abo – oder kostenlos per iPhone-Kurzbefehl über Apple Health).
+
 ## Stand 14.11. abends: Großes Update live (Commit 7baeb92)
 - Sofort-Coach: Worker ruft Claude (claude-opus-5-5, effort low, max 25 Aufrufe/Tag) bei /note, /run, /run/feel, /spotcheck. **Braucht Worker-Secret ANTHROPIC_API_KEY** (noch nicht gesetzt → bis dahin Regel-Antworten). Janis ist 14 → API-Konto muss ein Elternteil anlegen (console.anthropic.com, ab 18). Dann `npx wrangler secret put ANTHROPIC_API_KEY` im Ordner worker.
 - Beschwerden-Gedächtnis (shared/followup.js, Tabelle spot_checks): Nachfrage-Karte „Wie geht's deinem rechten Schienbein?“ (Weg/Besser/Gleich/Schlimmer), Extras Stufe 1–3, „weg“ → noch 7 Tage Vorbeugung.
