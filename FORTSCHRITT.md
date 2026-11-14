@@ -2,6 +2,14 @@
 
 Auftrag: Obsidian `Projekte/Laufcoach-App Auftrag.md` · Projektordner: `Desktop\Lauftraining`
 
+## Stand 14.11. abends: Großes Update live (Commit 7baeb92)
+- Sofort-Coach: Worker ruft Claude (claude-opus-5-5, effort low, max 25 Aufrufe/Tag) bei /note, /run, /run/feel, /spotcheck. **Braucht Worker-Secret ANTHROPIC_API_KEY** (noch nicht gesetzt → bis dahin Regel-Antworten). Janis ist 14 → API-Konto muss ein Elternteil anlegen (console.anthropic.com, ab 18). Dann `npx wrangler secret put ANTHROPIC_API_KEY` im Ordner worker.
+- Beschwerden-Gedächtnis (shared/followup.js, Tabelle spot_checks): Nachfrage-Karte „Wie geht's deinem rechten Schienbein?“ (Weg/Besser/Gleich/Schlimmer), Extras Stufe 1–3, „weg“ → noch 7 Tage Vorbeugung.
+- „Wie war dein Lauf?“-Karte (Gefühl + Schmerz) für importierte Läufe, 15:00-Push „Vor dem Lauf: Wie geht es dir?“, Morgen-Check jeden Tag.
+- Gutachten-Regeln (krank = rot, Knochen 5 Checks, Ruhepuls vs. Normalwert, Schlaf/HRV via Tabelle wellness, 10-%-Regel alle Läufe, Ferse) + 12 Fehler aus der Code-Prüfung behoben. 79 Tests grün.
+- Alle Texte vereinfacht, locker = Puls 145–162 (Alarm 164), Intervalle 2/2:30 min auf 4:45–5:00. **Offen: Garmin-Workouts in Garmin Connect auf diese Werte anpassen.**
+- Schlaf/HRV: Tredict nur mit Vollzugang (kostenpflichtig) oder später iPhone-Kurzbefehl → /coach/wellness.
+
 ## Stand 14.11.: Trainer-Routine läuft echt (Schlüssel + Domain eingetragen). Uhr eingerichtet, Laufcoach-Push kommt auf der Uhr an.
 
 ## ⏸ Wiedereinstieg (Pause am 13.11.2026 abends)
