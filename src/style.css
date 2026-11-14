@@ -291,3 +291,26 @@ details.general summary { color: var(--muted); }
 
 [hidden] { display: none !important; }
 .mini-label { font-size: 13px; font-weight: 700; color: var(--muted); margin: 12px 2px 0; }
+
+/* Satz-Block + Timer (Redesign 14.11.) */
+.setbox { margin-top: 12px; padding: 12px; border-radius: 14px; background: var(--card-2); }
+.setdots { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; font-size: 13.5px; font-weight: 650; color: var(--muted); }
+.setdots i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--line); background: var(--card); display: inline-block; }
+.setdots i.on { background: var(--ok); border-color: var(--ok); }
+.setdots i.cur { border-color: var(--accent); }
+.setdots span { margin-left: 4px; }
+.setgo { min-height: 52px; font-size: 16.5px; }
+.setbox .sets-hint { margin-top: 6px; text-align: center; }
+.linkbtn { background: none; border: 0; color: var(--muted); font-size: 13.5px; text-decoration: underline; padding: 8px 0 0; width: 100%; cursor: pointer; }
+.timer-sheet { position: fixed; left: 10px; right: 10px; bottom: calc(var(--safe-b) + 74px); max-width: 540px; margin: 0 auto; background: var(--text); color: var(--bg); border-radius: 22px; padding: 16px 18px 14px; z-index: 30; box-shadow: 0 10px 40px rgba(0,0,0,.3); animation: tin .2s ease-out; }
+.timer-sheet .ts-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.timer-sheet .ts-label { font-weight: 700; font-size: 16px; }
+.timer-sheet .ts-time { font-family: var(--display); font-size: 46px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+.timer-sheet .ts-bar { height: 8px; border-radius: 99px; background: color-mix(in srgb, var(--bg) 22%, transparent); overflow: hidden; margin-top: 10px; }
+.timer-sheet .ts-bar i { display: block; height: 100%; width: 0; border-radius: 99px; background: var(--ok); transition: width .2s linear; }
+.timer-sheet.hold .ts-bar i { background: var(--accent); }
+.timer-sheet .ts-next { margin-top: 8px; font-size: 14px; opacity: .8; }
+.timer-sheet .ts-btns { display: grid; grid-template-columns: 1fr 1.4fr; gap: 8px; margin-top: 12px; }
+.timer-sheet button { min-height: 46px; border-radius: 14px; border: 0; font-weight: 700; font-size: 15px; background: color-mix(in srgb, var(--bg) 18%, transparent); color: var(--bg); cursor: pointer; }
+.timer-sheet button.main { background: var(--bg); color: var(--text); }
+body.has-timer #app { padding-bottom: calc(var(--safe-b) + 260px); }

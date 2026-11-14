@@ -48,35 +48,47 @@ const fmtSec = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`
 
 // ---------- Timer (Pause + Halten) ----------
 let timer = null;
+const PAUSE_S = 60;
 const SEQ_LABELS = ['Unterarmstütz', 'Seitstütz links', 'Seitstütz rechts'];
-function startTimerSeq(list, i = 0) {
-  if (i >= list.length) { toast('Runde geschafft!'); return; }
-  startTimer(list[i], SEQ_LABELS[i] || 'Halten', () => { beep(1); startTimerSeq(list, i + 1); });
+/** Mehrere Halte-Zeiten nacheinander (Stütz-Runde), danach onDone. */
+function startTimerSeq(list, onDone, i = 0) {
+  if (i >= list.length) { if (onDone) onDone(); return; }
+  startTimer(list[i], SEQ_LABELS[i] || 'Halten', () => { beep(1); startTimerSeq(list, onDone, i + 1); }, { kind: 'hold', next: i + 1 < list.length ? `Danach: ${SEQ_LABELS[i + 1] || 'weiter'}` : 'Danach: Pause' });
 }
-function startTimer(seconds, label, onDone) {
+/** kind: 'pause' | 'hold'. onDone läuft am Ende oder bei „Weiter“. */
+function startTimer(seconds, label, onDone, opts = {}) {
   stopTimer();
   try { audioCtx ||= new (window.AudioContext || window.webkitAudioContext)(); audioCtx.resume(); } catch { /* egal */ }
+  const kind = opts.kind || (label === 'Pause' ? 'pause' : 'hold');
   const el = document.createElement('div');
-  el.className = 'timer';
-  let left = seconds;
-  const end = Date.now() + seconds * 1000;
-  el.innerHTML = `<span class="small">${esc(label)}</span><span class="t">${fmtSec(left)}</span><button>Stopp</button>`;
-  el.querySelector('button').onclick = stopTimer;
+  el.className = `timer-sheet ${kind}`;
+  el.setAttribute('role', 'timer');
+  let total = seconds;
+  let end = Date.now() + seconds * 1000;
+  el.innerHTML = `<div class="ts-top"><span class="ts-label">${esc(label)}</span><span class="ts-time">${fmtSec(seconds)}</span></div>
+    <div class="ts-bar"><i></i></div>
+    ${opts.next ? `<div class="ts-next">${esc(opts.next)}</div>` : ''}
+    <div class="ts-btns">${kind === 'pause' ? '<button data-t="plus">+15 s</button>' : '<button data-t="stop">Abbrechen</button>'}<button data-t="skip" class="main">${kind === 'pause' ? 'Pause überspringen' : 'Fertig'}</button></div>`;
   document.body.appendChild(el);
-  const iv = setInterval(() => {
-    left = Math.max(0, Math.round((end - Date.now()) / 1000));
-    el.querySelector('.t').textContent = fmtSec(left);
-    if (left <= 0) {
-      stopTimer();
-      if (onDone) { onDone(); return; }
-      beep(3); toast(label === 'Pause' ? 'Pause vorbei – nächster Satz!' : 'Geschafft!');
-    }
-  }, 250);
+  document.body.classList.add('has-timer');
+  const finish = (skipped) => { stopTimer(); if (!skipped) beep(kind === 'pause' ? 3 : 2); if (onDone) onDone(); else if (kind === 'pause') toast('Pause vorbei – nächster Satz!'); };
+  el.querySelector('[data-t="skip"]').onclick = () => finish(true);
+  const plus = el.querySelector('[data-t="plus"]'); if (plus) plus.onclick = () => { end += 15000; total += 15; };
+  const stop = el.querySelector('[data-t="stop"]'); if (stop) stop.onclick = () => stopTimer();
+  const tick = () => {
+    const ms = Math.max(0, end - Date.now());
+    el.querySelector('.ts-time').textContent = fmtSec(Math.ceil(ms / 1000));
+    el.querySelector('.ts-bar i').style.width = `${100 - (ms / (total * 1000)) * 100}%`;
+    if (ms <= 0) finish(false);
+  };
+  const iv = setInterval(tick, 200);
   timer = { el, iv };
+  tick();
 }
 function stopTimer() {
   if (!timer) return;
   clearInterval(timer.iv); timer.el.remove(); timer = null;
+  document.body.classList.remove('has-timer');
 }
 
 // ---------- Navigation ----------
@@ -203,8 +215,7 @@ function exerciseCard(it, idx, done, fb) {
         ${kg || it.extraSet ? `<div class="chips-inline">${kg ? `<span class="weight kg">${esc(it.weight)}</span>` : ''}${it.extraSet ? `<span class="weight acc">${esc(it.extraSet)}</span>` : ''}</div>` : ''}
         ${it.cue ? `<div class="cue">„${esc(it.cue)}“</div>` : ''}
         <div class="collapse-when-done">
-          ${it.sets > 1 ? `<div class="sets" aria-label="Sätze">${Array.from({ length: it.sets }, (_, k) => `<button class="set ${k < setsDone ? 'on' : ''}" data-set="${k + 1}" aria-label="Satz ${k + 1}">${k + 1}</button>`).join('')}<span class="sets-hint">Satz antippen = Pause-Timer</span></div>` : ''}
-          ${it.holds ? `<button class="btn small hold" data-holds="${it.holds.join(',')}">Timer: ${it.holds.join(' / ')} s</button>` : it.hold ? `<button class="btn small hold" data-hold="${it.hold}">Timer: ${fmtSec(it.hold)} halten</button>` : ''}
+          ${setBlock(it, setsDone)}
           <details class="how"><summary>So geht's</summary><div class="how-body">
             <div class="how-start"><b>Start:</b> ${esc(it.start)}</div>
             <ol class="how-steps">${(it.steps || []).map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
@@ -220,6 +231,26 @@ function exerciseCard(it, idx, done, fb) {
       </div>
       <button class="tick" aria-label="Übung erledigt">${TICK}</button>
     </div>
+  </div>`;
+}
+
+/** Satz-Block: Punkte + ein großer Knopf, der Satz abhakt und die Pause startet. */
+function setBlock(it, setsDone) {
+  const total = it.sets || 1;
+  const isStart = it.exId.endsWith('0');
+  const timed = !!(it.holds || it.hold);
+  if (isStart || (total === 1 && !timed)) return '';
+  const n = Math.min(setsDone + 1, total);
+  const sides = it.perSide && it.hold && !it.holds;
+  const label = it.holds ? `Satz ${n}: Runde starten (${it.holds.join(' + ')} s)`
+    : it.hold ? `Satz ${n}: ${sides ? `${it.hold} s links, dann rechts` : `${it.hold < 90 ? it.hold + ' s' : fmtSec(it.hold) + ' min'} halten`}`
+    : `Satz ${n} geschafft`;
+  const hint = timed ? 'Der Timer zählt für dich. Danach startet die Pause von allein.' : (n < total ? `Mach den Satz, dann antippen. Danach läuft ${PAUSE_S / 60} min Pause.` : 'Letzter Satz – dann ist die Übung fertig.');
+  return `<div class="setbox">
+    <div class="setdots" aria-label="${setsDone} von ${total} Sätzen">${Array.from({ length: total }, (_, k) => `<i class="${k < setsDone ? 'on' : k === setsDone ? 'cur' : ''}"></i>`).join('')}<span>${setsDone} von ${total} Sätzen${it.perSide ? ' · je Seite' : ''}</span></div>
+    <button class="btn primary block setgo" data-act="${it.holds ? 'seq' : it.hold ? 'hold' : 'set'}">${timed ? '▶ ' : '✓ '}${esc(label)}</button>
+    <div class="sets-hint">${hint}</div>
+    ${setsDone > 0 ? '<button class="linkbtn" data-act="undo">Satz zurücknehmen</button>' : ''}
   </div>`;
 }
 
@@ -403,6 +434,7 @@ async function renderToday() {
 
   // 2. Coach
   html += coachCard(data, day);
+  if (day.type === 'strength' && day.items.some((i) => i.kind === 'exercise' && !i.exId.endsWith('0'))) html += `<div class="card note info small howto-sets"><b>So geht's:</b> Mach einen Satz und tipp dann auf den orangen Knopf. Die Pause zählt von allein. Bei Halte-Übungen tippst du vorher auf ▶, dann zählt der Timer für dich.</div>`;
   if (day.general && day.type === 'strength') html += `<details class="how general"><summary>So läuft die Einheit ab</summary><div class="how-body">${esc(day.general)}</div></details>`;
   if (day.dailyReminder) html += `<div class="card note info small">${esc(day.dailyReminder)}</div>`;
 
@@ -484,15 +516,29 @@ function bindToday(day, done) {
       if (next && navigator.vibrate) navigator.vibrate(15);
       renderToday();
     };
-    card.querySelectorAll('.set').forEach((s) => s.onclick = async () => {
-      const n = +s.dataset.set;
-      const cur = done[id] || 0;
-      const next = cur === n ? n - 1 : n;
+    const total = it.sets || 1;
+    // Satz fertig → speichern → Pause (außer nach dem letzten Satz)
+    const setDone = async () => {
+      const next = Math.min((done[id] || 0) + 1, total);
       await save(id, next);
-      if (next > cur && next < it.sets) startTimer(60, 'Pause');
+      if (navigator.vibrate) navigator.vibrate(30);
       renderToday();
-    });
-    card.querySelectorAll('.hold').forEach((h) => h.onclick = () => (h.dataset.holds ? startTimerSeq(h.dataset.holds.split(',').map(Number)) : startTimer(+h.dataset.hold, 'Halten')));
+      if (next < total) startTimer(PAUSE_S, 'Pause', null, { kind: 'pause', next: `Gleich: Satz ${next + 1} von ${total}` });
+      else toast(`${it.name}: fertig ✓`);
+    };
+    const go = card.querySelector('.setgo');
+    if (go) go.onclick = () => {
+      const act = go.dataset.act;
+      const n = Math.min((done[id] || 0) + 1, total);
+      if (act === 'set') return setDone();
+      if (act === 'seq') return startTimerSeq(it.holds, setDone);
+      if (it.perSide && !it.holds) {
+        return startTimer(it.hold, `Satz ${n} · linke Seite halten`, () => { beep(1); startTimer(it.hold, `Satz ${n} · rechte Seite halten`, setDone, { kind: 'hold', next: 'Danach: Pause' }); }, { kind: 'hold', next: 'Danach: rechte Seite' });
+      }
+      return startTimer(it.hold, `Satz ${n} · halten`, setDone, { kind: 'hold', next: n < total ? 'Danach: Pause' : 'Letzter Satz!' });
+    };
+    const undo = card.querySelector('[data-act="undo"]');
+    if (undo) undo.onclick = async () => { await save(id, Math.max(0, (done[id] || 0) - 1)); renderToday(); };
     card.querySelectorAll('[data-fb]').forEach((b) => b.onclick = async () => {
       try {
         await api('/feedback', { method: 'POST', body: { date: state.date, ex_id: it.exId, value: b.dataset.fb } });
