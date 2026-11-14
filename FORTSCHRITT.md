@@ -6,7 +6,7 @@ Auftrag: Obsidian `Projekte/Laufcoach-App Auftrag.md` · Projektordner: `Desktop
 - **Kein API-Schlüssel** (kostet extra, nicht über das Claude-Abo). Sofort-Coach-Code bleibt drin, macht ohne Schlüssel nichts; App sagt „Claude antwortet um X Uhr“.
 - Routine jetzt **6× täglich: 07, 10, 13, 18, 20, 22 Uhr** (cron 0 6,9,12,17,19,21 UTC), beantwortet jede neue Nachricht.
 - Pulszonen auf der Uhr bleiben vorerst wie sie sind.
-- Schlafdaten: offen (Tredict-Vollzugang ca. 49 € einmalig für 12 Monate, kein Abo – oder kostenlos per iPhone-Kurzbefehl über Apple Health).
+- Schlafdaten: **iPhone-Kurzbefehl** gewählt. Server-Endpunkt `/wellness/in?k=…` (Schlüssel in settings.wellnessKey, App → Mehr → „Link kopieren“). Kurzbefehl: Automation 9:00 → Gesundheitsproben suchen (Schlafanalyse, letzte 1 Tage, Wert ist nicht Wach) → Details: Dauer → Statistik: Summe → Inhalte von URL (POST, JSON sleep=Summe) → Mitteilung. Nach dem ersten Lauf Wert mit Garmin vergleichen (doppelt? dann Filter „ist nicht Im Bett“).
 
 ## Stand 14.11. abends: Großes Update live (Commit 7baeb92)
 - Sofort-Coach: Worker ruft Claude (claude-opus-5-5, effort low, max 25 Aufrufe/Tag) bei /note, /run, /run/feel, /spotcheck. **Braucht Worker-Secret ANTHROPIC_API_KEY** (noch nicht gesetzt → bis dahin Regel-Antworten). Janis ist 14 → API-Konto muss ein Elternteil anlegen (console.anthropic.com, ab 18). Dann `npx wrangler secret put ANTHROPIC_API_KEY` im Ordner worker.
