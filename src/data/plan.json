@@ -126,121 +126,127 @@
   "workouts": {
     "Locker (frei)": {
       "kind": "easy",
-      "summary": "Ein Schritt bis zur Runden-Taste, Puls 140–164. Strecke frei, meist 6–8 km.",
+      "summary": "Lauf locker, so weit du magst. Meist sind es 6–8 km.",
       "steps": [
-        "Laufen bis du die Runden-Taste drückst",
-        "Puls 140–164 (Uhr piept über 164)"
+        "Lauf locker los. Du kannst noch reden.",
+        "Halte den Puls bei 145–162.",
+        "Werd langsamer oder geh, wenn die Uhr über 164 piept.",
+        "Drück die Runden-Taste, wenn du fertig bist."
       ]
     },
     "Lang 9 km": {
       "kind": "long",
       "km": 9,
-      "summary": "9 km flach, Schnitt-Puls höchstens 160.",
+      "summary": "9 km flach und locker. Dein Puls im Schnitt: höchstens 160.",
       "steps": [
-        "1 km Einlaufen, Puls 120–162",
-        "7,5 km Hauptteil, Puls 140–162",
-        "0,5 km Auslaufen"
+        "Lauf 1 km langsam ein (Puls unter 162).",
+        "Lauf 7,5 km locker (Puls 145–162).",
+        "Lauf 0,5 km ganz langsam aus."
       ]
     },
     "Lang 10 km": {
       "kind": "long",
       "km": 10,
-      "summary": "10 km flach, Schnitt-Puls höchstens 160.",
+      "summary": "10 km flach und locker. Dein Puls im Schnitt: höchstens 160.",
       "steps": [
-        "1 km Einlaufen, Puls 120–162",
-        "8,5 km Hauptteil, Puls 140–162",
-        "0,5 km Auslaufen"
+        "Lauf 1 km langsam ein (Puls unter 162).",
+        "Lauf 8,5 km locker (Puls 145–162).",
+        "Lauf 0,5 km ganz langsam aus."
       ]
     },
     "Lang 11 km": {
       "kind": "long",
       "km": 11,
-      "summary": "11 km flach, Schnitt-Puls höchstens 160.",
+      "summary": "11 km flach und locker. Dein Puls im Schnitt: höchstens 160.",
       "steps": [
-        "1 km Einlaufen, Puls 120–162",
-        "9,5 km Hauptteil, Puls 140–162",
-        "0,5 km Auslaufen"
+        "Lauf 1 km langsam ein (Puls unter 162).",
+        "Lauf 9,5 km locker (Puls 145–162).",
+        "Lauf 0,5 km ganz langsam aus."
       ]
     },
     "Lang 12 km": {
       "kind": "long",
       "km": 12,
-      "summary": "12 km flach, Schnitt-Puls höchstens 160.",
+      "summary": "12 km flach und locker. Dein Puls im Schnitt: höchstens 160.",
       "steps": [
-        "1 km Einlaufen, Puls 120–162",
-        "10,5 km Hauptteil, Puls 140–162",
-        "0,5 km Auslaufen"
+        "Lauf 1 km langsam ein (Puls unter 162).",
+        "Lauf 10,5 km locker (Puls 145–162).",
+        "Lauf 0,5 km ganz langsam aus."
       ]
     },
     "Lang 13 km": {
       "kind": "long",
       "km": 13,
-      "summary": "13 km flach, Schnitt-Puls höchstens 160.",
+      "summary": "13 km flach und locker. Dein Puls im Schnitt: höchstens 160.",
       "steps": [
-        "1 km Einlaufen, Puls 120–162",
-        "11,5 km Hauptteil, Puls 140–162",
-        "0,5 km Auslaufen"
+        "Lauf 1 km langsam ein (Puls unter 162).",
+        "Lauf 11,5 km locker (Puls 145–162).",
+        "Lauf 0,5 km ganz langsam aus."
       ]
     },
     "Lang 14 km": {
       "kind": "long",
       "km": 14,
-      "summary": "14 km flach, Schnitt-Puls höchstens 160.",
+      "summary": "14 km flach und locker. Dein Puls im Schnitt: höchstens 160.",
       "steps": [
-        "1 km Einlaufen, Puls 120–162",
-        "12,5 km Hauptteil, Puls 140–162",
-        "0,5 km Auslaufen"
+        "Lauf 1 km langsam ein (Puls unter 162).",
+        "Lauf 12,5 km locker (Puls 145–162).",
+        "Lauf 0,5 km ganz langsam aus."
       ]
     },
     "Di Steigerungen": {
       "kind": "tempo",
       "reps": 6,
-      "summary": "Locker laufen, dann 6 kurze Steigerungen.",
+      "summary": "Erst locker laufen. Dann 6× kurz schneller werden.",
       "steps": [
-        "12 min Einlaufen, Puls 120–162",
-        "20 min locker, Puls 140–164",
-        "6× (20 s Steigerung + 60 s traben)",
-        "5 min Auslaufen"
+        "Lauf 12 min langsam ein.",
+        "Lauf 20 min locker (Puls 145–162).",
+        "Werd 6× je 20 s immer schneller. Trab danach je 60 s.",
+        "Lauf 5 min langsam aus."
       ]
     },
     "Di Zügig 3x6 min": {
       "kind": "tempo",
       "reps": 3,
-      "summary": "3 zügige Stücke à 6 min.",
+      "summary": "3× 6 min zügig. Du kannst nur noch kurze Sätze sagen.",
       "steps": [
-        "12 min Einlaufen",
-        "3× (6 min Pace 5:40–6:00 + 2 min traben)",
-        "8 min Auslaufen"
+        "Lauf 12 min langsam ein.",
+        "Lauf 3× 6 min zügig: Tempo 5:40–6:00 min pro km.",
+        "Trab nach jedem Stück 2 min langsam.",
+        "Lauf 8 min langsam aus."
       ]
     },
     "Di Schnell 8x1 min": {
       "kind": "tempo",
       "reps": 8,
-      "summary": "8 schnelle Minuten.",
+      "summary": "8× 1 min schnell. Dazwischen langsam traben.",
       "steps": [
-        "12 min Einlaufen",
-        "8× (1 min Pace 4:30–4:45 + 90 s traben)",
-        "8 min Auslaufen"
+        "Lauf 12 min langsam ein.",
+        "Lauf 8× 1 min schnell: Tempo 4:30–4:45 min pro km.",
+        "Trab nach jedem Stück 90 s langsam.",
+        "Lauf 8 min langsam aus."
       ]
     },
     "Di Schwelle 3x6 min": {
       "kind": "tempo",
       "reps": 3,
-      "summary": "3 Schwellen-Stücke à 6 min.",
+      "summary": "3× 6 min an der Schwelle. Das heißt: angenehm hart.",
       "steps": [
-        "12 min Einlaufen",
-        "3× (6 min Pace 5:15–5:30 + 2 min traben)",
-        "8 min Auslaufen"
+        "Lauf 12 min langsam ein.",
+        "Lauf 3× 6 min angenehm hart: Tempo 5:15–5:30 min pro km.",
+        "Trab nach jedem Stück 2 min langsam.",
+        "Lauf 8 min langsam aus."
       ]
     },
     "Di Schnell 5x2 min": {
       "kind": "tempo",
       "reps": 5,
-      "summary": "5 schnelle Stücke à 2 min.",
+      "summary": "5× 2 min schnell. Dazwischen langsam traben.",
       "steps": [
-        "12 min Einlaufen",
-        "5× (2 min Pace 4:30–4:45 + 2 min traben)",
-        "8 min Auslaufen"
+        "Lauf 12 min langsam ein.",
+        "Lauf 5× 2 min schnell: Tempo 4:45–5:00 min pro km.",
+        "Trab nach jedem Stück 2 min langsam.",
+        "Lauf 8 min langsam aus."
       ]
     },
     "Di Schwelle 2x10 min (Check)": {
@@ -248,41 +254,44 @@
       "reps": 2,
       "test": "threshold",
       "testLabel": "Puls der letzten 2 min (2. Stück)",
-      "summary": "2 × 10 min Schwelle. Danach den Puls der letzten 2 min eintragen.",
+      "summary": "2× 10 min angenehm hart. Trag danach den Puls der letzten 2 min ein.",
       "steps": [
-        "15 min Einlaufen",
-        "2× (10 min Pace 5:15–5:30 + 2 min traben)",
-        "8 min Auslaufen"
+        "Lauf 15 min langsam ein.",
+        "Lauf 2× 10 min angenehm hart: Tempo 5:15–5:30 min pro km.",
+        "Trab dazwischen 2 min langsam.",
+        "Lauf 8 min langsam aus. Merk dir den Puls am Ende vom 2. Stück."
       ]
     },
     "Di Schwelle 4x5 min": {
       "kind": "tempo",
       "reps": 4,
-      "summary": "4 Schwellen-Stücke à 5 min.",
+      "summary": "4× 5 min an der Schwelle. Das heißt: angenehm hart.",
       "steps": [
-        "12 min Einlaufen",
-        "4× (5 min Pace 5:15–5:30 + 90 s traben)",
-        "8 min Auslaufen"
+        "Lauf 12 min langsam ein.",
+        "Lauf 4× 5 min angenehm hart: Tempo 5:15–5:30 min pro km.",
+        "Trab nach jedem Stück 90 s langsam.",
+        "Lauf 8 min langsam aus."
       ]
     },
     "Di Schnell 4x2:30 min": {
       "kind": "tempo",
       "reps": 4,
-      "summary": "4 schnelle Stücke à 2:30 min.",
+      "summary": "4× 2:30 min schnell. Dazwischen langsam traben.",
       "steps": [
-        "12 min Einlaufen",
-        "4× (2:30 min Pace 4:30–4:45 + 2:30 min traben)",
-        "8 min Auslaufen"
+        "Lauf 12 min langsam ein.",
+        "Lauf 4× 2:30 min schnell: Tempo 4:45–5:00 min pro km.",
+        "Trab nach jedem Stück 2:30 min langsam.",
+        "Lauf 8 min langsam aus."
       ]
     },
     "Di Schwelle 20 min": {
       "kind": "tempo",
       "reps": 1,
-      "summary": "20 min am Stück an der Schwelle.",
+      "summary": "20 min am Stück angenehm hart.",
       "steps": [
-        "15 min Einlaufen",
-        "20 min Pace 5:15–5:30",
-        "10 min Auslaufen"
+        "Lauf 15 min langsam ein.",
+        "Lauf 20 min angenehm hart: Tempo 5:15–5:30 min pro km.",
+        "Lauf 10 min langsam aus."
       ]
     },
     "Di Test 5 km": {
@@ -290,22 +299,24 @@
       "reps": 1,
       "test": "5k",
       "testLabel": "5-km-Zeit (mm:ss)",
-      "summary": "5 km so schnell wie gleichmäßig möglich. Zeit eintragen.",
+      "summary": "Lauf 5 km so schnell, wie du es gleichmäßig schaffst. Trag danach die Zeit ein.",
       "steps": [
-        "15 min Einlaufen",
-        "5 km so schnell wie gleichmäßig möglich",
-        "10 min Auslaufen"
+        "Lauf 15 min langsam ein.",
+        "Starte ruhig. Lauf 5 km in gleichem Tempo.",
+        "Gib auf dem letzten km alles.",
+        "Lauf 10 min langsam aus."
       ]
     },
     "Do Puls-Pace-Check": {
       "kind": "easy",
       "test": "hrpace",
       "testLabel": "Schnitt-Pace der 20 min (m:ss)",
-      "summary": "20 min bei Puls 158–162. Danach die Schnitt-Pace eintragen.",
+      "summary": "20 min mit Puls 158–162. Trag danach dein Tempo (min pro km) ein.",
       "steps": [
-        "10 min Einlaufen",
-        "20 min Puls 158–162",
-        "Auslaufen"
+        "Lauf 10 min langsam ein.",
+        "Lauf 20 min mit Puls 158–162.",
+        "Merk dir dein Tempo aus diesen 20 min.",
+        "Lauf ein paar Minuten langsam aus."
       ]
     }
   },
@@ -313,68 +324,69 @@
     {
       "z": "Z1",
       "name": "Erholung",
-      "hr": "120–153",
-      "pace": "langsamer als locker",
-      "feel": "Traben"
+      "hr": "120–144",
+      "pace": "langsamer als 6:45",
+      "feel": "ganz locker traben"
     },
     {
       "z": "Z2",
       "name": "Locker",
-      "hr": "154–162 (Alarm 164)",
+      "hr": "145–162 (Uhr piept ab 164)",
       "pace": "6:05–6:45",
-      "feel": "ganze Sätze reden"
+      "feel": "du kannst ganze Sätze reden"
     },
     {
       "z": "Z3",
       "name": "Zügig",
       "hr": "163–171",
       "pace": "5:40–6:00",
-      "feel": "kurze Sätze"
+      "feel": "nur noch kurze Sätze"
     },
     {
       "z": "Z4",
       "name": "Schwelle",
       "hr": "172–180",
       "pace": "5:15–5:30",
-      "feel": "angenehm hart"
+      "feel": "angenehm hart, nur einzelne Wörter"
     },
     {
       "z": "Z5",
       "name": "Schnell",
       "hr": "ab 181",
-      "pace": "4:30–4:45",
-      "feel": "hart, kurz"
+      "pace": "4:45–5:00 (2-min-Stücke), 4:30–4:45 (1-min-Stücke)",
+      "feel": "hart, nur kurz"
     }
   ],
-  "zonesNote": "HFmax ≈ 200, Schwelle ≈ 181, Ruhepuls 54. Bergauf zählt nur der Puls, Gehen ist richtig. Bei Tempo-Stücken liegt der Puls oft eine Zone höher, das ist normal.",
+  "zonesNote": "Dein Puls geht höchstens bis etwa 200. Ab etwa 181 wird es sehr hart. Dein Ruhepuls ist 54. Tempo heißt: Minuten pro km. Bergauf zählt nur der Puls. Gehen ist dann richtig. Bei schnellen Stücken ist der Puls oft höher als in der Tabelle. Das ist normal.",
   "runCards": {
     "tempo": [
-      "Auf der Uhr: Laufen → Up halten → Training → Trainingskalender → heutiges Training → Training ausführen.",
-      "Erst locker einlaufen, die Uhr sagt dir, wann es losgeht.",
-      "Schnelle Stücke flach laufen (Nidda-Radweg). Im Dunkeln Stirnlampe oder beleuchtete Strecke.",
-      "Pausen traben oder gehen.",
-      "Polar-Sensor tragen, wenn du ihn dabei hast."
+      "Starte auf der Uhr: Laufen → Up halten → Training → Trainingskalender → heutiges Training → Training ausführen.",
+      "Lauf erst locker ein. Die Uhr sagt dir, wann es losgeht.",
+      "Lauf die schnellen Stücke flach, z. B. auf dem Nidda-Radweg.",
+      "Nimm im Dunkeln eine Stirnlampe. Oder lauf auf einer hellen Strecke.",
+      "Trab oder geh in den Pausen.",
+      "Trag den Polar-Sensor, wenn du ihn dabei hast."
     ],
     "easy": [
-      "Auf der Uhr: Laufen → Up halten → Training → Trainingskalender → heutiges Training → Training ausführen.",
-      "Strecke frei, meist 6–8 km.",
-      "Uhr piept über 164: langsamer laufen oder gehen.",
-      "Ab Woche 3: Schrittfrequenz 170–172 im Blick (kurze, leise Schritte).",
-      "Mit Freunden laufen oder Fußball zählt auch."
+      "Starte auf der Uhr: Laufen → Up halten → Training → Trainingskalender → heutiges Training → Training ausführen.",
+      "Lauf, so weit du magst. Meist sind es 6–8 km.",
+      "Die Uhr piept über 164? Lauf langsamer oder geh.",
+      "Ab Woche 3: Achte auf 170–172 Schritte pro Minute. Mach kurze, leise Schritte.",
+      "Laufen mit Freunden oder Fußball zählt auch."
     ],
     "long": [
-      "Auf der Uhr: Laufen → Up halten → Training → Trainingskalender → heutiges Training → Training ausführen.",
-      "Flache Strecke (Nidda-Radweg), Puls 140–162.",
-      "Langsamer als sonst ist richtig.",
-      "Bergab kurze Schritte."
+      "Starte auf der Uhr: Laufen → Up halten → Training → Trainingskalender → heutiges Training → Training ausführen.",
+      "Lauf flach, z. B. auf dem Nidda-Radweg. Puls 145–162.",
+      "Lauf langsamer als sonst. Das ist richtig so.",
+      "Mach bergab kurze Schritte."
     ],
-    "rest": "Heute Pause. Pause macht dich schneller. Spazieren gehen ist okay."
+    "rest": "Heute ist Pause. Pause macht dich schneller. Spazieren gehen ist okay."
   },
   "strength": {
     "A": {
       "title": "Kraft A – Beine & Fuß",
       "minutes": 35,
-      "general": "Am Ende jedes Satzes wären noch 2–3 Wiederholungen gegangen. 1 min Pause zwischen den Sätzen. Bei einbeinigen Übungen ist die andere Seite die Pause.",
+      "general": "Hör jeden Satz auf, wenn noch 2–3 Wiederholungen gehen würden. Mach 1 min Pause zwischen den Sätzen, bei Übungen auf einem Bein ist die andere Seite die Pause.",
       "mini": [
         "A0",
         "A2",
@@ -384,17 +396,17 @@
       "exercises": [
         {
           "id": "A0",
-          "name": "Start (4 min)",
-          "why": "Füße und Waden aufwecken, bevor es losgeht.",
-          "start": "Du sitzt auf der Matte, Rolle und Ball liegen neben dir.",
+          "name": "Start: Wade und Fuß (4 min)",
+          "why": "Wade und Fuß werden warm. Dann klappen die Übungen danach besser.",
+          "start": "Setz dich auf die Matte. Schaumstoffrolle und Tennisball liegen neben dir.",
           "steps": [
-            "Wade auf die große Rolle legen und langsam rollen, je Seite 1 min.",
-            "Im Stehen die Fußsohle auf dem Ball rollen, je Seite 1 min.",
-            "Zehen-Yoga: nur die Großzehe heben, dann nur die anderen Zehen – je 10×.",
-            "Großzehe 5× für 5 s fest in den Boden drücken."
+            "Leg die rechte Wade auf die Rolle. Roll 1 min langsam hin und her. Dann links.",
+            "Stell dich hin. Leg den Tennisball unter die rechte Fußsohle. Roll 1 min, dann links.",
+            "Heb nur die große Zehe hoch, dann nur die 4 kleinen. Je 10×.",
+            "Drück die große Zehe 5× fest in den Boden. Halt jedes Mal 5 s."
           ],
-          "watch": "Langsam rollen, auf einem festen Punkt 20–30 s liegen bleiben, durch die Nase atmen. Höchstens „angenehm weh“ (4–5 von 10). Nie auf Schienbeinkante, Kniescheibe oder direkt hinter dem Innenknöchel.",
-          "mistake": "Zu schnell rollen – langsam ist besser.",
+          "watch": "Roll so langsam wie eine Schnecke, etwa 1 cm pro Sekunde. Findest du eine harte Stelle, bleib dort 20 s liegen. Der Druck ist nur „angenehm weh“, höchstens 5 von 10. Der Ball liegt zwischen Ferse und Ballen, nicht unter den Zehen. Roll nie auf dem Knochen vorn am Schienbein, nie auf der Kniescheibe und nie in der Mulde innen hinter dem Knöchel.",
+          "mistake": "Du rollst schnell hin und her wie mit einem Nudelholz.",
           "tool": "Große Rolle, Ball",
           "focus": [
             "wade",
@@ -408,21 +420,23 @@
               "text": "1 Durchgang",
               "weight": "ohne Gewicht"
             }
-          ]
+          ],
+          "cue": "Langsam rollen, Zehen einzeln steuern."
         },
         {
           "id": "A1",
           "name": "Pogo-Hüpfer",
-          "why": "Sehnen werden federnd, du läufst leichter.",
+          "why": "Deine Sehnen werden federnd. Dann läufst du leichter.",
           "jumps": true,
-          "start": "Aufrecht stehen, Füße hüftbreit, Knie fast gestreckt.",
+          "start": "Stell dich gerade hin. Füße hüftbreit, Knie fast gerade.",
           "steps": [
-            "Kleine, schnelle Hüpfer nur aus den Füßen.",
-            "Knie bleiben fast gestreckt.",
-            "Leise landen, auf dem Vorfuß."
+            "Hüpf klein und schnell, nur aus den Füßen. Etwa 3 cm hoch.",
+            "Halt die Knie fast gerade, wie bei einem Flummi.",
+            "Lande leise auf dem vorderen Teil vom Fuß.",
+            "Hör auf, wenn die Zahl aus der Dosis erreicht ist."
           ],
-          "watch": "Leise landen. Nur bei Grün und bestandenem Hüpftest (10 Hüpfer je Bein ohne Schmerz, Hocke ohne Schmerz, Schienbein und Knöchel 2 Wochen ruhig). Bei Gelb oder Rot heute weglassen.",
-          "mistake": "Hohe Sprünge mit viel Kniebeugen – es sollen kleine Hüpfer sein.",
+          "watch": "Mach die Hüpfer nur bei Grün und nach bestandenem Hüpftest. Test: 10 Hüpfer je Bein ohne Schmerz, tiefe Hocke ohne Schmerz, Schienbein und Knöchel seit 2 Wochen ruhig. Bei Gelb oder Rot: heute weglassen.",
+          "mistake": "Du springst hoch und beugst die Knie tief.",
           "tool": "Nichts",
           "focus": [
             "wade",
@@ -453,20 +467,22 @@
               "text": "3×15 beidbeinig, dann 1×7 kleine einbeinige Hüpfer je Bein (zusammen höchstens 60)",
               "weight": "ohne Gewicht"
             }
-          ]
+          ],
+          "cue": "Klein, schnell, leise – wie ein Flummi."
         },
         {
           "id": "A2",
-          "name": "Wadenheben mit Ball zwischen den Fersen",
-          "why": "Stärkt die Wade und den Muskel hinter dem Innenknöchel.",
-          "start": "Fußballen auf die Stufenkante, eine Hand am Geländer, Ball zwischen die Fersen klemmen.",
+          "name": "Wadenheben an der Stufe mit Ball",
+          "why": "Stärkt die Wade und den Muskel innen hinter dem Knöchel.",
+          "start": "Stell dich mit den Fußballen auf die Kante einer Treppenstufe. Halt dich mit einer Hand am Geländer. Klemm einen Tennisball zwischen die Fersen.",
           "steps": [
-            "Auf die Zehen hochdrücken.",
-            "Oben 1 s halten.",
-            "In 3 s langsam runter, Fersen nur knapp unter die Stufe."
+            "Drück dich hoch auf die Zehen.",
+            "Halt oben 1 s.",
+            "Senk die Fersen in 3 s ab. Zähl „21, 22, 23“.",
+            "Stopp, wenn die Fersen knapp unter der Stufe sind."
           ],
-          "watch": "Gewicht auf dem Großzehenballen. Der Ball bleibt drin.",
-          "mistake": "Füße kippen nach außen und der Ball fällt raus.",
+          "watch": "Das Gewicht liegt auf dem Ballen unter der großen Zehe. Der Ball bleibt die ganze Zeit zwischen den Fersen.",
+          "mistake": "Die Füße kippen nach außen. Dann fällt der Ball raus.",
           "tool": "Treppenstufe mit Geländer, Ball",
           "focus": [
             "wade",
@@ -492,14 +508,15 @@
               "weight": "ohne Gewicht",
               "perSide": true,
               "variant": {
-                "name": "Wadenheben einbeinig an der Stufe",
-                "start": "Ballen eines Fußes auf die Stufenkante, der andere Fuß ist hinter der Wade angehoben, eine Hand am Geländer.",
+                "name": "Wadenheben auf einem Bein",
+                "start": "Stell den Ballen von einem Fuß auf die Stufenkante. Heb den anderen Fuß hinten an. Halt dich mit einer Hand am Geländer.",
                 "steps": [
-                  "Auf die Zehen hochdrücken.",
-                  "Oben 1 s halten.",
-                  "In 3 s langsam runter, Ferse nur knapp unter die Stufe."
+                  "Drück dich hoch auf die Zehen.",
+                  "Halt oben 1 s.",
+                  "Senk die Ferse in 3 s ab, knapp unter die Stufe.",
+                  "Mach alle Wiederholungen, dann wechsel das Bein."
                 ],
-                "watch": "Gewicht auf dem Großzehenballen, die Ferse kippt nicht nach außen.",
+                "watch": "Das Gewicht liegt auf dem Ballen unter der großen Zehe. Die Ferse zeigt gerade nach hinten.",
                 "mistake": "Der Fuß rollt auf die Außenkante.",
                 "tool": "Treppenstufe mit Geländer"
               }
@@ -511,25 +528,27 @@
               "weight": "1 × 3 kg",
               "perSide": true,
               "variant": {
-                "name": "Wadenheben einbeinig an der Stufe",
-                "start": "Ballen eines Fußes auf die Stufenkante, Hantel in der Hand auf der Seite vom Standbein, andere Hand am Geländer.",
+                "name": "Wadenheben auf einem Bein mit Hantel",
+                "start": "Stell den Ballen von einem Fuß auf die Stufenkante. Die Hantel (3 kg) hältst du auf der Seite vom Standbein. Die andere Hand hält das Geländer.",
                 "steps": [
-                  "Auf die Zehen hochdrücken.",
-                  "Oben 1 s halten.",
-                  "In 3 s langsam runter, Ferse nur knapp unter die Stufe."
+                  "Drück dich hoch auf die Zehen.",
+                  "Halt oben 1 s.",
+                  "Senk die Ferse in 3 s ab, knapp unter die Stufe.",
+                  "Mach alle Wiederholungen, dann wechsel Bein und Hand."
                 ],
-                "watch": "Gewicht auf dem Großzehenballen, die Ferse kippt nicht nach außen.",
+                "watch": "Stehst du auf rechts, ist die Hantel rechts. Die Ferse zeigt gerade nach hinten.",
                 "mistake": "Der Fuß rollt auf die Außenkante.",
                 "tool": "Treppenstufe mit Geländer, Kurzhantel 3 kg"
               }
             }
-          ]
+          ],
+          "cue": "Hoch, halten, langsam runter – Ball bleibt."
         },
         {
           "id": "A3",
           "name": "Knie-Übung",
-          "why": "Macht den Oberschenkel stark und das Knie ruhig – hilft aus der Hocke und bergab.",
-          "watch": "Knie zeigt über den zweiten Zeh, nicht nach innen. Höchstens leichtes Ziehen (bis 3 von 10).",
+          "why": "Macht den Oberschenkel stark. Das Knie bleibt ruhig, auch beim Bergablaufen.",
+          "watch": "Das Knie zeigt zum zweiten Zeh, nicht nach innen. Es darf höchstens leicht ziehen, bis 3 von 10.",
           "tool": "Wand",
           "focus": [
             "knie",
@@ -543,14 +562,16 @@
               "hold": 40,
               "weight": "ohne Gewicht",
               "variant": {
-                "name": "Knie-Übung: Wandsitz",
-                "start": "Rücken an die Wand, Füße etwa 50 cm vor der Wand.",
+                "name": "Wandsitz",
+                "start": "Lehn dich mit dem Rücken an eine Wand. Stell die Füße 50 cm vor die Wand, etwa 2 Schuhlängen.",
                 "steps": [
-                  "An der Wand runterrutschen, bis die Knie halb gebeugt sind.",
-                  "So halten, ruhig atmen.",
-                  "Langsam wieder hochschieben."
+                  "Rutsch an der Wand runter, bis die Knie halb gebeugt sind.",
+                  "Halt die Oberschenkel schräg, nicht waagerecht.",
+                  "Atme ruhig weiter, bis der Timer piept.",
+                  "Schieb dich langsam wieder hoch."
                 ],
-                "mistake": "Zu tief runter – halb gebeugt reicht."
+                "mistake": "Du gehst zu tief. Halb gebeugt reicht, wie auf einem Barhocker.",
+                "watch": "Die Knie zeigen nach vorn zum zweiten Zeh. Der Rücken bleibt an der Wand."
               }
             },
             {
@@ -560,15 +581,17 @@
               "weight": "ohne Gewicht",
               "perSide": true,
               "variant": {
-                "name": "Knie-Übung: Ausfallschritt im Stand",
-                "start": "Großer Schritt nach vorn, beide Füße bleiben am Boden stehen.",
+                "name": "Ausfallschritt (halb tief)",
+                "start": "Mach einen großen Schritt nach vorn. Beide Füße bleiben am Boden stehen.",
                 "steps": [
-                  "Hinteres Knie langsam Richtung Boden senken.",
-                  "Erst nur halbe Tiefe.",
-                  "Mit dem vorderen Bein wieder hochdrücken."
+                  "Senk das hintere Knie langsam Richtung Boden.",
+                  "Geh nur halb so tief, wie du kannst.",
+                  "Drück dich mit dem vorderen Bein wieder hoch.",
+                  "Mach alle Wiederholungen, dann wechsel das Bein."
                 ],
-                "mistake": "Vorderes Knie fällt nach innen.",
-                "tool": "Nichts"
+                "mistake": "Das vordere Knie fällt nach innen.",
+                "tool": "Nichts",
+                "watch": "Das vordere Knie bleibt über dem Fuß. Der Oberkörper bleibt aufrecht."
               }
             },
             {
@@ -578,15 +601,17 @@
               "weight": "ohne Gewicht",
               "perSide": true,
               "variant": {
-                "name": "Knie-Übung: Ausfallschritt im Stand",
-                "start": "Großer Schritt nach vorn, beide Füße bleiben am Boden stehen.",
+                "name": "Ausfallschritt",
+                "start": "Mach einen großen Schritt nach vorn. Beide Füße bleiben am Boden stehen.",
                 "steps": [
-                  "Hinteres Knie langsam Richtung Boden senken.",
-                  "So tief, wie es sauber geht.",
-                  "Mit dem vorderen Bein wieder hochdrücken."
+                  "Senk das hintere Knie langsam Richtung Boden.",
+                  "Geh so tief, wie es sauber geht. Das Knie berührt den Boden nicht.",
+                  "Drück dich mit dem vorderen Bein wieder hoch.",
+                  "Mach alle Wiederholungen, dann wechsel das Bein."
                 ],
-                "mistake": "Vorderes Knie fällt nach innen.",
-                "tool": "Nichts"
+                "mistake": "Das vordere Knie fällt nach innen.",
+                "tool": "Nichts",
+                "watch": "Das vordere Knie bleibt über dem Fuß. Der Oberkörper bleibt aufrecht."
               }
             },
             {
@@ -596,15 +621,17 @@
               "weight": "2 × 2 kg",
               "perSide": true,
               "variant": {
-                "name": "Knie-Übung: Ausfallschritt mit Hanteln",
-                "start": "In jeder Hand eine 2-kg-Hantel, großer Schritt nach vorn.",
+                "name": "Ausfallschritt mit Hanteln",
+                "start": "Nimm in jede Hand eine 2-kg-Hantel. Mach einen großen Schritt nach vorn.",
                 "steps": [
-                  "Hinteres Knie langsam Richtung Boden senken.",
-                  "Arme hängen locker.",
-                  "Mit dem vorderen Bein wieder hochdrücken."
+                  "Lass die Arme locker neben dem Körper hängen.",
+                  "Senk das hintere Knie langsam Richtung Boden.",
+                  "Drück dich mit dem vorderen Bein wieder hoch.",
+                  "Mach alle Wiederholungen, dann wechsel das Bein."
                 ],
-                "mistake": "Oberkörper kippt nach vorn.",
-                "tool": "Kurzhanteln 2 kg"
+                "mistake": "Der Oberkörper kippt nach vorn.",
+                "tool": "Kurzhanteln 2 kg",
+                "watch": "Der Oberkörper bleibt gerade, wie an einer Schnur nach oben gezogen."
               }
             },
             {
@@ -614,31 +641,35 @@
               "weight": "ohne Gewicht, später 2 × 2 kg",
               "perSide": true,
               "variant": {
-                "name": "Knie-Übung: Step-Down",
-                "start": "Mit einem Fuß auf dem Buch (etwa 10 cm) stehen, das andere Bein hängt gestreckt vorn über der Kante. Eine Hand leicht an der Wand oder am Geländer.",
+                "name": "Runtertippen vom Buch",
+                "start": "Stell dich mit einem Fuß auf ein dickes Buch, etwa 10 cm hoch. Das andere Bein hängt gerade vorn über der Kante. Eine Hand liegt leicht an der Wand.",
                 "steps": [
-                  "Standbein langsam beugen.",
-                  "Freies Bein gestreckt nach vorn absenken, bis die Ferse den Boden antippt.",
-                  "Mit dem Standbein wieder hochdrücken."
+                  "Beug das Standbein langsam, in 3 s.",
+                  "Senk dabei das freie Bein nach vorn, bis die Ferse den Boden antippt.",
+                  "Drück dich mit dem Standbein wieder hoch.",
+                  "Mach alle Wiederholungen, dann wechsel das Bein."
                 ],
-                "mistake": "Knie vom Standbein fällt nach innen.",
-                "tool": "Dickes Buch oder Stufe"
+                "mistake": "Das Knie vom Standbein fällt nach innen.",
+                "tool": "Dickes Buch oder Stufe",
+                "watch": "Das Knie vom Standbein zeigt zum zweiten Zeh. Der Po geht leicht nach hinten, wie beim Hinsetzen."
               }
             }
-          ]
+          ],
+          "cue": "Knie zeigt zum zweiten Zeh."
         },
         {
           "id": "A4",
           "name": "Brücke",
-          "why": "Der Po arbeitet mehr, das Knie trägt weniger.",
-          "start": "Rückenlage, Knie gebeugt, Füße flach aufgestellt.",
+          "why": "Der Po arbeitet mehr, dann muss das Knie weniger tragen.",
+          "start": "Leg dich auf den Rücken. Beug die Knie und stell die Füße flach auf. Fersen etwa eine Handlänge vor dem Po.",
           "steps": [
-            "Becken hochdrücken, bis Knie, Hüfte und Schultern eine Linie sind.",
-            "Oben 2 s halten.",
-            "Langsam wieder ablegen."
+            "Spann den Po an und drück das Becken hoch.",
+            "Stopp, wenn Knie, Hüfte und Schultern eine gerade Linie sind.",
+            "Halt oben 2 s.",
+            "Leg das Becken langsam wieder ab."
           ],
-          "watch": "Po fest anspannen, kein Hohlkreuz.",
-          "mistake": "Rücken drückt hoch statt der Po.",
+          "watch": "Der Po ist fest angespannt. Der untere Rücken bleibt flach, kein Hohlkreuz.",
+          "mistake": "Der Rücken drückt hoch statt der Po.",
           "tool": "Matte",
           "focus": [
             "knie",
@@ -658,14 +689,16 @@
               "weight": "ohne Gewicht",
               "perSide": true,
               "variant": {
-                "name": "Brücke einbeinig",
-                "start": "Rückenlage, ein Fuß aufgestellt, das andere Bein gestreckt in der Luft, beide Knie auf gleicher Höhe.",
+                "name": "Brücke auf einem Bein",
+                "start": "Leg dich auf den Rücken. Stell einen Fuß auf. Streck das andere Bein in die Luft, beide Knie auf gleicher Höhe.",
                 "steps": [
-                  "Mit dem aufgestellten Bein das Becken hochdrücken, bis Knie, Hüfte und Schultern eine Linie sind.",
-                  "Oben 2 s halten.",
-                  "Langsam ablegen. Nach allen Wiederholungen Seite wechseln."
+                  "Drück mit dem aufgestellten Fuß das Becken hoch.",
+                  "Stopp, wenn Knie, Hüfte und Schultern eine Linie sind.",
+                  "Halt oben 2 s, dann leg langsam ab.",
+                  "Mach alle Wiederholungen, dann wechsel das Bein."
                 ],
-                "mistake": "Becken kippt zur Seite des freien Beins."
+                "mistake": "Das Becken kippt zur Seite vom freien Bein.",
+                "watch": "Beide Hüften bleiben gleich hoch, wie ein gerades Brett."
               }
             },
             {
@@ -675,14 +708,16 @@
               "weight": "ohne Gewicht",
               "fp": 8,
               "variant": {
-                "name": "FP Supine Bridge (beidbeinig)",
-                "start": "Rückenlage, beide Füße hüftbreit aufgestellt, Arme neben dem Körper.",
+                "name": "Brücke langsam (FP)",
+                "start": "Leg dich auf den Rücken. Stell beide Füße hüftbreit auf. Die Arme liegen neben dem Körper.",
                 "steps": [
-                  "Erst den Po anspannen, dann das Becken langsam hochrollen.",
-                  "Oben 2 s halten – Rippen bleiben unten, kein Hohlkreuz.",
-                  "Langsam Wirbel für Wirbel ablegen."
+                  "Spann zuerst den Po an.",
+                  "Roll das Becken langsam hoch, Stück für Stück.",
+                  "Halt oben 2 s. Die Rippen bleiben unten.",
+                  "Roll den Rücken langsam von oben nach unten ab."
                 ],
-                "mistake": "Hohlkreuz oben statt Po-Spannung."
+                "mistake": "Du machst oben ein Hohlkreuz statt den Po anzuspannen.",
+                "watch": "Kein Hohlkreuz. Der Bauch bleibt flach, die Rippen stehen nicht vor."
               }
             },
             {
@@ -692,30 +727,34 @@
               "weight": "ohne Gewicht",
               "perSide": true,
               "variant": {
-                "name": "Brücke einbeinig",
-                "start": "Rückenlage, ein Fuß aufgestellt, das andere Bein gestreckt in der Luft, beide Knie auf gleicher Höhe.",
+                "name": "Brücke auf einem Bein (3 s halten)",
+                "start": "Leg dich auf den Rücken. Stell einen Fuß auf. Streck das andere Bein in die Luft, beide Knie auf gleicher Höhe.",
                 "steps": [
-                  "Mit dem aufgestellten Bein das Becken hochdrücken, bis Knie, Hüfte und Schultern eine Linie sind.",
-                  "Oben 3 s halten.",
-                  "Langsam ablegen. Nach allen Wiederholungen Seite wechseln."
+                  "Drück mit dem aufgestellten Fuß das Becken hoch.",
+                  "Stopp, wenn Knie, Hüfte und Schultern eine Linie sind.",
+                  "Halt oben 3 s, dann leg langsam ab.",
+                  "Mach alle Wiederholungen, dann wechsel das Bein."
                 ],
-                "mistake": "Becken kippt zur Seite des freien Beins."
+                "mistake": "Das Becken kippt zur Seite vom freien Bein.",
+                "watch": "Beide Hüften bleiben gleich hoch, wie ein gerades Brett."
               }
             }
-          ]
+          ],
+          "cue": "Po fest, dann Becken hoch."
         },
         {
           "id": "A5",
-          "name": "Seitliche Bandschritte",
-          "why": "Stärkt die Hüfte außen – das Knie bleibt stabil.",
-          "start": "Kleines Band um die Knöchel, Knie leicht gebeugt, Füße hüftbreit.",
+          "name": "Seitschritte mit Band",
+          "why": "Stärkt die Hüfte außen. Dann bleibt das Knie stabil.",
+          "start": "Leg das kleine Band um beide Knöchel. Stell die Füße hüftbreit. Beug die Knie leicht, wie ein Torwart.",
           "steps": [
-            "So viele kleine Schritte zur Seite, wie in der Dosis steht.",
-            "Dann gleich viele Schritte zurück.",
-            "Das ist 1 Satz."
+            "Mach einen kleinen Schritt nach rechts, etwa eine Fußbreite.",
+            "Zieh den linken Fuß nach. Das Band bleibt gespannt.",
+            "Geh so viele Schritte, wie in der Dosis steht.",
+            "Geh gleich viele Schritte zurück nach links. Das ist 1 Satz."
           ],
-          "watch": "Füße und Knie zeigen nach vorn, das Band bleibt gespannt.",
-          "mistake": "Oberkörper wackelt hin und her.",
+          "watch": "Füße und Knie zeigen nach vorn. Der Oberkörper bleibt ruhig und aufrecht. Du spürst es außen an der Hüfte.",
+          "mistake": "Der Oberkörper wackelt hin und her wie ein Pinguin.",
           "tool": "Kleines Band",
           "focus": [
             "knie",
@@ -740,20 +779,22 @@
               "text": "3×15 je Richtung, Band fester (kürzer nehmen oder doppelt legen)",
               "weight": "ohne Gewicht"
             }
-          ]
+          ],
+          "cue": "Band gespannt, Oberkörper ruhig."
         },
         {
           "id": "A6",
-          "name": "Schienbein-Heben an der Wand",
+          "name": "Fußspitzen hoch an der Wand",
           "why": "Der Muskel vorn am Schienbein fängt jeden Schritt ab.",
-          "start": "Rücken an die Wand, Fersen etwa 30 cm vor der Wand.",
+          "start": "Lehn dich mit Po und Rücken an eine Wand. Stell die Fersen 30 cm vor die Wand, etwa eine Schuhlänge.",
           "steps": [
-            "Fußspitzen so hoch ziehen, wie es geht.",
-            "Kurz halten.",
-            "Langsam wieder absenken."
+            "Zieh beide Fußspitzen hoch, so weit es geht.",
+            "Halt oben 1 s.",
+            "Senk die Fußspitzen langsam ab, in 2 s.",
+            "Tipp nur kurz auf, dann gleich wieder hoch."
           ],
-          "watch": "Die Fersen bleiben am Boden.",
-          "mistake": "Hüfte rutscht von der Wand weg.",
+          "watch": "Die Fersen bleiben am Boden. Du spürst es vorn am Schienbein.",
+          "mistake": "Der Po rutscht von der Wand weg.",
           "tool": "Wand",
           "focus": [
             "schienbein"
@@ -777,19 +818,21 @@
               "text": "3×20",
               "weight": "ohne Gewicht"
             }
-          ]
+          ],
+          "cue": "Zehen hoch, Fersen bleiben unten."
         },
         {
           "id": "A7",
           "name": "Fuß nach innen gegen das Band",
-          "why": "Macht die Sehne am Innenknöchel ausdauernd.",
-          "start": "Auf dem Boden sitzen. Band an einem Tischbein, das außen neben dem Fuß steht. Schlaufe um den Vorfuß.",
+          "why": "Die Sehne innen am Knöchel wird ausdauernd.",
+          "start": "Setz dich auf den Boden, Beine lang. Bind das Band an ein Tischbein. Das Tischbein steht außen neben deinem Fuß. Leg die Schlaufe um den vorderen Teil vom Fuß.",
           "steps": [
-            "Fußspitze leicht nach unten strecken.",
-            "Fuß gegen das Band nach innen ziehen.",
-            "In 3 s langsam zurück."
+            "Streck die Fußspitze leicht nach unten, wie beim Gasgeben.",
+            "Zieh den Fuß nach innen, Richtung anderer Fuß.",
+            "Lass ihn in 3 s langsam zurück.",
+            "Mach alle Wiederholungen. Dreh dich dann um für den anderen Fuß."
           ],
-          "watch": "Nur der Fuß bewegt sich, das Bein bleibt ruhig.",
+          "watch": "Nur der Fuß bewegt sich. Das Knie zeigt die ganze Zeit zur Decke.",
           "mistake": "Das ganze Bein dreht mit.",
           "tool": "Band, Tischbein",
           "focus": [
@@ -817,21 +860,23 @@
               "weight": "ohne Gewicht",
               "perSide": true
             }
-          ]
+          ],
+          "cue": "Nur der Fuß, Knie zeigt hoch."
         },
         {
           "id": "A8",
-          "name": "Standing Neutral (FP)",
-          "why": "Du übst, gerade und entspannt zu stehen.",
+          "name": "Ruhig stehen (FP)",
+          "why": "Du übst, gerade und locker zu stehen.",
           "fromWeek": 4,
-          "start": "Barfuß stehen, Füße hüftbreit.",
+          "start": "Stell dich barfuß hin, Füße hüftbreit.",
           "steps": [
-            "Gewicht gleich auf beide Füße verteilen.",
-            "Becken neutral, Rippen locker nach unten.",
-            "Ruhig durch die Nase atmen."
+            "Verteil dein Gewicht gleich auf beide Füße.",
+            "Lass die Knie locker, nicht durchdrücken.",
+            "Lass die Rippen locker sinken. Der Bauch bleibt weich.",
+            "Atme ruhig durch die Nase, bis der Timer piept."
           ],
-          "watch": "Gewicht mittig zwischen Ferse und Ballen, Knie locker, nicht durchgedrückt. Kopf lang nach oben, Schultern hängen locker.",
-          "mistake": "Ins Hohlkreuz drücken.",
+          "watch": "Das Gewicht liegt in der Mitte zwischen Ferse und Ballen. Der Kopf ist lang, wie an einem Faden nach oben gezogen. Die Schultern hängen locker.",
+          "mistake": "Du schiebst den Po nach hinten und machst ein Hohlkreuz.",
           "tool": "Nichts",
           "focus": [],
           "dose": [
@@ -843,14 +888,15 @@
               "weight": "ohne Gewicht"
             }
           ],
-          "untilWeek": 4
+          "untilWeek": 4,
+          "cue": "Groß, locker, ruhig atmen."
         }
       ]
     },
     "B": {
       "title": "Kraft B – Hüfte, Rumpf, Oberkörper",
       "minutes": 35,
-      "general": "Am Ende jedes Satzes wären noch 2–3 Wiederholungen gegangen. 1 min Pause zwischen den Sätzen.",
+      "general": "Hör jeden Satz auf, wenn noch 2–3 Wiederholungen gehen würden. Mach 1 min Pause zwischen den Sätzen.",
       "mini": [
         "B0",
         "B1",
@@ -860,17 +906,17 @@
       "exercises": [
         {
           "id": "B0",
-          "name": "Start (4 min)",
-          "why": "Hüfte, Schultern und Füße warm machen.",
-          "start": "Auf einem Stuhl sitzen, kleiner Ball liegt bereit.",
+          "name": "Start: Hüfte, Schultern, Fuß (4 min)",
+          "why": "Hüfte, Schultern und Füße werden warm und beweglich.",
+          "start": "Stell dich neben eine Wand. Eine Hand liegt an der Wand. Ein Stuhl steht bereit.",
           "steps": [
-            "Mit dem Po auf den kleinen Ball setzen, je Seite 1 min.",
-            "10 Armkreise, 10 halbe Kniebeugen, 10 Hüftkreise.",
-            "Kurzer Fuß: Gewölbe hochziehen, Zehen bleiben lang am Boden – 5× 5 s je Fuß."
+            "Schwing ein Bein locker vor und zurück, 10×. Dann 10× zur Seite. Dann das andere Bein.",
+            "Mach 10 Armkreise, 10 halbe Kniebeugen und 10 Hüftkreise.",
+            "Setz dich auf den Stuhl. Mach den kurzen Fuß, 5× 5 s je Fuß."
           ],
-          "watch": "Langsam rollen, auf einem festen Punkt 20–30 s liegen bleiben, durch die Nase atmen. Höchstens „angenehm weh“ (4–5 von 10). Nie auf Schienbeinkante, Kniescheibe oder direkt hinter dem Innenknöchel.",
-          "mistake": "Beim kurzen Fuß die Zehen krallen.",
-          "tool": "Kleiner Ball",
+          "watch": "So geht der kurze Fuß: Schieb den Ballen leicht Richtung Ferse. Das Gewölbe innen wird höher, wie eine kleine Brücke. Die Zehen bleiben lang und flach am Boden.",
+          "mistake": "Beim kurzen Fuß krallst du die Zehen ein.",
+          "tool": "Wand, Stuhl",
           "focus": [
             "huefte",
             "fuss"
@@ -889,32 +935,35 @@
               "weight": "ohne Gewicht",
               "fp": 6,
               "variant": {
-                "name": "Start (6 min)",
-                "start": "Auf einem Stuhl sitzen, kleiner Ball und Besenstiel liegen bereit.",
+                "name": "Start mit Rücken und Schultern (6 min)",
+                "start": "Stell dich neben eine Wand. Stuhl und Besenstiel liegen bereit.",
                 "steps": [
-                  "Mit dem Po auf den kleinen Ball setzen, je Seite 1 min.",
-                  "10 Armkreise, 10 halbe Kniebeugen, 10 Hüftkreise.",
-                  "Kurzer Fuß: Gewölbe hochziehen, Zehen bleiben lang am Boden – 5× 5 s je Fuß.",
-                  "Besenstiel quer hinter die Schultern, Hände außen, Oberkörper langsam nach links und rechts drehen, Becken bleibt vorn – 1 min.",
-                  "Rücken an die Wand, Arme wie ein W an die Wand, Schulterblätter nach hinten-unten ziehen, 3 s halten – 1 min."
+                  "Schwing jedes Bein 10× vor und zurück. Dann 10 Armkreise, 10 halbe Kniebeugen, 10 Hüftkreise.",
+                  "Setz dich auf den Stuhl. Mach den kurzen Fuß, 5× 5 s je Fuß.",
+                  "Leg den Besenstiel hinten quer auf die Schultern. Dreh den Oberkörper langsam nach links und rechts, 1 min.",
+                  "Lehn dich mit dem Rücken an die Wand. Leg die Arme als W an die Wand. Zieh die Schulterblätter nach hinten unten, 3 s halten, 1 min lang."
                 ],
-                "tool": "Kleiner Ball, Besenstiel, Wand"
+                "tool": "Wand, Stuhl",
+                "watch": "Beim Drehen zeigt der Bauchnabel nach vorn, nur die Brust dreht. Beim W bleiben die Schultern weg von den Ohren.",
+                "mistake": "Beim kurzen Fuß krallst du die Zehen ein."
               }
             }
-          ]
+          ],
+          "cue": "Brücke unterm Fuß, Zehen bleiben lang."
         },
         {
           "id": "B1",
-          "name": "Einbeinstand mit kurzem Fuß",
-          "why": "Fuß und Hüfte bleiben bei jedem Schritt stabil.",
-          "start": "Barfuß auf einem Bein stehen.",
+          "name": "Auf einem Bein stehen",
+          "why": "Fuß und Hüfte bleiben bei jedem Laufschritt stabil.",
+          "start": "Stell dich barfuß auf ein Bein. Heb das andere Knie leicht an.",
           "steps": [
-            "Kurzer Fuß machen: Gewölbe hoch.",
-            "Großzehe drückt leicht in den Boden.",
-            "Halten, bis der Timer piept, dann Seite wechseln."
+            "Mach den kurzen Fuß: Gewölbe hoch, Zehen bleiben lang.",
+            "Drück die große Zehe leicht in den Boden.",
+            "Halt still, bis der Timer piept.",
+            "Wechsel dann das Bein."
           ],
-          "watch": "Becken bleibt gerade.",
-          "mistake": "Hüfte vom Standbein schiebt zur Seite raus.",
+          "watch": "Das Becken bleibt gerade wie ein Tablett. Nichts kippt zur Seite. Ab Woche 9: Augen zu oder auf einem Kissen stehen.",
+          "mistake": "Die Hüfte vom Standbein schiebt zur Seite raus.",
           "tool": "Nichts",
           "focus": [
             "fuss",
@@ -955,20 +1004,22 @@
               "weight": "ohne Gewicht",
               "perSide": true
             }
-          ]
+          ],
+          "cue": "Fuß als Brücke, Becken als Tablett."
         },
         {
           "id": "B2",
-          "name": "Wadenheben mit gebeugtem Knie",
-          "why": "Stärkt den tiefen Wadenmuskel und schützt das Schienbein.",
-          "start": "Rücken an die Wand, Knie leicht gebeugt.",
+          "name": "Wadenheben mit krummen Knien",
+          "why": "Stärkt den tiefen Wadenmuskel. Das schützt das Schienbein.",
+          "start": "Lehn dich mit dem Rücken an die Wand. Beug die Knie leicht, wie beim Skifahren.",
           "steps": [
-            "Auf die Zehen hochdrücken.",
-            "Knie bleiben gebeugt.",
-            "In 3 s runter."
+            "Drück dich hoch auf die Zehen.",
+            "Lass die Knie dabei gebeugt.",
+            "Halt oben 1 s.",
+            "Senk die Fersen in 3 s ab."
           ],
-          "watch": "Knie bleiben die ganze Zeit gebeugt.",
-          "mistake": "Beine strecken sich beim Hochgehen.",
+          "watch": "Die Knie bleiben die ganze Zeit gebeugt, auch oben. Du spürst es tief unten in der Wade. Ab Woche 9 auf einem Bein.",
+          "mistake": "Die Beine strecken sich beim Hochgehen.",
           "tool": "Wand",
           "focus": [
             "wade",
@@ -994,20 +1045,22 @@
               "weight": "ohne Gewicht",
               "perSide": true
             }
-          ]
+          ],
+          "cue": "Knie bleiben krumm, Fersen hoch."
         },
         {
           "id": "B3",
-          "name": "Einbeiniges Kreuzheben",
-          "why": "Stärkt Beinrückseite, Po und Gleichgewicht.",
-          "start": "Auf einem Bein stehen, Finger an der Wand.",
+          "name": "Waage auf einem Bein",
+          "why": "Stärkt die Rückseite vom Bein, den Po und das Gleichgewicht.",
+          "start": "Stell dich seitlich neben eine Wand auf ein Bein. Die Fingerspitzen berühren die Wand.",
           "steps": [
-            "Oberkörper nach vorn kippen.",
-            "Freies Bein gerade nach hinten strecken.",
-            "Wieder hochkommen."
+            "Kipp den Oberkörper langsam nach vorn, wie eine Waage.",
+            "Streck dabei das freie Bein gerade nach hinten.",
+            "Geh so weit, wie es ruhig geht.",
+            "Komm wieder hoch und spann den Po an."
           ],
-          "watch": "Rücken bleibt gerade, das Becken dreht nicht auf.",
-          "mistake": "Hüfte vom freien Bein dreht nach oben.",
+          "watch": "Der Rücken bleibt gerade wie ein Brett. Die Zehen vom freien Bein zeigen zum Boden.",
+          "mistake": "Die Hüfte vom freien Bein dreht nach oben auf.",
           "tool": "Wand",
           "focus": [
             "huefte",
@@ -1029,13 +1082,17 @@
               "weight": "1 × 2 kg",
               "perSide": true,
               "variant": {
-                "start": "Frei auf einem Bein stehen, Hantel in der Hand auf der Seite des freien Beins.",
+                "start": "Stell dich frei auf ein Bein. Die Hantel ist in der anderen Hand. Stehst du auf links, ist die Hantel rechts.",
                 "steps": [
-                  "Oberkörper nach vorn kippen, freies Bein gerade nach hinten strecken.",
-                  "Die Hantel hängt senkrecht unter der Schulter und geht am Standbein entlang nach unten.",
-                  "Wieder hochkommen, Po anspannen."
+                  "Kipp den Oberkörper nach vorn und streck das freie Bein nach hinten.",
+                  "Lass die Hantel gerade unter der Schulter hängen.",
+                  "Führ sie am Standbein entlang nach unten.",
+                  "Komm wieder hoch und spann den Po an."
                 ],
-                "tool": "Kurzhantel 2 kg"
+                "tool": "Kurzhantel 2 kg",
+                "name": "Waage mit Hantel (2 kg)",
+                "watch": "Der Rücken bleibt gerade. Die Zehen vom freien Bein zeigen zum Boden.",
+                "mistake": "Die Hüfte vom freien Bein dreht nach oben auf."
               }
             },
             {
@@ -1045,22 +1102,27 @@
               "weight": "1 × 3 kg",
               "perSide": true,
               "variant": {
-                "start": "Frei auf einem Bein stehen, Hantel in der Hand auf der Seite des freien Beins.",
+                "start": "Stell dich frei auf ein Bein. Die Hantel ist in der anderen Hand. Stehst du auf links, ist die Hantel rechts.",
                 "steps": [
-                  "Oberkörper nach vorn kippen, freies Bein gerade nach hinten strecken.",
-                  "Die Hantel hängt senkrecht unter der Schulter und geht am Standbein entlang nach unten.",
-                  "Wieder hochkommen, Po anspannen."
+                  "Kipp den Oberkörper nach vorn und streck das freie Bein nach hinten.",
+                  "Lass die Hantel gerade unter der Schulter hängen.",
+                  "Führ sie am Standbein entlang nach unten.",
+                  "Komm wieder hoch und spann den Po an."
                 ],
-                "tool": "Kurzhantel 3 kg"
+                "tool": "Kurzhantel 3 kg",
+                "name": "Waage mit Hantel (3 kg)",
+                "watch": "Der Rücken bleibt gerade. Die Zehen vom freien Bein zeigen zum Boden.",
+                "mistake": "Die Hüfte vom freien Bein dreht nach oben auf."
               }
             }
-          ]
+          ],
+          "cue": "Wie eine Waage, Zehen zeigen runter."
         },
         {
           "id": "B4",
           "name": "Rudern",
-          "why": "Gute Haltung und lockere Schultern – gegen das Schulter-Zwicken.",
-          "watch": "Schultern bleiben unten, weg von den Ohren.",
+          "why": "Gute Haltung und lockere Schultern. Das hilft gegen das Schulter-Zwicken.",
+          "watch": "Die Schultern bleiben unten, weg von den Ohren.",
           "focus": [
             "schulter"
           ],
@@ -1072,14 +1134,16 @@
               "weight": "ohne Gewicht",
               "variant": {
                 "name": "Rudern mit Band",
-                "start": "Großes Band um die Klimmzugstange. Vor der Tür auf den Boden setzen oder knien, sodass das Band etwa auf Brusthöhe zieht.",
+                "start": "Häng das große Band über die Klimmzugstange in der Tür. Setz oder knie dich davor. Das Band zieht etwa auf Höhe deiner Brust.",
                 "steps": [
-                  "Ellbogen eng am Körper nach hinten ziehen.",
-                  "Schulterblätter zusammen.",
-                  "Langsam wieder nach vorn."
+                  "Greif beide Enden, die Arme sind gestreckt.",
+                  "Zieh die Ellbogen eng am Körper nach hinten.",
+                  "Drück die Schulterblätter zusammen, als hältst du einen Stift dazwischen.",
+                  "Lass die Arme langsam wieder nach vorn."
                 ],
-                "mistake": "Schultern ziehen hoch.",
-                "tool": "Großes Band, Klimmzugstange"
+                "mistake": "Die Schultern ziehen hoch zu den Ohren.",
+                "tool": "Großes Band, Klimmzugstange",
+                "watch": "Die Schultern bleiben unten, weg von den Ohren."
               }
             },
             {
@@ -1089,15 +1153,17 @@
               "weight": "1 × 3 kg",
               "perSide": true,
               "variant": {
-                "name": "Einarmiges Rudern mit Hantel",
-                "start": "Eine Hand und ein Knie auf Stuhl oder Sofa, Rücken gerade wie ein Tisch.",
+                "name": "Rudern mit einer Hantel",
+                "start": "Stütz eine Hand und ein Knie auf Stuhl oder Sofa. Der Rücken ist gerade wie ein Tisch. Die andere Hand hält die Hantel (3 kg).",
                 "steps": [
-                  "Hantel zur Hüfte ziehen.",
-                  "Oben kurz halten.",
-                  "Langsam runterlassen."
+                  "Zieh die Hantel hoch zur Hüfte, wie beim Starten vom Rasenmäher.",
+                  "Halt oben 1 s.",
+                  "Lass sie langsam wieder runter.",
+                  "Mach alle Wiederholungen, dann wechsel die Seite."
                 ],
-                "mistake": "Oberkörper dreht beim Ziehen auf.",
-                "tool": "Kurzhantel 3 kg, Stuhl"
+                "mistake": "Der Oberkörper dreht beim Ziehen auf.",
+                "tool": "Kurzhantel 3 kg, Stuhl",
+                "watch": "Der Rücken bleibt flach. Der Ellbogen streift am Körper vorbei."
               }
             },
             {
@@ -1106,15 +1172,17 @@
               "text": "3×3–5 langsam vom Klimmzug runterlassen + 2×12 einarmiges Rudern je Seite",
               "weight": "1 × 3 kg (Rudern)",
               "variant": {
-                "name": "Klimmzug runterlassen + Rudern",
-                "start": "Stuhl unter der Klimmzugstange.",
+                "name": "Langsam vom Klimmzug runter + Rudern",
+                "start": "Stell einen Stuhl unter die Klimmzugstange. Greif die Stange mit beiden Händen.",
                 "steps": [
-                  "Mit den Beinen vom Stuhl hochdrücken, bis das Kinn über der Stange ist.",
-                  "In 3–5 s langsam runterlassen.",
-                  "Danach 2×12 einarmiges Rudern mit der 3-kg-Hantel."
+                  "Drück dich mit den Beinen hoch, bis das Kinn über der Stange ist.",
+                  "Nimm die Füße vom Stuhl.",
+                  "Lass dich in 3–5 s langsam runter. Zähl laut mit.",
+                  "Mach danach 2×12 Rudern mit der 3-kg-Hantel je Seite."
                 ],
-                "mistake": "Unten einfach fallen lassen.",
-                "tool": "Klimmzugstange, Stuhl, Kurzhantel 3 kg"
+                "mistake": "Du lässt dich unten einfach fallen.",
+                "tool": "Klimmzugstange, Stuhl, Kurzhantel 3 kg",
+                "watch": "Die Schultern bleiben unten, weg von den Ohren. Unten stellst du die Füße wieder auf den Stuhl."
               }
             },
             {
@@ -1125,15 +1193,17 @@
               "perSide": true,
               "fp": 9,
               "variant": {
-                "name": "FP One Arm Row (Band)",
-                "start": "Band im Türanker auf Brusthöhe. So weit von der Tür weg, dass das Band schon leicht gespannt ist. Schrittstellung. Noch kein Türanker? Band um die Klimmzugstange und im Knien ziehen.",
+                "name": "Rudern mit einem Arm am Band (FP)",
+                "start": "Mach das Band im Türanker fest, auf Höhe der Brust. Geh so weit weg, bis das Band leicht gespannt ist. Ein Fuß steht vorn, einer hinten. Kein Türanker? Häng das Band über die Klimmzugstange und zieh im Knien.",
                 "steps": [
-                  "Mit einem Arm das Band zur Hüfte ziehen.",
-                  "Rumpf bleibt fest, Becken dreht nicht.",
-                  "Langsam zurück."
+                  "Zieh das Band mit einem Arm zur Hüfte.",
+                  "Halt den Bauch fest. Die Hüfte zeigt nach vorn.",
+                  "Lass das Band langsam zurück.",
+                  "Mach alle Wiederholungen, dann wechsel den Arm."
                 ],
-                "mistake": "Schulter zieht hoch.",
-                "tool": "Band + Türanker"
+                "mistake": "Die Schulter zieht hoch zum Ohr.",
+                "tool": "Band + Türanker",
+                "watch": "Die Schultern bleiben unten. Das Becken dreht nicht mit."
               }
             },
             {
@@ -1144,32 +1214,35 @@
               "perSide": true,
               "fp": 10,
               "variant": {
-                "name": "FP Unilateral Row (Band)",
-                "start": "Band im Türanker auf Brusthöhe, so weit weg, dass es leicht gespannt ist. Schrittstellung, nach 2 Wochen auf einem Bein. Noch kein Türanker? Band um die Klimmzugstange und im Knien ziehen.",
+                "name": "Rudern mit einem Arm, Gleichgewicht (FP)",
+                "start": "Mach das Band im Türanker fest, auf Höhe der Brust. Geh so weit weg, bis es leicht gespannt ist. Die ersten 2 Wochen: ein Fuß vorn, einer hinten. Danach auf einem Bein. Kein Türanker? Band über die Klimmzugstange, im Knien ziehen.",
                 "steps": [
-                  "Band mit einem Arm nach hinten ziehen.",
-                  "Gleichgewicht halten.",
-                  "Langsam zurück."
+                  "Zieh das Band mit einem Arm nach hinten zur Hüfte.",
+                  "Halt dein Gleichgewicht, der Bauch bleibt fest.",
+                  "Lass das Band langsam zurück.",
+                  "Mach alle Wiederholungen, dann wechsel den Arm."
                 ],
-                "mistake": "Becken kippt weg.",
-                "tool": "Band + Türanker"
+                "mistake": "Das Becken kippt zur Seite weg.",
+                "tool": "Band + Türanker",
+                "watch": "Die Schultern bleiben unten. Das Becken bleibt gerade."
               }
             }
-          ]
+          ],
+          "cue": "Ellbogen nach hinten, Schultern bleiben unten."
         },
         {
           "id": "B5",
-          "name": "Liegestütz",
-          "why": "Oberkörperkraft für einen ruhigen Armschwung.",
+          "name": "Liegestütz erhöht",
+          "why": "Mehr Kraft im Oberkörper für einen ruhigen Armschwung.",
           "fromWeek": 2,
-          "start": "Hände auf eine Stufe oder das Sofa, Körper gerade wie ein Brett.",
+          "start": "Stell die Hände schulterbreit auf eine Stufe oder das Sofa. Geh mit den Füßen nach hinten. Dein Körper ist gerade wie ein Brett.",
           "steps": [
-            "Brust langsam zur Kante senken.",
-            "Kurz unten.",
-            "Wieder wegdrücken."
+            "Senk die Brust langsam zur Kante, in 2 s.",
+            "Bleib unten 1 s.",
+            "Drück dich wieder weg, bis die Arme gerade sind."
           ],
-          "watch": "Körper bleibt ein Brett.",
-          "mistake": "Po hängt durch.",
+          "watch": "Kopf, Po und Fersen bleiben in einer Linie. Die Ellbogen zeigen schräg nach hinten, nicht zur Seite. Ab Woche 9 auf dem Boden.",
+          "mistake": "Der Po hängt durch oder streckt sich hoch.",
           "tool": "Stufe oder Sofa",
           "focus": [
             "schulter"
@@ -1201,15 +1274,17 @@
               "perSide": true,
               "fp": 9,
               "variant": {
-                "name": "FP The Press (Band)",
-                "start": "Rücken zum Türanker, Band in einer Hand auf Brusthöhe, so weit weg, dass es leicht gespannt ist. Schrittstellung. Noch kein Türanker? Band um die Klimmzugstange und im Knien ziehen.",
+                "name": "Drücken mit Band (FP)",
+                "start": "Stell dich mit dem Rücken zum Türanker. Halt das Band in einer Hand auf Höhe der Brust. Geh vor, bis es leicht gespannt ist. Ein Fuß vorn, einer hinten. Kein Türanker? Band über die Klimmzugstange, im Knien mit dem Rücken zur Tür.",
                 "steps": [
-                  "Band nach vorn wegdrücken.",
-                  "Rumpf bleibt fest.",
-                  "Langsam zurück."
+                  "Drück das Band nach vorn weg, bis der Arm gerade ist.",
+                  "Halt den Bauch fest.",
+                  "Lass das Band langsam zurück, in 2 s.",
+                  "Mach alle Wiederholungen, dann wechsel den Arm."
                 ],
-                "mistake": "Hohlkreuz beim Drücken.",
-                "tool": "Band + Türanker"
+                "mistake": "Du machst beim Drücken ein Hohlkreuz.",
+                "tool": "Band + Türanker",
+                "watch": "Der Rücken bleibt gerade. Die Schulter bleibt unten."
               }
             },
             {
@@ -1220,32 +1295,36 @@
               "perSide": true,
               "fp": 10,
               "variant": {
-                "name": "FP Unilateral Press (Band)",
-                "start": "Rücken zum Türanker, Band in einer Hand auf Brusthöhe, leicht gespannt. Schrittstellung. Noch kein Türanker? Band um die Klimmzugstange und im Knien ziehen.",
+                "name": "Drücken mit einem Arm, Becken ruhig (FP)",
+                "start": "Stell dich mit dem Rücken zum Türanker. Halt das Band in einer Hand auf Höhe der Brust, leicht gespannt. Ein Fuß vorn, einer hinten. Kein Türanker? Band über die Klimmzugstange, im Knien.",
                 "steps": [
-                  "Band mit einem Arm nach vorn wegdrücken.",
-                  "Rumpf bleibt fest, Becken dreht nicht mit.",
-                  "Langsam zurück."
+                  "Drück das Band mit einem Arm nach vorn weg.",
+                  "Halt den Bauch fest. Das Becken dreht nicht mit.",
+                  "Lass das Band langsam zurück.",
+                  "Mach alle Wiederholungen, dann wechsel den Arm."
                 ],
-                "mistake": "Hohlkreuz beim Drücken.",
-                "tool": "Band + Türanker"
+                "mistake": "Du machst beim Drücken ein Hohlkreuz.",
+                "tool": "Band + Türanker",
+                "watch": "Der Bauchnabel zeigt die ganze Zeit nach vorn."
               }
             }
-          ]
+          ],
+          "cue": "Brett bleiben, Brust zur Kante."
         },
         {
           "id": "B5b",
-          "name": "FP Step Press and Row (Band)",
-          "why": "Arm und Bein arbeiten gegengleich – wie beim Laufen.",
+          "name": "Schritt mit Drücken und Ziehen (FP)",
+          "why": "Arm und Bein arbeiten über Kreuz zusammen, wie beim Laufen.",
           "fromWeek": 10,
-          "start": "Band im Türanker auf Brusthöhe, leicht gespannt, ein Griff in der Hand. Noch kein Türanker? Band um die Klimmzugstange und im Knien ziehen.",
+          "start": "Mach das Band im Türanker auf Höhe der Brust fest. Stell dich mit dem Rücken zur Tür. Halt den Griff in der rechten Hand, Band leicht gespannt. Kein Türanker? Band über die Klimmzugstange.",
           "steps": [
-            "Mit dem gegenüberliegenden Bein einen Schritt nach vorn und dabei nach vorn drücken.",
-            "Zurück in den Stand und das Band zur Hüfte ziehen.",
-            "Ruhig und kontrolliert, dann Seite wechseln."
+            "Mach mit dem linken Bein einen Schritt vor. Drück dabei das Band nach vorn weg.",
+            "Geh zurück in den Stand. Mach alle Wiederholungen.",
+            "Dreh dich um, Gesicht zur Tür. Mach links einen Schritt zurück und zieh das Band zur Hüfte.",
+            "Wechsel dann die Hand und das Bein."
           ],
-          "watch": "Rumpf bleibt fest, Becken zeigt nach vorn.",
-          "mistake": "Zu schnell, der Rumpf wackelt.",
+          "watch": "Der Bauch bleibt fest. Das Becken zeigt nach vorn. Arm und Bein sind immer über Kreuz: rechte Hand, linkes Bein.",
+          "mistake": "Du machst es zu schnell und der Oberkörper wackelt.",
           "tool": "Band + Türanker",
           "focus": [
             "schulter",
@@ -1260,20 +1339,22 @@
               "perSide": true,
               "fp": 10
             }
-          ]
+          ],
+          "cue": "Rechte Hand, linkes Bein – ruhig bleiben."
         },
         {
           "id": "B6",
           "name": "Stütz-Runde",
-          "why": "Fester Rumpf, weniger Wackeln im Becken.",
-          "start": "Auf der Matte im Unterarmstütz.",
+          "why": "Ein fester Bauch. Dann wackelt das Becken beim Laufen weniger.",
+          "start": "Leg dich auf den Bauch auf die Matte. Stütz dich auf die Unterarme. Die Ellbogen sind unter den Schultern.",
           "steps": [
-            "Unterarmstütz: Körper gerade wie ein Brett, halten.",
-            "Seitstütz links: Hüfte oben, halten.",
-            "Seitstütz rechts. Das ist 1 Runde."
+            "Heb den Körper hoch, gerade wie ein Brett. Halt.",
+            "Dreh dich auf den linken Unterarm. Heb die Hüfte hoch. Halt.",
+            "Dreh dich auf den rechten Unterarm. Heb die Hüfte hoch. Halt.",
+            "Das ist 1 Runde. Der Timer läuft alle 3 Teile nacheinander."
           ],
-          "watch": "Bauch und Po fest, weiter atmen.",
-          "mistake": "Luft anhalten oder Po zu hoch.",
+          "watch": "Bauch und Po sind fest. Atme weiter und zähl laut mit.",
+          "mistake": "Du hältst die Luft an oder der Po geht zu hoch.",
           "tool": "Matte",
           "focus": [
             "huefte",
@@ -1293,10 +1374,15 @@
               ],
               "variant": {
                 "steps": [
-                  "Unterarmstütz 30 s: Körper gerade wie ein Brett, Knie dürfen am Boden bleiben.",
-                  "Seitstütz links 20 s (Knie gebeugt), dann rechts 20 s.",
-                  "Das ist 1 Runde – der Timer läuft alle drei Teile nacheinander."
-                ]
+                  "Heb den Körper 30 s hoch. Die Knie dürfen am Boden bleiben.",
+                  "Leg dich auf die linke Seite, Knie gebeugt. Heb die Hüfte 20 s hoch.",
+                  "Mach das Gleiche rechts, 20 s.",
+                  "Das ist 1 Runde. Der Timer läuft alle 3 Teile nacheinander."
+                ],
+                "name": "Stütz-Runde leicht (Knie unten)",
+                "start": "Leg dich auf den Bauch. Stütz dich auf die Unterarme, Ellbogen unter den Schultern.",
+                "watch": "Von Kopf bis Knie bist du eine gerade Linie. Atme weiter.",
+                "mistake": "Du hältst die Luft an oder der Po geht zu hoch."
               }
             },
             {
@@ -1312,10 +1398,15 @@
               ],
               "variant": {
                 "steps": [
-                  "Unterarmstütz 40 s, dabei abwechselnd ein Bein 2 s anheben.",
-                  "Seitstütz links 40 s, dann rechts 40 s.",
-                  "Das ist 1 Runde – der Timer läuft alle drei Teile nacheinander."
-                ]
+                  "Halt den Unterarmstütz 40 s. Heb dabei abwechselnd ein Bein 2 s an.",
+                  "Dreh dich auf den linken Unterarm. Halt die Hüfte 40 s hoch.",
+                  "Mach das Gleiche rechts, 40 s.",
+                  "Das ist 1 Runde. Der Timer läuft alle 3 Teile nacheinander."
+                ],
+                "name": "Stütz-Runde mit Bein heben",
+                "start": "Leg dich auf den Bauch. Stütz dich auf die Unterarme, Ellbogen unter den Schultern.",
+                "watch": "Beim Bein heben bleibt das Becken still, es kippt nicht zur Seite.",
+                "mistake": "Du hebst das Bein zu hoch und machst ein Hohlkreuz."
               }
             },
             {
@@ -1331,12 +1422,16 @@
                 40
               ],
               "variant": {
-                "name": "Stütz-Runde (FP Plank-Varianten)",
+                "name": "Stütz-Runde (FP)",
                 "steps": [
-                  "Unterarmstütz 40 s, dabei abwechselnd ein Bein 2 s anheben (Plank with Hip Extension). Alternativ Hände erhöht auf dem Sofa (Elevated Plank).",
-                  "Seitstütz links 40 s, dann rechts 40 s.",
-                  "Das ist 1 Runde – der Timer läuft alle drei Teile nacheinander."
-                ]
+                  "Halt den Unterarmstütz 40 s. Heb dabei abwechselnd ein Bein 2 s an.",
+                  "Dreh dich auf den linken Unterarm. Halt die Hüfte 40 s hoch.",
+                  "Mach das Gleiche rechts, 40 s.",
+                  "Das ist 1 Runde. Der Timer läuft alle 3 Teile nacheinander."
+                ],
+                "start": "Leg dich auf den Bauch. Stütz dich auf die Unterarme. Zu schwer? Stütz die Hände auf das Sofa.",
+                "watch": "Beim Bein heben bleibt das Becken still, es kippt nicht zur Seite.",
+                "mistake": "Du hebst das Bein zu hoch und machst ein Hohlkreuz."
               }
             },
             {
@@ -1352,10 +1447,15 @@
               ],
               "variant": {
                 "steps": [
-                  "Unterarmstütz 45 s.",
-                  "Seitstütz links 45 s, Beine gestreckt übereinander, dann rechts 45 s.",
-                  "Das ist 1 Runde – der Timer läuft alle drei Teile nacheinander."
-                ]
+                  "Halt den Unterarmstütz 45 s.",
+                  "Leg dich auf die linke Seite, Beine gestreckt übereinander. Halt die Hüfte 45 s hoch.",
+                  "Mach das Gleiche rechts, 45 s.",
+                  "Das ist 1 Runde. Der Timer läuft alle 3 Teile nacheinander."
+                ],
+                "name": "Stütz-Runde schwer (Beine gestreckt)",
+                "start": "Leg dich auf den Bauch. Stütz dich auf die Unterarme, Ellbogen unter den Schultern.",
+                "watch": "Im Seitstütz bilden Kopf, Hüfte und Füße eine Linie.",
+                "mistake": "Die Hüfte sackt im Seitstütz nach unten."
               }
             },
             {
@@ -1371,29 +1471,35 @@
                 45
               ],
               "variant": {
-                "name": "Stütz-Runde (FP Plank-Varianten)",
+                "name": "Stütz-Runde schwer (FP)",
                 "steps": [
-                  "Unterarmstütz 45 s, dabei abwechselnd ein Bein 2 s anheben (Plank with Hip Extension). Alternativ Hände erhöht auf dem Sofa (Elevated Plank).",
-                  "Seitstütz links 45 s, Beine gestreckt übereinander, dann rechts 45 s.",
-                  "Das ist 1 Runde – der Timer läuft alle drei Teile nacheinander."
-                ]
+                  "Halt den Unterarmstütz 45 s. Heb dabei abwechselnd ein Bein 2 s an.",
+                  "Leg dich auf die linke Seite, Beine gestreckt übereinander. Halt die Hüfte 45 s hoch.",
+                  "Mach das Gleiche rechts, 45 s.",
+                  "Das ist 1 Runde. Der Timer läuft alle 3 Teile nacheinander."
+                ],
+                "start": "Leg dich auf den Bauch. Stütz dich auf die Unterarme. Zu schwer? Stütz die Hände auf das Sofa.",
+                "watch": "Im Seitstütz bilden Kopf, Hüfte und Füße eine Linie.",
+                "mistake": "Die Hüfte sackt im Seitstütz nach unten."
               }
             }
-          ]
+          ],
+          "cue": "Brett bleiben, weiter atmen."
         },
         {
           "id": "B6q",
-          "name": "Quad Ped (FP)",
-          "why": "Rumpf und Hüfte arbeiten über Kreuz zusammen – wie beim Laufen.",
+          "name": "Vierfüßler über Kreuz (FP)",
+          "why": "Bauch und Hüfte arbeiten über Kreuz zusammen, wie beim Laufen.",
           "fromWeek": 5,
-          "start": "Vierfüßlerstand: Hände unter den Schultern, Knie unter der Hüfte, Rücken gerade.",
+          "start": "Geh auf alle viere. Die Hände sind unter den Schultern, die Knie unter der Hüfte.",
           "steps": [
-            "Rechten Arm nach vorn und linkes Bein nach hinten lang strecken.",
-            "2 s halten, Becken bleibt gerade.",
-            "Zurück und Seite wechseln."
+            "Streck den rechten Arm nach vorn und das linke Bein nach hinten.",
+            "Halt 2 s. Das Becken bleibt gerade.",
+            "Komm zurück auf alle viere.",
+            "Wechsel: linker Arm und rechtes Bein."
           ],
-          "watch": "Rücken bleibt flach wie ein Tisch.",
-          "mistake": "Hohlkreuz oder Becken dreht auf.",
+          "watch": "Stell dir ein Glas Wasser auf deinem Rücken vor. Es darf nicht umkippen.",
+          "mistake": "Du machst ein Hohlkreuz oder das Becken dreht auf.",
           "tool": "Matte",
           "focus": [
             "huefte",
@@ -1408,19 +1514,21 @@
               "perSide": true,
               "fp": 5
             }
-          ]
+          ],
+          "cue": "Glas Wasser auf dem Rücken."
         },
         {
           "id": "B7",
-          "name": "Großzehe gegen das Band",
-          "why": "Stärkt den Muskel, der die Großzehe runterdrückt – wichtig für den Abstoß.",
-          "start": "Sitzen, kleines Band um die Großzehe, Ende in der Hand.",
+          "name": "Große Zehe gegen das Band",
+          "why": "Stärkt den Muskel, der die große Zehe runterdrückt. Den brauchst du beim Abstoßen.",
+          "start": "Setz dich auf einen Stuhl, Fuß flach am Boden. Leg das kleine Band um die große Zehe. Halt das andere Ende in der Hand.",
           "steps": [
-            "Mit der Hand das Band zu dir ziehen (zieht die Zehe hoch).",
-            "Großzehe dagegen nach unten drücken, 3 s halten.",
-            "Langsam lösen."
+            "Zieh das Band zu dir. Die große Zehe geht nach oben.",
+            "Drück die große Zehe gegen das Band nach unten. Halt 3 s.",
+            "Lass langsam locker.",
+            "Mach alle Wiederholungen, dann der andere Fuß."
           ],
-          "watch": "Nur die Großzehe bewegt sich.",
+          "watch": "Nur die große Zehe drückt. Ferse und Ballen bleiben ruhig am Boden.",
           "mistake": "Der ganze Fuß drückt mit.",
           "tool": "Kleines Band",
           "focus": [
@@ -1449,21 +1557,23 @@
               "weight": "ohne Gewicht",
               "perSide": true
             }
-          ]
+          ],
+          "cue": "Nur die große Zehe arbeitet."
         },
         {
           "id": "B8",
-          "name": "Standing Neutral (FP)",
-          "why": "Du übst, gerade und entspannt zu stehen.",
+          "name": "Ruhig stehen (FP)",
+          "why": "Du übst, gerade und locker zu stehen.",
           "fromWeek": 4,
-          "start": "Barfuß stehen, Füße hüftbreit.",
+          "start": "Stell dich barfuß hin, Füße hüftbreit.",
           "steps": [
-            "Gewicht gleich auf beide Füße verteilen.",
-            "Becken neutral, Rippen locker nach unten.",
-            "Ruhig durch die Nase atmen."
+            "Verteil dein Gewicht gleich auf beide Füße.",
+            "Lass die Knie locker, nicht durchdrücken.",
+            "Lass die Rippen locker sinken. Der Bauch bleibt weich.",
+            "Atme ruhig durch die Nase, bis der Timer piept."
           ],
-          "watch": "Gewicht mittig zwischen Ferse und Ballen, Knie locker, nicht durchgedrückt. Kopf lang nach oben, Schultern hängen locker.",
-          "mistake": "Ins Hohlkreuz drücken.",
+          "watch": "Das Gewicht liegt in der Mitte zwischen Ferse und Ballen. Der Kopf ist lang, wie an einem Faden nach oben gezogen. Die Schultern hängen locker.",
+          "mistake": "Du schiebst den Po nach hinten und machst ein Hohlkreuz.",
           "tool": "Nichts",
           "focus": [],
           "dose": [
@@ -1475,7 +1585,8 @@
               "weight": "ohne Gewicht"
             }
           ],
-          "untilWeek": 4
+          "untilWeek": 4,
+          "cue": "Groß, locker, ruhig atmen."
         }
       ]
     }
@@ -1483,79 +1594,341 @@
   "extraExercises": {
     "knie": [
       {
+        "id": "X-knie-3",
+        "name": "Wandsitz halten",
+        "why": "Halten ohne Bewegung beruhigt das Knie. Dein Oberschenkel wird stark.",
+        "start": "Lehn den Rücken an die Wand. Stell die Füße hüftbreit, etwa 50 cm vor die Wand.",
+        "steps": [
+          "Rutsch runter, bis die Knie halb gebeugt sind.",
+          "Halte und atme ruhig.",
+          "Schieb dich langsam wieder hoch."
+        ],
+        "watch": "Knie bleiben über dem zweiten Zeh. Bis 3 von 10 Ziehen ist okay.",
+        "mistake": "Zu tief runtergehen. Halb gebeugt reicht.",
+        "tool": "Wand",
+        "dose": {
+          "sets": 3,
+          "text": "3× 30 s halten (beide Beine)",
+          "hold": 30,
+          "weight": "ohne Gewicht"
+        },
+        "levels": [
+          {
+            "sets": 4,
+            "text": "4× 45 s halten",
+            "hold": 45,
+            "weight": "ohne Gewicht"
+          },
+          {
+            "sets": 3,
+            "text": "3× 30 s je Seite, Gewicht mehr auf ein Bein (andere Ferse leicht anheben)",
+            "hold": 30,
+            "weight": "ohne Gewicht",
+            "perSide": true
+          }
+        ],
+        "cue": "Halb tief, ruhig atmen."
+      },
+      {
         "id": "X-knie-1",
         "name": "Step-Down langsam",
-        "why": "Knie lernt, beim Absenken ruhig zu bleiben.",
-        "start": "Auf einem dicken Buch (10 cm) stehen.",
+        "why": "Dein Knie lernt, beim Absenken ruhig zu bleiben. Das hilft beim Bergablaufen.",
+        "start": "Stell einen Fuß auf ein Buch oder eine Stufe. Das andere Bein hängt vorn frei. Halt dich leicht an der Wand.",
         "steps": [
-          "Standbein langsam in 3 s beugen.",
-          "Freies Bein vorn, Ferse tippt kurz.",
-          "Hoch."
+          "Beug das Standbein langsam in 3 s.",
+          "Tipp mit der freien Ferse kurz auf den Boden.",
+          "Drück dich mit dem Standbein wieder hoch."
         ],
-        "watch": "Knie über dem zweiten Zeh.",
-        "mistake": "Knie fällt nach innen.",
-        "tool": "Dickes Buch",
+        "watch": "Knie bleibt über dem zweiten Zeh. Becken bleibt gerade.",
+        "mistake": "Das Knie fällt nach innen.",
+        "tool": "Buch (5 cm), später Stufe",
         "dose": {
           "sets": 2,
-          "text": "2×8 je Bein",
+          "text": "2×8 je Bein, 5 cm hoch",
           "weight": "ohne Gewicht",
-          "perSide": false
-        }
+          "perSide": true
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×8 je Bein, 10 cm hoch",
+            "weight": "ohne Gewicht",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3×10 je Bein, 15 cm hoch (Treppenstufe)",
+            "weight": "ohne Gewicht",
+            "perSide": true
+          }
+        ],
+        "cue": "Langsam runter, Knie über Zeh."
       },
       {
         "id": "X-knie-2",
-        "name": "Seitlich liegend Bein heben",
-        "why": "Hüfte außen stark – das Knie fällt weniger nach innen.",
-        "start": "Seitlage, unteres Bein gebeugt, oberes gestreckt.",
+        "name": "Bein heben in Seitlage",
+        "why": "Deine Hüfte außen wird stark. Dann fällt das Knie weniger nach innen.",
+        "start": "Leg dich auf die Seite. Beug das untere Bein. Streck das obere Bein.",
         "steps": [
-          "Oberes Bein leicht nach hinten und hoch heben.",
-          "1 s halten.",
-          "Langsam ab."
+          "Heb das obere Bein leicht nach hinten und hoch.",
+          "Halte 1 s.",
+          "Leg es in 3 s langsam ab."
         ],
-        "watch": "Fußspitze zeigt nach vorn, nicht nach oben.",
-        "mistake": "Becken kippt nach hinten.",
-        "tool": "Matte",
+        "watch": "Die Fußspitze zeigt nach vorn.",
+        "mistake": "Das Becken kippt nach hinten.",
+        "tool": "Matte, kleines Band",
         "dose": {
           "sets": 2,
-          "text": "2×15 je Seite",
+          "text": "2×12 je Seite",
           "weight": "ohne Gewicht",
           "perSide": true
-        }
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×15 je Seite",
+            "weight": "ohne Gewicht",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3×12 je Seite, kleines Band um die Knöchel",
+            "weight": "Band",
+            "perSide": true
+          }
+        ],
+        "cue": "Fußspitze nach vorn."
       }
     ],
     "schienbein": [
       {
+        "id": "X-schien-2",
+        "name": "Fußheber mit Band",
+        "why": "Der Muskel vorn am Schienbein bremst jeden Schritt. Ist er stark, wird er nicht so schnell müde.",
+        "start": "Setz dich hin, Beine lang. Mach das Band am Tischbein vor dir fest. Leg die Schlaufe über den Fußrücken.",
+        "steps": [
+          "Zieh die Fußspitze zu dir.",
+          "Halte 1 s.",
+          "Gib in 3 s langsam nach."
+        ],
+        "watch": "Nur der Fuß bewegt sich.",
+        "mistake": "Das Band schnell zurückschnappen lassen.",
+        "tool": "Band, Tischbein",
+        "dose": {
+          "sets": 2,
+          "text": "2×15 je Seite",
+          "weight": "leichtes Band",
+          "perSide": true
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×15 je Seite",
+            "weight": "Band",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3×15 je Seite, Band kürzer",
+            "weight": "festes Band",
+            "perSide": true
+          }
+        ],
+        "cue": "Ran ziehen, langsam lösen."
+      },
+      {
+        "id": "X-schien-3",
+        "name": "Handtuch raffen",
+        "why": "Die Muskeln, die die Zehen beugen, sitzen innen am Schienbein. Sind sie stark, entlasten sie die Kante.",
+        "start": "Setz dich hin. Stell einen Fuß barfuß auf ein Handtuch.",
+        "steps": [
+          "Zieh das Handtuch mit den Zehen zu dir.",
+          "Lass die Ferse am Boden.",
+          "Zieh das Handtuch glatt und fang neu an."
+        ],
+        "watch": "Langsam und mit allen Zehen.",
+        "mistake": "Nur die Ferse dreht sich.",
+        "tool": "Handtuch",
+        "dose": {
+          "sets": 2,
+          "text": "2× 30 s je Fuß",
+          "hold": 30,
+          "weight": "ohne Gewicht",
+          "perSide": true
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3× 30 s je Fuß, Buch auf dem Handtuch-Ende",
+            "hold": 30,
+            "weight": "Buch",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3× 45 s je Fuß, im Stehen",
+            "hold": 45,
+            "weight": "ohne Gewicht",
+            "perSide": true
+          }
+        ],
+        "cue": "Alle Zehen greifen."
+      },
+      {
         "id": "X-schien-1",
         "name": "Fersengang",
-        "why": "Muskel vorn am Schienbein wird ausdauernd.",
-        "start": "Barfuß stehen.",
+        "why": "Der Muskel vorn am Schienbein wird ausdauernd.",
+        "start": "Stell dich barfuß hin.",
         "steps": [
-          "Fußspitzen hochziehen.",
-          "Nur auf den Fersen 20 Schritte gehen.",
-          "Kurz Pause."
+          "Zieh die Fußspitzen hoch.",
+          "Geh kleine Schritte nur auf den Fersen.",
+          "Mach kurz Pause."
         ],
-        "watch": "Kleine Schritte.",
-        "mistake": "Hüfte knickt nach hinten.",
+        "watch": "Kleine Schritte, aufrecht bleiben.",
+        "mistake": "Die Hüfte knickt nach hinten.",
         "tool": "Nichts",
         "dose": {
           "sets": 2,
           "text": "2×20 Schritte",
           "weight": "ohne Gewicht"
-        }
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×20 Schritte",
+            "weight": "ohne Gewicht"
+          },
+          {
+            "sets": 3,
+            "text": "3×30 Schritte",
+            "weight": "ohne Gewicht"
+          }
+        ],
+        "cue": "Zehen hoch, aufrecht."
       }
     ],
     "innenknoechel": [
       {
-        "id": "X-innen-1",
-        "name": "Einbeinstand auf Kissen",
-        "why": "Fuß und Knöchel lernen, sich zu stabilisieren.",
-        "start": "Auf einem Kissen auf einem Bein stehen.",
+        "id": "X-innen-2",
+        "name": "Kurzer Fuß",
+        "why": "Dein Fußgewölbe wird höher. Das entlastet die Sehne hinter dem Innenknöchel.",
+        "start": "Stell den Fuß barfuß flach auf den Boden.",
         "steps": [
-          "Kurzer Fuß machen.",
-          "Halten.",
-          "Seite wechseln."
+          "Zieh den Ballen der großen Zehe Richtung Ferse. Krall die Zehen nicht.",
+          "Das Gewölbe wird höher. Halte 5 s.",
+          "Lass locker."
         ],
-        "watch": "Fuß knickt nicht nach innen.",
+        "watch": "Die Zehen bleiben lang.",
+        "mistake": "Die Zehen krallen.",
+        "tool": "Nichts",
+        "dose": {
+          "sets": 2,
+          "text": "2×8 je Fuß im Sitzen, 5 s halten",
+          "hold": 5,
+          "weight": "ohne Gewicht",
+          "perSide": true
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×8 je Fuß im Stehen",
+            "hold": 5,
+            "weight": "ohne Gewicht",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3×8 je Fuß im Einbeinstand",
+            "hold": 5,
+            "weight": "ohne Gewicht",
+            "perSide": true
+          }
+        ],
+        "cue": "Gewölbe hoch, Zehen lang."
+      },
+      {
+        "id": "X-innen-1",
+        "name": "Einbeinstand mit kurzem Fuß",
+        "why": "Fuß und Knöchel lernen, sich selbst zu halten.",
+        "start": "Stell dich auf ein Bein. Mach einen kurzen Fuß.",
+        "steps": [
+          "Halte die Position.",
+          "Atme ruhig.",
+          "Wechsel die Seite."
+        ],
+        "watch": "Der Fuß knickt nicht nach innen.",
+        "mistake": "Am Tisch festhalten.",
+        "tool": "Kissen",
+        "dose": {
+          "sets": 2,
+          "text": "2× 30 s je Seite auf dem Boden",
+          "hold": 30,
+          "weight": "ohne Gewicht",
+          "perSide": true
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3× 30 s je Seite auf dem Kissen",
+            "hold": 30,
+            "weight": "ohne Gewicht",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3× 30 s je Seite auf dem Kissen, Augen zu",
+            "hold": 30,
+            "weight": "ohne Gewicht",
+            "perSide": true
+          }
+        ],
+        "cue": "Gewölbe hoch, ruhig stehen."
+      },
+      {
+        "id": "X-innen-3",
+        "name": "Zehengang mit Fersen zusammen",
+        "why": "Der Muskel hinter dem Innenknöchel arbeitet, wenn die Fersen zur Mitte drücken.",
+        "start": "Stell dich barfuß auf die Zehen. Die Fersen berühren sich fast.",
+        "steps": [
+          "Geh auf den Zehen.",
+          "Halte die Fersen hoch und zur Mitte.",
+          "Mach kurz Pause."
+        ],
+        "watch": "Das Gewicht liegt auf dem Ballen der großen Zehe.",
+        "mistake": "Die Füße rollen nach außen.",
+        "tool": "Nichts",
+        "dose": {
+          "sets": 2,
+          "text": "2×15 Schritte",
+          "weight": "ohne Gewicht"
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×20 Schritte",
+            "weight": "ohne Gewicht"
+          },
+          {
+            "sets": 3,
+            "text": "3×20 Schritte, dazu oben 3 s halten bei jedem 5. Schritt",
+            "weight": "ohne Gewicht"
+          }
+        ],
+        "cue": "Fersen hoch und zusammen."
+      }
+    ],
+    "aussenknoechel": [
+      {
+        "id": "X-aussen-2",
+        "name": "Einbeinstand mit Kopfdrehen",
+        "why": "Gleichgewicht üben schützt davor, wieder umzuknicken.",
+        "start": "Stell dich barfuß auf ein Bein. Leg die Hände an die Hüfte.",
+        "steps": [
+          "Mach einen kurzen Fuß.",
+          "Dreh den Kopf langsam nach links und rechts.",
+          "Halte, bis der Timer piept. Wechsel dann die Seite."
+        ],
+        "watch": "Der Fuß kippt nicht auf die Außenkante.",
         "mistake": "Am Tisch festhalten.",
         "tool": "Kissen",
         "dose": {
@@ -1564,136 +1937,597 @@
           "hold": 30,
           "weight": "ohne Gewicht",
           "perSide": true
-        }
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3× 30 s je Seite auf dem Kissen",
+            "hold": 30,
+            "weight": "ohne Gewicht",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3× 30 s je Seite auf dem Kissen, Ball hochwerfen und fangen",
+            "hold": 30,
+            "weight": "Ball",
+            "perSide": true
+          }
+        ],
+        "cue": "Fuß flach, Kopf langsam."
+      },
+      {
+        "id": "X-aussen-1",
+        "name": "Fuß nach außen gegen das Band",
+        "why": "Die Muskeln außen am Unterschenkel schützen vor dem Umknicken.",
+        "start": "Setz dich hin. Mach das Band am Tischbein innen neben dem Fuß fest. Leg die Schlaufe um den vorderen Fuß.",
+        "steps": [
+          "Zeig mit der Fußspitze leicht nach unten.",
+          "Dreh den Fuß nach außen.",
+          "Geh in 3 s langsam zurück."
+        ],
+        "watch": "Das Knie bleibt ruhig.",
+        "mistake": "Das ganze Bein dreht mit.",
+        "tool": "Band, Tischbein",
+        "dose": {
+          "sets": 2,
+          "text": "2×15 je Seite",
+          "weight": "leichtes Band",
+          "perSide": true
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×15 je Seite",
+            "weight": "Band",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3×15 je Seite, Band kürzer",
+            "weight": "festes Band",
+            "perSide": true
+          }
+        ],
+        "cue": "Nur der Fuß dreht."
+      },
+      {
+        "id": "X-aussen-3",
+        "name": "Stern-Tippen",
+        "why": "Dein Knöchel lernt, in alle Richtungen stabil zu bleiben.",
+        "start": "Stell dich auf ein Bein. Beug das Standknie leicht.",
+        "steps": [
+          "Tipp mit dem freien Fuß nach vorn.",
+          "Tipp dann zur Seite und dann schräg nach hinten.",
+          "Komm jedes Mal zur Mitte zurück."
+        ],
+        "watch": "Das Standknie bleibt über dem zweiten Zeh. Die Ferse bleibt am Boden.",
+        "mistake": "Mit dem Tippfuß abstützen.",
+        "tool": "Nichts",
+        "dose": {
+          "sets": 2,
+          "text": "2×3 Runden je Bein",
+          "weight": "ohne Gewicht",
+          "perSide": true
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×4 Runden je Bein, weiter tippen",
+            "weight": "ohne Gewicht",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3×4 Runden je Bein auf dem Kissen",
+            "weight": "ohne Gewicht",
+            "perSide": true
+          }
+        ],
+        "cue": "Nur antippen, nicht abstützen."
       }
     ],
     "grosszehe": [
       {
         "id": "X-zeh-1",
-        "name": "Großzehe 5 s drücken",
-        "why": "Großzehe wird stark für den Abstoß.",
-        "start": "Barfuß stehen.",
+        "name": "Große Zehe in den Boden drücken",
+        "why": "Eine starke große Zehe macht deinen Abstoß kräftig.",
+        "start": "Stell dich barfuß hin.",
         "steps": [
-          "Großzehe fest in den Boden drücken.",
-          "5 s halten.",
-          "Lösen."
+          "Drück die große Zehe fest in den Boden.",
+          "Halte 5 s.",
+          "Lass locker."
         ],
-        "watch": "Andere Zehen bleiben locker.",
-        "mistake": "Zehen krallen.",
+        "watch": "Die anderen Zehen bleiben locker.",
+        "mistake": "Die Zehen krallen.",
         "tool": "Nichts",
         "dose": {
           "sets": 2,
           "text": "2×8 je Fuß",
+          "hold": 5,
           "weight": "ohne Gewicht",
           "perSide": true
-        }
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×8 je Fuß",
+            "hold": 5,
+            "weight": "ohne Gewicht",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3×8 je Fuß im Einbeinstand",
+            "hold": 5,
+            "weight": "ohne Gewicht",
+            "perSide": true
+          }
+        ],
+        "cue": "Nur die große Zehe drückt."
+      },
+      {
+        "id": "X-zeh-2",
+        "name": "Zehen-Yoga",
+        "why": "Die große Zehe und die kleinen Zehen lernen, getrennt zu arbeiten.",
+        "start": "Setz dich hin. Stell die Füße flach hin.",
+        "steps": [
+          "Heb nur die große Zehe. Die anderen bleiben unten.",
+          "Heb dann nur die kleinen Zehen.",
+          "Wechsel immer ab."
+        ],
+        "watch": "Langsam. Der Fuß bleibt flach.",
+        "mistake": "Der ganze Fuß rollt mit.",
+        "tool": "Nichts",
+        "dose": {
+          "sets": 2,
+          "text": "2×10 je Fuß",
+          "weight": "ohne Gewicht",
+          "perSide": true
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×10 je Fuß im Stehen",
+            "weight": "ohne Gewicht",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3×12 je Fuß im Einbeinstand",
+            "weight": "ohne Gewicht",
+            "perSide": true
+          }
+        ],
+        "cue": "Groß hoch, dann klein hoch."
+      },
+      {
+        "id": "X-zeh-3",
+        "name": "Zehen aufstellen im Kniestand",
+        "why": "Die große Zehe muss sich für jeden Abstoß nach oben biegen können.",
+        "start": "Knie dich auf die Matte. Stell die Zehen auf.",
+        "steps": [
+          "Geh mit dem Po langsam Richtung Fersen.",
+          "Geh nur so weit, wie es angenehm zieht.",
+          "Halte. Komm dann wieder hoch."
+        ],
+        "watch": "Ziehen bis 3 von 10 ist okay. Stechen nicht.",
+        "mistake": "Ruckartig runtergehen.",
+        "tool": "Matte",
+        "dose": {
+          "sets": 2,
+          "text": "2× 20 s (beide Füße)",
+          "hold": 20,
+          "weight": "ohne Gewicht"
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3× 30 s",
+            "hold": 30,
+            "weight": "ohne Gewicht"
+          },
+          {
+            "sets": 3,
+            "text": "3× 30 s, dazu je Seite 5× Gewicht kurz auf einen Fuß verlagern",
+            "hold": 30,
+            "weight": "ohne Gewicht"
+          }
+        ],
+        "cue": "Langsam, nur angenehm ziehen."
       }
     ],
     "wade": [
       {
         "id": "X-wade-1",
         "name": "Wadenheben langsam",
-        "why": "Wade wird belastbarer.",
-        "start": "Auf der Stufe, Hand am Geländer.",
+        "why": "Deine Wade trägt beim Laufen ein Vielfaches deines Gewichts. Ist sie stark, hält sie mehr aus.",
+        "start": "Stell die Fußballen auf die Stufe. Halt dich am Geländer.",
         "steps": [
-          "Hoch in 1 s.",
-          "Oben halten.",
-          "In 4 s runter."
+          "Geh in 1 s hoch.",
+          "Halte oben 1 s.",
+          "Geh in 3 s runter."
         ],
-        "watch": "Gewicht auf der Großzehe.",
+        "watch": "Das Gewicht liegt über der großen Zehe.",
         "mistake": "Wippen.",
         "tool": "Stufe",
         "dose": {
-          "sets": 2,
-          "text": "2×12 beidbeinig",
+          "sets": 3,
+          "text": "3×15 beidbeinig",
           "weight": "ohne Gewicht"
-        }
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×12 je Bein",
+            "weight": "ohne Gewicht",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3×12 je Bein, Rucksack mit 3–5 kg",
+            "weight": "Rucksack 3–5 kg",
+            "perSide": true
+          }
+        ],
+        "cue": "1 hoch, 3 runter."
+      },
+      {
+        "id": "X-wade-2",
+        "name": "Wade halten mit gebeugtem Knie",
+        "why": "Das trainiert den tiefen Wadenmuskel. Er entlastet Schienbein und Achillessehne.",
+        "start": "Lehn den Rücken an die Wand. Beug die Knie leicht. Heb die Fersen.",
+        "steps": [
+          "Halte dich auf den Fußballen.",
+          "Lass die Knie gebeugt.",
+          "Setz die Fersen langsam ab."
+        ],
+        "watch": "Ziehen bis 3 von 10 ist okay.",
+        "mistake": "Die Knie werden gerade.",
+        "tool": "Wand",
+        "dose": {
+          "sets": 3,
+          "text": "3× 30 s beidbeinig",
+          "hold": 30,
+          "weight": "ohne Gewicht"
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3× 30 s je Bein",
+            "hold": 30,
+            "weight": "ohne Gewicht",
+            "perSide": true
+          },
+          {
+            "sets": 4,
+            "text": "4× 45 s je Bein",
+            "hold": 45,
+            "weight": "ohne Gewicht",
+            "perSide": true
+          }
+        ],
+        "cue": "Knie gebeugt, Fersen hoch."
+      },
+      {
+        "id": "X-wade-3",
+        "name": "Fersen-Senken auf einem Bein",
+        "why": "Langsames Nachgeben macht Wade und Achillessehne robust.",
+        "start": "Stell die Fußballen auf die Stufe. Halt dich am Geländer.",
+        "steps": [
+          "Geh mit beiden Beinen hoch.",
+          "Heb ein Bein an.",
+          "Geh auf dem anderen Bein in 4 s runter."
+        ],
+        "watch": "Die Ferse geht nur knapp unter die Stufe.",
+        "mistake": "Runterplumpsen.",
+        "tool": "Stufe",
+        "dose": {
+          "sets": 2,
+          "text": "2×10 je Bein",
+          "weight": "ohne Gewicht",
+          "perSide": true
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×12 je Bein",
+            "weight": "ohne Gewicht",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3×12 je Bein, davon die Hälfte mit gebeugtem Knie",
+            "weight": "ohne Gewicht",
+            "perSide": true
+          }
+        ],
+        "cue": "Zwei hoch, eins in 4 s runter."
+      }
+    ],
+    "ferse": [
+      {
+        "id": "X-ferse-1",
+        "name": "Wade halten mit gebeugtem Knie",
+        "why": "Das entlastet Ferse und Achillessehne, ohne zu stoßen.",
+        "start": "Lehn den Rücken an die Wand. Beug die Knie leicht. Heb die Fersen.",
+        "steps": [
+          "Halte dich auf den Fußballen.",
+          "Lass die Knie gebeugt.",
+          "Setz die Fersen langsam ab."
+        ],
+        "watch": "An der Ferse ist bis 2 von 10 okay. Keine Sprünge, solange die Ferse zwickt.",
+        "mistake": "Die Knie werden gerade.",
+        "tool": "Wand",
+        "dose": {
+          "sets": 3,
+          "text": "3× 30 s beidbeinig",
+          "hold": 30,
+          "weight": "ohne Gewicht"
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3× 30 s je Bein",
+            "hold": 30,
+            "weight": "ohne Gewicht",
+            "perSide": true
+          },
+          {
+            "sets": 4,
+            "text": "4× 45 s je Bein",
+            "hold": 45,
+            "weight": "ohne Gewicht",
+            "perSide": true
+          }
+        ],
+        "cue": "Knie gebeugt, Fersen hoch."
+      },
+      {
+        "id": "X-ferse-2",
+        "name": "Fersen-Senken langsam",
+        "why": "Langsames Nachgeben macht Wade und Achillessehne robust.",
+        "start": "Stell die Fußballen auf die Stufe. Halt dich am Geländer.",
+        "steps": [
+          "Geh mit beiden Beinen hoch.",
+          "Heb ein Bein an.",
+          "Geh auf dem anderen Bein in 4 s runter."
+        ],
+        "watch": "Die Ferse geht nur knapp unter die Stufe.",
+        "mistake": "Runterplumpsen.",
+        "tool": "Stufe",
+        "dose": {
+          "sets": 2,
+          "text": "2×8 je Bein",
+          "weight": "ohne Gewicht",
+          "perSide": true
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×10 je Bein",
+            "weight": "ohne Gewicht",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3×12 je Bein",
+            "weight": "ohne Gewicht",
+            "perSide": true
+          }
+        ],
+        "cue": "Zwei hoch, eins in 4 s runter."
       }
     ],
     "huefte": [
       {
         "id": "X-huefte-1",
-        "name": "Clamshell mit Band",
-        "why": "Hüfte außen stark.",
-        "start": "Seitlage, Knie gebeugt, kleines Band über den Knien.",
+        "name": "Muschel (Clamshell)",
+        "why": "Deine Hüfte außen wird stark.",
+        "start": "Leg dich auf die Seite. Beug die Knie. Ab Stufe 2 kommt ein kleines Band über die Knie.",
         "steps": [
-          "Oberes Knie öffnen, Füße bleiben zusammen.",
-          "Kurz halten.",
-          "Langsam schließen."
+          "Öffne das obere Knie. Die Füße bleiben zusammen.",
+          "Halte 1 s.",
+          "Schließ das Knie in 2 s."
         ],
-        "watch": "Becken bleibt still.",
-        "mistake": "Becken kippt nach hinten.",
+        "watch": "Das Becken bleibt still.",
+        "mistake": "Das Becken kippt nach hinten.",
         "tool": "Kleines Band",
         "dose": {
           "sets": 2,
           "text": "2×15 je Seite",
+          "weight": "ohne Band",
+          "perSide": true
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×15 je Seite mit Band",
+            "weight": "Band",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3×12 je Seite im Seitstütz auf dem Knie",
+            "weight": "Band",
+            "perSide": true
+          }
+        ],
+        "cue": "Füße zusammen, Becken still."
+      },
+      {
+        "id": "X-huefte-2",
+        "name": "Kurzer Copenhagen",
+        "why": "Die Innenseite vom Oberschenkel wird stark. Das schützt die Leiste.",
+        "start": "Stütz dich seitlich auf den Unterarm. Leg das obere Knie auf einen Stuhl. Das untere Bein liegt gebeugt am Boden.",
+        "steps": [
+          "Drück die Hüfte hoch.",
+          "Halte.",
+          "Leg dich langsam ab."
+        ],
+        "watch": "Dein Körper bildet eine gerade Linie.",
+        "mistake": "Die Hüfte hängt durch.",
+        "tool": "Stuhl, Matte",
+        "dose": {
+          "sets": 2,
+          "text": "2× 15 s je Seite",
+          "hold": 15,
           "weight": "ohne Gewicht",
           "perSide": true
-        }
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3× 20 s je Seite",
+            "hold": 20,
+            "weight": "ohne Gewicht",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3× 20 s je Seite, unteres Bein leicht vom Boden heben",
+            "hold": 20,
+            "weight": "ohne Gewicht",
+            "perSide": true
+          }
+        ],
+        "cue": "Hüfte hoch, gerade Linie."
+      },
+      {
+        "id": "X-huefte-3",
+        "name": "Brücke mit Marschieren",
+        "why": "Po und Bauch halten das Becken ruhig, wenn du auf einem Bein stehst.",
+        "start": "Leg dich auf den Rücken. Stell die Füße auf. Heb das Becken.",
+        "steps": [
+          "Heb ein Knie an. Das Becken bleibt gerade.",
+          "Setz den Fuß ab. Heb das andere Knie.",
+          "Atme ruhig weiter."
+        ],
+        "watch": "Das Becken kippt nicht zur Seite.",
+        "mistake": "Hohlkreuz machen.",
+        "tool": "Matte",
+        "dose": {
+          "sets": 2,
+          "text": "2×6 je Seite",
+          "weight": "ohne Gewicht",
+          "perSide": true
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×8 je Seite, oben 2 s halten",
+            "weight": "ohne Gewicht",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3×10 je Seite einbeinige Brücke",
+            "weight": "ohne Gewicht",
+            "perSide": true
+          }
+        ],
+        "cue": "Becken oben und gerade."
       }
     ],
     "schulter": [
       {
         "id": "X-schulter-1",
         "name": "Band auseinanderziehen",
-        "why": "Schultern hinten stark, Haltung gerade.",
-        "start": "Stehen, großes Band vor der Brust, Arme gestreckt.",
+        "why": "Deine Schultern hinten werden stark. Du stehst gerader.",
+        "start": "Stell dich hin. Halt das große Band vor der Brust. Die Arme sind gestreckt.",
         "steps": [
-          "Band auseinanderziehen bis zur Brust.",
-          "Schulterblätter zusammen.",
-          "Langsam zurück."
+          "Zieh das Band bis zur Brust auseinander.",
+          "Drück die Schulterblätter zusammen.",
+          "Geh langsam zurück."
         ],
-        "watch": "Schultern unten.",
-        "mistake": "Hohlkreuz.",
+        "watch": "Die Schultern bleiben unten.",
+        "mistake": "Hohlkreuz machen.",
         "tool": "Großes Band",
         "dose": {
           "sets": 2,
-          "text": "2×15",
-          "weight": "ohne Gewicht"
-        }
-      }
-    ],
-    "aussenknoechel": [
-      {
-        "id": "X-aussen-1",
-        "name": "Fuß nach außen gegen das Band",
-        "why": "Stärkt die Muskeln außen am Unterschenkel – sie schützen vor dem Umknicken.",
-        "start": "Auf dem Boden sitzen, Band an einem Tischbein, das innen neben dem Fuß steht. Schlaufe um den Vorfuß.",
-        "steps": [
-          "Fußspitze leicht nach unten strecken.",
-          "Fuß gegen das Band nach außen drehen.",
-          "In 3 s langsam zurück."
+          "text": "2×12",
+          "weight": "leichtes Band"
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×15",
+            "weight": "Band"
+          },
+          {
+            "sets": 3,
+            "text": "3×15, Band kürzer greifen",
+            "weight": "festes Band"
+          }
         ],
-        "watch": "Nur der Fuß bewegt sich, das Knie bleibt ruhig.",
-        "mistake": "Das ganze Bein dreht mit.",
-        "tool": "Band, Tischbein",
-        "dose": {
-          "sets": 2,
-          "text": "2×15 je Seite",
-          "weight": "ohne Gewicht",
-          "perSide": true
-        }
+        "cue": "Schultern runter, Blätter zusammen."
       },
       {
-        "id": "X-aussen-2",
-        "name": "Einbeinstand mit Kopfdrehen",
-        "why": "Der Knöchel lernt, kleine Wackler sofort abzufangen.",
-        "start": "Barfuß auf einem Bein stehen, Hände an der Hüfte.",
+        "id": "X-schulter-2",
+        "name": "Arm nach außen drehen mit Band",
+        "why": "Die kleinen Muskeln halten die Schulter im Gelenk.",
+        "start": "Stell dich hin. Leg die Ellbogen an den Körper und beug sie rechtwinklig. Halt das Band in beiden Händen.",
         "steps": [
-          "Kurzer Fuß machen.",
-          "Kopf langsam nach links und rechts drehen.",
-          "Halten, bis der Timer piept, dann Seite wechseln."
+          "Dreh den Unterarm nach außen.",
+          "Halte 1 s.",
+          "Geh langsam zurück."
         ],
-        "watch": "Der Fuß kippt nicht auf die Außenkante.",
-        "mistake": "Am Tisch festhalten.",
-        "tool": "Nichts",
+        "watch": "Der Ellbogen bleibt am Körper.",
+        "mistake": "Der Oberkörper dreht mit.",
+        "tool": "Band",
         "dose": {
           "sets": 2,
-          "text": "2× 30 s je Seite",
-          "hold": 30,
-          "weight": "ohne Gewicht",
+          "text": "2×12 je Seite",
+          "weight": "leichtes Band",
           "perSide": true
-        }
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×12 je Seite",
+            "weight": "Band",
+            "perSide": true
+          },
+          {
+            "sets": 3,
+            "text": "3×15 je Seite, Band kürzer",
+            "weight": "festes Band",
+            "perSide": true
+          }
+        ],
+        "cue": "Ellbogen am Körper."
+      },
+      {
+        "id": "X-schulter-3",
+        "name": "Y-T in Bauchlage",
+        "why": "Die Muskeln zwischen den Schulterblättern werden stark.",
+        "start": "Leg dich auf den Bauch. Leg die Stirn auf ein Handtuch. Die Daumen zeigen nach oben.",
+        "steps": [
+          "Heb die Arme als Y leicht vom Boden. Halte 2 s.",
+          "Leg sie ab. Heb sie dann als T.",
+          "Leg die Arme langsam ab."
+        ],
+        "watch": "Der Nacken bleibt lang. Du schaust zum Boden.",
+        "mistake": "Den Kopf hochreißen.",
+        "tool": "Matte",
+        "dose": {
+          "sets": 2,
+          "text": "2×6 (Y+T)",
+          "weight": "ohne Gewicht"
+        },
+        "levels": [
+          {
+            "sets": 3,
+            "text": "3×8 (Y+T)",
+            "weight": "ohne Gewicht"
+          },
+          {
+            "sets": 3,
+            "text": "3×8 (Y+T), Wasserflasche 0,5 l in jeder Hand",
+            "weight": "2 × 0,5 kg"
+          }
+        ],
+        "cue": "Blick nach unten, Daumen hoch."
       }
     ]
   },
@@ -1701,9 +2535,9 @@
     "courseUrl": "https://learning.functionalpatterns.app/courses/142637",
     "lessonUrl": "https://learning.functionalpatterns.app/courses/142637/lessons/",
     "classUrl": "https://learning.functionalpatterns.app/courses/142637/classes/",
-    "explain": "Functional Patterns hat 3 Teile. Erst lockerst du mit Ball und Rolle verspannte Stellen. Dann lernst du, wie du gerade stehst. Danach kommen Übungen für Rumpf, Hüfte und Schultern. Rollen macht dich nicht stärker, aber lockerer und beweglicher. Darum ist es bei dir das Aufwärmen vor der Kraft. Die Übungen aus Teil 3 werden Teil deiner Kraft-Einheiten.",
-    "rollRules": "1–2 min pro Seite, langsam rollen, auf einem festen Punkt 20–30 s liegen bleiben, ruhig durch die Nase atmen, höchstens „angenehm weh“ (4–5 von 10). Nie auf Schienbeinkante, Kniescheibe, die Stelle direkt hinter dem Innenknöchel oder Stellen, die richtig wehtun.",
-    "unlockNote": "Im Kurs wird die nächste Lektion erst frei, wenn die vorige erledigt ist. Darum jede Lektion einmal ansehen und im Kurs als erledigt markieren – auch die, die du nur ansiehst.",
+    "explain": "Functional Patterns hat 3 Teile. Teil 1: Du lockerst feste Stellen mit Ball und Rolle. Teil 2: Du lernst, gerade zu stehen. Teil 3: Du übst für Bauch, Rücken, Hüfte und Schultern. Rollen macht dich nicht stärker. Aber du wirst lockerer und beweglicher. Darum rollst du zum Aufwärmen vor der Kraft. Die Übungen aus Teil 3 kommen später in deine Kraft-Einheiten.",
+    "rollRules": "Roll jede Seite 1–2 min. Roll langsam. Bleib an einer festen Stelle 20–30 s liegen. Atme ruhig durch die Nase. Es darf nur „angenehm weh“ tun: höchstens 4–5 von 10. Roll nie auf der Schienbeinkante, der Kniescheibe oder direkt hinter dem Innenknöchel. Roll nie auf Stellen, die richtig wehtun.",
+    "unlockNote": "Die nächste Lektion wird erst frei, wenn die vorige erledigt ist. Schau darum jede Lektion einmal an. Markier sie dann im Kurs als erledigt. Das gilt auch für Lektionen, die du nur ansiehst.",
     "weeks": {
       "1": {
         "title": "Lockern (Teil 1)",
@@ -2210,27 +3044,27 @@
   },
   "rules": {
     "morningCheck": [
-      "Tief in die Hocke und wieder hoch.",
-      "Schienbein mit den Fingern abdrücken.",
-      "Vor Tempo und Lang: 10 Hüpfer je Bein."
+      "Geh tief in die Hocke und wieder hoch.",
+      "Drück mit den Fingern dein Schienbein ab.",
+      "Vor Tempo und Lang: Hüpf 10× auf jedem Bein."
     ],
     "ampel": {
-      "gruen": "0–2 und wird nicht schlimmer → Plan normal.",
-      "gelb": "3–4, oder Schmerz erst am Ende vom Lauf, oder Ruhepuls-7-Tage-Schnitt ≥ 59 → nächster Lauf ein Drittel kürzer, flach, Puls nur bis 158, keine Sprünge, Kraft leichtere Variante.",
-      "rot": "≥ 5, Hinken, ein Punkt am Knochen tut beim Drücken weh, oder einbeiniges Hüpfen tut weh → nicht laufen, bis 2 Tage grün. Oberkörper und Rumpf sind okay. Danach 2/3 vom Umfang. Punkt am Knochen: kein Laufen, keine Sprünge, bis 7 Tage schmerzfrei beim Drücken, dann mit der Hälfte neu starten.",
-      "kraft": "Beim Machen darf es bis 3 von 10 ziehen, danach nicht schlimmer werden."
+      "gruen": "Schmerz 0–2 und nicht schlimmer: Mach den Plan normal.",
+      "gelb": "Schmerz 3–4, Schmerz erst am Ende vom Lauf oder Ruhepuls im 7-Tage-Schnitt ab 59: Lauf ein Drittel kürzer und flach. Halte den Puls unter 158. Keine Sprünge. Mach die Kraft leichter.",
+      "rot": "Schmerz ab 5, du hinkst, Drücken auf einen Punkt am Knochen tut weh oder Hüpfen auf einem Bein tut weh: Lauf nicht, bis 2 Tage grün sind. Oberkörper und Bauch darfst du trainieren. Lauf danach erst 2/3 so viel. Punkt am Knochen: Kein Laufen und keine Sprünge, bis Drücken 7 Tage nicht wehtut. Fang dann mit der Hälfte neu an.",
+      "kraft": "Bei der Kraft darf es bis 3 von 10 ziehen. Danach darf es nicht schlimmer werden."
     },
-    "long": "Nie mehr als 10 % länger als der längste Lauf der letzten 30 Tage. Zwei Läufe über 10 km nie innerhalb von 3 Tagen. +1 km nur, wenn die Hocke am Montagmorgen danach grün ist.",
+    "long": "Lauf nie mehr als 10 % länger als dein längster Lauf der letzten 30 Tage. Lauf nie zweimal über 10 km innerhalb von 3 Tagen. Leg nur 1 km drauf, wenn die Hocke am Montag danach grün ist.",
     "swap": [
-      "Termin höchstens 1 Tag schieben.",
-      "Tempo und Lang nie an zwei Tagen hintereinander.",
-      "Sturm oder Glätte → Lauf auf den nächsten Ruhetag oder Mini-Version.",
-      "Beinkraft nie am Tag vor Tempo oder Lang.",
-      "Krank → Pause, danach erst 1 lockerer Lauf.",
-      "Verpasst → nicht nachholen."
+      "Schieb ein Training höchstens 1 Tag.",
+      "Mach Tempo und Lang nie an zwei Tagen hintereinander.",
+      "Sturm oder Glätte: Lauf am nächsten Ruhetag oder mach die Mini-Version.",
+      "Mach Beinkraft nie am Tag vor Tempo oder Lang.",
+      "Krank: Mach Pause. Danach erst 1 lockerer Lauf.",
+      "Verpasst: Hol es nicht nach."
     ],
     "weekDone": "Woche geschafft: 4 von 5 Einheiten.",
-    "food": "Nach jedem Training innerhalb 1 h ein Snack mit Eiweiß (Skyr, Quark, Tofu, Linsen). An Lauftagen eine Mahlzeit mehr."
+    "food": "Iss nach jedem Training innerhalb 1 h einen Snack mit Eiweiß, z. B. Skyr, Quark, Tofu oder Linsen. Iss an Lauftagen eine Mahlzeit mehr."
   },
   "recovery": {
     "title": "Plan geschafft! Erholungswoche",

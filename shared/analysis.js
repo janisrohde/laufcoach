@@ -30,11 +30,11 @@ export function analyzeRun(run, runs = []) {
   if (run.hr_avg) {
     if (kind === 'easy' || kind === 'long') {
       const limit = kind === 'long' ? 160 : 162;
-      if (run.hr_avg <= limit && run.hr_avg >= 145) { points.push({ icon: '✅', text: `Ø-Puls ${run.hr_avg} – genau richtig locker (Ziel ${kind === 'long' ? 'höchstens 160' : '154–162'}).` }); score += 2; }
+      if (run.hr_avg <= limit && run.hr_avg >= 145) { points.push({ icon: '✅', text: `Ø-Puls ${run.hr_avg} – genau richtig locker (Ziel ${kind === 'long' ? 'höchstens 160' : '145–162'}).` }); score += 2; }
       else if (run.hr_avg < 145) { points.push({ icon: '✅', text: `Ø-Puls ${run.hr_avg} – sehr locker, perfekt für Erholung.` }); score += 1; }
       else if (run.hr_avg <= 166) { points.push({ icon: '⚠️', text: `Ø-Puls ${run.hr_avg} – etwas zu hoch für locker (Ziel bis ${limit}).${hilly ? ' Die Strecke war hügelig – bergauf gehen ist richtig.' : ' Etwas langsamer starten.'}` }); score -= 1; }
-      else { points.push({ icon: '🔴', text: `Ø-Puls ${run.hr_avg} – das war kein lockerer Lauf mehr (Zone 3–4). Locker heißt: ganze Sätze reden können.${hilly ? ` ${run.ascent_m} Höhenmeter – bergauf gehen!` : ''}` }); score -= 2; }
-      if (run.hr_max && run.hr_max >= 180) points.push({ icon: '⚠️', text: `Max-Puls ${run.hr_max} – an Steigungen ruhig gehen, damit der Puls unter 170 bleibt.` });
+      else { points.push({ icon: '🔴', text: `Ø-Puls ${run.hr_avg} – das war kein lockerer Lauf mehr. Locker heißt: Du kannst noch ganze Sätze reden.${hilly ? ` ${run.ascent_m} Höhenmeter – bergauf gehen!` : ''}` }); score -= 2; }
+      if (run.hr_max && run.hr_max >= 180) points.push({ icon: '⚠️', text: `Max-Puls ${run.hr_max} – geh bergauf, damit der Puls unter 164 bleibt.` });
     } else if (kind === 'tempo') {
       points.push({ icon: 'ℹ️', text: `Ø-Puls ${run.hr_avg} (bei Tempo-Läufen mit Pausen normal höher).` });
     }
@@ -42,7 +42,7 @@ export function analyzeRun(run, runs = []) {
 
   // --- Tempo ---
   if (pace && (kind === 'easy' || kind === 'long')) {
-    if (pace < 365 && run.hr_avg && run.hr_avg > 162) points.push({ icon: '🐢', text: `Pace ${fmtPace(pace)} – für deinen Puls zu schnell. Locker ist bei dir gerade eher 6:30–7:00, und das ist völlig okay.` });
+    if (pace < 365 && run.hr_avg && run.hr_avg > 162) points.push({ icon: '🐢', text: `Tempo ${fmtPace(pace)} min pro km – zu schnell für deinen Puls. Locker ist bei dir 6:05–6:45 oder langsamer. Das ist völlig okay.` });
     else points.push({ icon: '⏱️', text: `Pace ${fmtPace(pace)} min/km${hilly ? ` bei ${run.ascent_m} Höhenmetern` : ''}.` });
   }
 
@@ -57,7 +57,7 @@ export function analyzeRun(run, runs = []) {
   // --- Schrittfrequenz ---
   if (run.cadence) {
     if (run.cadence >= 170) { points.push({ icon: '✅', text: `Schrittfrequenz ${run.cadence} – super, kurze leichte Schritte.` }); score += 1; }
-    else if (run.cadence >= 164) points.push({ icon: '👟', text: `Schrittfrequenz ${run.cadence} – Ziel 170–172. Etwas kürzere, schnellere Schritte schonen Knie und Schienbein.` });
+    else if (run.cadence >= 164) points.push({ icon: '👟', text: `${run.cadence} Schritte pro Minute – Ziel 170–172. Mach kürzere, schnellere Schritte. Das schont Knie und Schienbein.` });
     else points.push({ icon: '👟', text: `Schrittfrequenz ${run.cadence} – eher niedrig. Kürzere Schritte (Ziel 170) nehmen Last vom Knie.` });
   }
 
@@ -91,8 +91,8 @@ export function analyzeRun(run, runs = []) {
   // --- Fazit ---
   let tip = null;
   const tooFast = (kind === 'easy' || kind === 'long') && run.hr_avg > 164;
-  if (tooFast) tip = 'Nächster lockerer Lauf: Starte bewusst langsam, schau auf den Puls statt aufs Tempo, und geh bergauf. Locker laufen macht dich langfristig schneller als schnell laufen.';
-  else if (run.cadence && run.cadence < 168) tip = 'Nächster Lauf: Achte 3× für je 1 min auf kurze, schnelle, leise Schritte (zähl 30 Schritte in 10 s).';
+  if (tooFast) tip = 'Nächster lockerer Lauf: Starte langsam. Schau auf den Puls, nicht aufs Tempo. Geh bergauf. Locker laufen macht dich auf Dauer schneller.';
+  else if (run.cadence && run.cadence < 168) tip = 'Nächster Lauf: Mach 3× je 1 min kurze, schnelle, leise Schritte. Zähl in 10 s etwa 28 Schritte.';
   else if (score >= 2) tip = 'Genau so weitermachen!';
   const verdict = score >= 2 ? 'gut' : score <= -2 ? 'achtung' : 'ok';
   const title = verdict === 'gut' ? 'Starker Lauf 💪' : verdict === 'achtung' ? 'Zu hart für den Plan' : 'Solider Lauf';

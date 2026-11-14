@@ -1,8 +1,17 @@
 // Laufcoach-API (Cloudflare Worker + D1)
 import { buildPushPayload } from '@block65/webcrypto-web-push';
 import { getDay, berlinDate, berlinTime, addDays, diffDays, morningText, previewText, weekday, planWeek, PLAN } from '../../shared/plan.js';
-import { adjust, weekReport, parseNote } from '../../shared/coach.js';
+import { adjust, weekReport, parseNote, weakSpots, AREAS } from '../../shared/coach.js';
 import { analyzeRun } from '../../shared/analysis.js';
+import { spotStatus, ANSWERS } from '../../shared/followup.js';
+import { coachReply } from './ai.js';
+
+const followupsFor = (date, data) => spotStatus(date, weakSpots(date, data.runs, data.checks, data.athleteNotes, data.spotChecks), data.spotChecks);
+// Sofort-Antwort von Claude, höchstens ~25 s warten
+const askCoach = (env, date, trigger, opts = {}) => Promise.race([
+  coachReply(env, date, trigger, { ...opts, sendPush: (p) => sendPush(env, p) }),
+  new Promise((r) => setTimeout(() => r(null), 25000)),
+]);
 
 const enc = new TextEncoder();
 const now = () => new Date().toISOString();
@@ -57,15 +66,17 @@ const str = (v, max = 2000) => (v == null || v === '' ? null : String(v).slice(0
 // ---------- Daten laden ----------
 async function loadData(env, until) {
   const from = addDays(until, -60);
-  const [checks, runs, feedback, manual, coachPlan, athleteNotes] = await Promise.all([
+  const [checks, runs, feedback, manual, coachPlan, athleteNotes, spotChecks, wellness] = await Promise.all([
     env.DB.prepare('SELECT * FROM checks WHERE date >= ? ORDER BY date').bind(from).all(),
     env.DB.prepare('SELECT * FROM runs WHERE date >= ? ORDER BY date, id').bind(from).all(),
     env.DB.prepare('SELECT * FROM feedback WHERE date >= ? ORDER BY date, id').bind(from).all(),
     env.DB.prepare('SELECT * FROM overrides WHERE date >= ? ORDER BY id').bind(from).all(),
     env.DB.prepare('SELECT * FROM coach_plan WHERE date >= ? ORDER BY date').bind(from).all(),
     env.DB.prepare('SELECT * FROM athlete_notes WHERE date >= ? ORDER BY id').bind(from).all(),
+    env.DB.prepare('SELECT * FROM spot_checks WHERE date >= ? ORDER BY date, id').bind(from).all(),
+    env.DB.prepare('SELECT * FROM wellness WHERE date >= ? ORDER BY date').bind(from).all(),
   ]);
-  return { checks: checks.results, runs: runs.results, feedback: feedback.results, manual: manual.results, coachPlan: coachPlan.results, athleteNotes: athleteNotes.results };
+  return { checks: checks.results, runs: runs.results, feedback: feedback.results, manual: manual.results, coachPlan: coachPlan.results, athleteNotes: athleteNotes.results, spotChecks: spotChecks.results, wellness: wellness.results };
 }
 async function getSettings(env) {
   const { results } = await env.DB.prepare('SELECT key, value FROM settings').all();
@@ -137,13 +148,17 @@ async function cron(env) {
   if (wd === 0 && due('19:00') && planWeek(date) >= 1 && (await onceToday(env, `${date}:report`))) {
     await sendPush(env, { title: 'Dein Wochenbericht ist da 📊', body: 'Was lief gut, was kommt nächste Woche.', url: './#bericht' });
   }
+  const checkToday = data.checks.some((c) => c.date === date);
+  if (due('15:00') && day.type === 'run' && !checkToday && !runToday && (await onceToday(env, `${date}:precheck`))) {
+    await sendPush(env, { title: 'Vor dem Lauf: Wie geht es dir?', body: '30 Sekunden Check – dann weiß ich, ob heute alles passt.', url: `./#heute/${date}` });
+  }
   if (due('20:00') && (await onceToday(env, `${date}:preview`))) {
     const tomorrow = addDays(date, 1);
     const { day: d2 } = await dayFor(env, tomorrow, data, settings);
     if (d2.type !== 'before') await sendPush(env, { title: previewText(d2), body: d2.reasons[0] || '', url: './#heute' });
   }
   if (due('20:30') && day.type === 'run' && !runToday && (await onceToday(env, `${date}:runlog`))) {
-    await sendPush(env, { title: 'Trag kurz deinen Lauf ein', body: 'Dann passe ich morgen an.', url: './#lauf' });
+    await sendPush(env, { title: 'Wie war dein Lauf?', body: 'Kurz antippen: Gefühl und ob etwas wehtat.', url: `./#lauf/${date}` });
   }
 }
 
@@ -210,7 +225,7 @@ async function handle(req, env, ctx) {
   if (path === '/strava/callback') {
     const code = url.searchParams.get('code');
     const state = url.searchParams.get('state') || '';
-    if (!(await verifyToken(env, state))) return new Response('Nicht angemeldet. Bitte aus der App heraus verbinden.', { status: 401 });
+    if ((await verifyToken(env, state))?.s !== 'strava') return new Response('Nicht angemeldet. Bitte aus der App heraus verbinden.', { status: 401 });
     const res = await fetch('https://www.strava.com/oauth/token', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ client_id: env.STRAVA_CLIENT_ID, client_secret: env.STRAVA_CLIENT_SECRET, code, grant_type: 'authorization_code' }),
@@ -254,6 +269,8 @@ async function handle(req, env, ctx) {
       const next = [];
       for (let i = 1; i <= 7; i++) { const d = addDays(date, i); const x = await dayFor(env, d, data, settings); next.push({ date: d, type: x.day.type, title: x.day.title, workout: x.day.workout, reasons: x.day.reasons }); }
       return reply({ today: date, week: planWeek(date), ampel: today.ampel, todayPlan: { type: today.day.type, title: today.day.title, workout: today.day.workout, reasons: today.day.reasons }, messages: today.messages, next7: next,
+        followups: followupsFor(date, data).map(({ area, side, count, last, lastAnswer, lastCheckDate, closed, due }) => ({ area, side, count, last, lastAnswer, lastCheckDate, closed, due })),
+        spotChecks: data.spotChecks.filter((c) => c.date >= from), wellness: data.wellness.filter((w) => w.date >= from),
         runs: data.runs.filter((r) => r.date >= from).map((r) => ({ ...r, auto: analyzeRun(r, data.runs) })), coachPlan: data.coachPlan.filter((c) => c.date >= addDays(date, -7)), athleteNotes: data.athleteNotes.filter((n) => n.date >= from),
         allowed: { focusAreas: Object.keys(PLAN.extraExercises), workouts: Object.keys(PLAN.workouts), exerciseIds: [...PLAN.strength.A.exercises, ...PLAN.strength.B.exercises].map((e) => `${e.id} ${e.name}`) }, checks: data.checks.filter((c) => c.date >= from), feedback: data.feedback.filter((f) => f.date >= from), overrides: data.manual.filter((m) => m.date >= from), done, notes });
     }
@@ -268,25 +285,45 @@ async function handle(req, env, ctx) {
     if (path === '/coach/runs' && req.method === 'POST') {
       // Läufe importieren (z. B. aus Garmin/Tredict durch die Claude-Routine)
       const b = await req.json().catch(() => ({}));
-      let added = 0;
+      let added = 0; let lastDate = null;
+      const impData = await loadData(env, addDays(date, 1));
+      const impSettings = await getSettings(env);
       for (const r of (b.runs || []).slice(0, 50)) {
         if (!isDate(r.date) || !r.ext_id) continue;
-        const planned = getDay(r.date);
+        const planned = (await dayFor(env, r.date, impData, impSettings)).day;
+        if (!lastDate || r.date > lastDate) lastDate = r.date;
         const workout = r.workout && PLAN.workouts[r.workout] ? r.workout : planned.type === 'run' ? planned.workout : 'Locker (frei)';
-        const ext = `ext:${String(r.ext_id).slice(0, 80)}`;
-        const known = await env.DB.prepare('SELECT id FROM runs WHERE strava_id = ?').bind(ext).first();
-        if (known) continue;
+        const ext = `ext:${String(r.ext_id).replace(/^ext:/, '').slice(0, 80)}`;
+        const known = await env.DB.prepare('SELECT id FROM runs WHERE strava_id IN (?, ?)').bind(ext, ext.slice(4)).first();
+        const rpe = r.rpe != null && Number.isFinite(Number(r.rpe)) ? Math.max(1, Math.min(10, Math.round(Number(r.rpe)))) : null;
+        const enjoyment = r.enjoyment != null && Number.isFinite(Number(r.enjoyment)) ? Number(r.enjoyment) : null;
+        if (known) {
+          if (rpe || enjoyment) await env.DB.prepare('UPDATE runs SET rpe = COALESCE(rpe, ?), enjoyment = COALESCE(enjoyment, ?) WHERE id = ?').bind(rpe, enjoyment, known.id).run();
+          continue;
+        }
         const appRun = await env.DB.prepare("SELECT id FROM runs WHERE date = ? AND strava_id IS NULL AND source = 'app' ORDER BY id DESC").bind(r.date).first();
         const vals = [int(r.duration_s), int(r.distance_m), int(r.hr_avg), int(r.hr_max), int(r.cadence), int(r.ascent_m)];
         if (appRun) {
-          await env.DB.prepare('UPDATE runs SET duration_s = COALESCE(duration_s, ?), distance_m = COALESCE(distance_m, ?), hr_avg = COALESCE(hr_avg, ?), hr_max = COALESCE(hr_max, ?), cadence = COALESCE(cadence, ?), ascent_m = COALESCE(ascent_m, ?), strava_id = ? WHERE id = ?').bind(...vals, ext, appRun.id).run();
+          await env.DB.prepare('UPDATE runs SET duration_s = COALESCE(duration_s, ?), distance_m = COALESCE(distance_m, ?), hr_avg = COALESCE(hr_avg, ?), hr_max = COALESCE(hr_max, ?), cadence = COALESCE(cadence, ?), ascent_m = COALESCE(ascent_m, ?), rpe = COALESCE(rpe, ?), enjoyment = COALESCE(enjoyment, ?), strava_id = ? WHERE id = ?').bind(...vals, rpe, enjoyment, ext, appRun.id).run();
         } else {
-          await env.DB.prepare("INSERT OR IGNORE INTO runs (date, workout, duration_s, distance_m, hr_avg, hr_max, cadence, ascent_m, source, strava_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'garmin', ?, ?)").bind(r.date, workout, ...vals, ext, now()).run();
+          await env.DB.prepare("INSERT OR IGNORE INTO runs (date, workout, duration_s, distance_m, hr_avg, hr_max, cadence, ascent_m, rpe, enjoyment, source, strava_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'garmin', ?, ?)").bind(r.date, workout, ...vals, rpe, enjoyment, ext, now()).run();
         }
         added++;
       }
-      if (added && b.push) await sendPush(env, { title: 'Dein Lauf ist da 🏃', body: 'Trag kurz ein, wie es sich angefühlt hat.', url: './#lauf' });
+      if (added && b.push) await sendPush(env, { title: 'Wie war dein Lauf? 🏃', body: 'Dein Lauf ist da. Kurz antippen, wie es sich angefühlt hat.', url: `./#heute/${lastDate || date}` });
       return reply({ ok: true, added });
+    }
+    if (path === '/coach/wellness' && req.method === 'POST') {
+      // Schlaf, HRV, Ruhepuls (Tredict-Vollzugang oder iPhone-Kurzbefehl)
+      const b = await req.json().catch(() => ({}));
+      let n = 0;
+      for (const w of (b.days || []).slice(0, 60)) {
+        if (!isDate(w.date)) continue;
+        await env.DB.prepare('INSERT INTO wellness (date, sleep_min, sleep_base, hrv, hrv_base, rhr, source, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON CONFLICT(date) DO UPDATE SET sleep_min = COALESCE(excluded.sleep_min, sleep_min), sleep_base = COALESCE(excluded.sleep_base, sleep_base), hrv = COALESCE(excluded.hrv, hrv), hrv_base = COALESCE(excluded.hrv_base, hrv_base), rhr = COALESCE(excluded.rhr, rhr), source = excluded.source')
+          .bind(w.date, int(w.sleep_min), int(w.sleep_base), int(w.hrv), int(w.hrv_base), int(w.rhr), str(w.source || 'coach', 30), now()).run();
+        n++;
+      }
+      return reply({ ok: true, saved: n });
     }
     if (path === '/coach/analysis' && req.method === 'POST') {
       const b = await req.json().catch(() => ({}));
@@ -316,7 +353,7 @@ async function handle(req, env, ctx) {
   // Ab hier nur mit App-Token
   const token = (req.headers.get('Authorization') || '').replace(/^Bearer /, '');
   const session = await verifyToken(env, token);
-  if (!session) return reply({ error: 'unauthorized' }, 401);
+  if (!session || (session.s && session.s !== 'app')) return reply({ error: 'unauthorized' }, 401);
 
   const body = req.method === 'POST' ? await req.json().catch(() => ({})) : {};
   const qDate = url.searchParams.get('date');
@@ -331,6 +368,8 @@ async function handle(req, env, ctx) {
     const { results: notes } = await env.DB.prepare('SELECT * FROM coach_notes WHERE date >= ? ORDER BY id DESC LIMIT 3').bind(addDays(date, -3)).all();
     const fb = data.feedback.filter((f) => f.date === date);
     return reply({ day, ampel, messages, done: Object.fromEntries(done.map((d) => [d.item_id, d.value])), check: data.checks.find((c) => c.date === date) || null,
+      followups: followupsFor(date, data).filter((f) => f.due).slice(0, 2).map((f) => ({ area: f.area, side: f.side, question: f.question })),
+      wellness: data.wellness.find((w) => w.date === date) || null,
       runs: data.runs.filter((r) => r.date === date).map((r) => ({ ...r, auto: analyzeRun(r, data.runs) })), notes, myNotes: data.athleteNotes.filter((n) => n.date === date), feedback: Object.fromEntries(fb.map((f) => [f.ex_id, f.value])), settings: { fpFree: settings.fpFree, fpLinks: settings.fpLinks, onboarded: settings.onboarded } });
   }
   if (path === '/week' && req.method === 'GET') {
@@ -365,6 +404,21 @@ async function handle(req, env, ctx) {
     if (body.value !== 'ok') await env.DB.prepare('INSERT INTO feedback (date, ex_id, value, created_at) VALUES (?, ?, ?, ?)').bind(date, ex, body.value, now()).run();
     return reply({ ok: true });
   }
+  if (path === '/spotcheck' && req.method === 'POST') {
+    // Antwort auf die Nachfrage, z. B. Wie geht es deinem rechten Schienbein?
+    const area = str(body.area, 30);
+    const answer = str(body.answer, 20);
+    if (!AREAS[area] || !ANSWERS[answer]) return reply({ error: 'area/answer ungültig' }, 400);
+    await env.DB.prepare('INSERT INTO spot_checks (date, area, side, answer, created_at) VALUES (?, ?, ?, ?, ?)').bind(date, area, str(body.side, 10) || null, answer, now()).run();
+    const text = {
+      weg: 'Super, dass es weg ist! Die Extra-Übungen machst du noch eine Woche zur Vorbeugung, dann fallen sie weg.',
+      besser: 'Gut, es wird besser. Die Extra-Übungen bleiben, ich frage in 2 Tagen nochmal.',
+      gleich: 'Okay, ich behalte es im Blick. Die Extra-Übungen bleiben, ich frage morgen wieder.',
+      schlimmer: 'Danke, dass du es sagst. Dein nächster Lauf wird vorsichtiger. Bleibt es so: Sag es deinen Eltern.',
+    }[answer];
+    ctx.waitUntil(askCoach(env, date, `Antwort auf Nachfrage: ${area}${body.side ? ' ' + body.side : ''} ist „${answer}“.`, { quiet: answer === 'besser' || answer === 'weg' }));
+    return reply({ ok: true, text });
+  }
   if (path === '/note' && req.method === 'POST') {
     // Nachricht von Janis an den Coach (Gefühl, Zwicken, Fragen)
     const text = str(body.text, 1000);
@@ -379,7 +433,8 @@ async function handle(req, env, ctx) {
       const { day } = await dayFor(env, d, data, settings);
       if (day.type === 'strength' && day.items.some((it) => it.extra)) upcoming.push({ label: day.label, extras: day.items.filter((it) => it.extra).map((it) => it.name) });
     }
-    return reply({ ok: true, areas: parsed.areas, upcoming });
+    const ai = await askCoach(env, date, `Janis schreibt dir: „${text}“`, { quiet: true });
+    return reply({ ok: true, areas: parsed.areas, upcoming, coach: ai?.reply || null });
   }
   if (path === '/check' && req.method === 'POST') {
     await env.DB.prepare('INSERT OR REPLACE INTO checks (date, squat, shin, hop, bone, limp, sick, rhr, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
@@ -390,8 +445,12 @@ async function handle(req, env, ctx) {
     const where = Array.isArray(body.pain_where) ? body.pain_where.join(',') : str(body.pain_where, 100);
     const parsed = parseNote(body.note || '');
     const finalWhere = where || ((int(body.pain) ?? 0) >= 2 && parsed.areas.length ? parsed.areas.join(',') : null);
+    if (!body.id) {
+      const open = await env.DB.prepare('SELECT id FROM runs WHERE date = ? AND rpe IS NULL AND pain IS NULL ORDER BY id DESC').bind(date).first();
+      if (open) body.id = open.id;
+    }
     if (body.id) {
-      await env.DB.prepare('UPDATE runs SET workout=?, duration_s=?, distance_m=?, hr_avg=?, hr_max=?, cadence=?, test_value=?, rpe=?, pain=?, pain_where=?, pain_side=?, pain_when=?, pain_gone=?, note=? WHERE id=?')
+      await env.DB.prepare('UPDATE runs SET workout=COALESCE(?, workout), duration_s=COALESCE(?, duration_s), distance_m=COALESCE(?, distance_m), hr_avg=COALESCE(?, hr_avg), hr_max=COALESCE(?, hr_max), cadence=COALESCE(?, cadence), test_value=?, rpe=?, pain=?, pain_where=?, pain_side=?, pain_when=?, pain_gone=?, note=? WHERE id=?')
         .bind(str(body.workout, 60), int(body.duration_s), int(body.distance_m), int(body.hr_avg), int(body.hr_max), int(body.cadence), str(body.test_value, 20), int(body.rpe), int(body.pain), finalWhere, str(body.pain_side, 10), str(body.pain_when, 10), str(body.pain_gone, 10), str(body.note), int(body.id)).run();
     } else {
       await env.DB.prepare('INSERT INTO runs (date, workout, duration_s, distance_m, hr_avg, hr_max, cadence, test_value, rpe, pain, pain_where, pain_side, pain_when, pain_gone, note, source, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
@@ -407,7 +466,19 @@ async function handle(req, env, ctx) {
       if (day.reasons.length) upcoming.push({ date: d, label: day.label, title: day.title, reasons: day.reasons });
     }
     const next = adjust(addDays(date, 1), data);
-    return reply({ ok: true, upcoming: upcoming.slice(0, 3), messages: next.messages, ampel: next.ampel });
+    const ai = await askCoach(env, date, `Janis hat gerade seinen Lauf eingetragen: ${JSON.stringify({ workout: body.workout, km: body.distance_m ? body.distance_m / 1000 : null, puls: body.hr_avg, gefuehl: body.rpe, schmerz: body.pain, wo: finalWhere, seite: body.pain_side, wann: body.pain_when, schnellWeg: body.pain_gone, notiz: body.note })}`, { quiet: true });
+    return reply({ ok: true, coach: ai?.reply || null, upcoming: upcoming.slice(0, 3), messages: next.messages, ampel: next.ampel });
+  }
+  if (path === '/run/feel' && req.method === 'POST') {
+    // Kurz nach dem Lauf: Wie war's? (nur Gefühl + Schmerz, Garmin-Daten bleiben)
+    const id = int(body.id);
+    if (!id) return reply({ error: 'id fehlt' }, 400);
+    const where = Array.isArray(body.pain_where) ? body.pain_where.join(',') : str(body.pain_where, 100);
+    await env.DB.prepare('UPDATE runs SET rpe = COALESCE(?, rpe), pain = COALESCE(?, pain), pain_where = COALESCE(?, pain_where), pain_side = COALESCE(?, pain_side), pain_gone = COALESCE(?, pain_gone), note = COALESCE(?, note) WHERE id = ?')
+      .bind(int(body.rpe), int(body.pain), where || null, str(body.pain_side, 10) || null, str(body.pain_gone, 10) || null, str(body.note) || null, id).run();
+    const r = await env.DB.prepare('SELECT * FROM runs WHERE id = ?').bind(id).first();
+    const ai = await askCoach(env, date, `Janis sagt nach dem Lauf vom ${r?.date}: Gefühl ${body.rpe ?? '-'}/10, Schmerz ${body.pain ?? 0}/10${where ? ' an ' + where : ''}${body.pain_side ? ' ' + body.pain_side : ''}${body.note ? ', Notiz: ' + body.note : ''}. Lauf-Daten: ${JSON.stringify({ workout: r?.workout, km: r?.distance_m ? r.distance_m / 1000 : null, puls: r?.hr_avg, kadenz: r?.cadence })}`, { quiet: true });
+    return reply({ ok: true, coach: ai?.reply || null });
   }
   if (path === '/run' && req.method === 'DELETE') {
     await env.DB.prepare('DELETE FROM runs WHERE id = ?').bind(int(url.searchParams.get('id'))).run();
@@ -416,7 +487,9 @@ async function handle(req, env, ctx) {
   if (path === '/history' && req.method === 'GET') {
     const { results } = await env.DB.prepare('SELECT * FROM runs ORDER BY date DESC, id DESC LIMIT 200').all();
     const asc = [...results].reverse();
-    return reply({ runs: results.map((r) => ({ ...r, auto: analyzeRun(r, asc) })) });
+    const hd = await loadData(env, date);
+    const spots = followupsFor(date, hd).map(({ area, side, count, first, last, lastAnswer, closed }) => ({ area, side, count, first, last, lastAnswer, closed }));
+    return reply({ runs: results.map((r) => ({ ...r, auto: analyzeRun(r, asc) })), spots });
   }
   if (path === '/report' && req.method === 'GET') {
     const data = await loadData(env, addDays(date, 1));
@@ -428,12 +501,14 @@ async function handle(req, env, ctx) {
   }
   if (path === '/move' && req.method === 'POST') {
     // „Heute verschieben“: Lauf 1 Tag später (Regeln: max. 1 Tag, Tempo/Lang nie hintereinander)
-    const day = getDay(date);
+    const mvSettings = await getSettings(env);
+    const mvData = await loadData(env, addDays(date, 3));
+    const day = (await dayFor(env, date, mvData, mvSettings)).day;
     const tomorrow = addDays(date, 1);
-    const t = getDay(tomorrow);
+    const t = (await dayFor(env, tomorrow, mvData, mvSettings)).day;
     if (day.type !== 'run' && day.type !== 'strength') return reply({ error: 'Heute gibt es nichts zu verschieben.' }, 400);
     const kind = day.type === 'run' ? PLAN.workouts[day.workout].kind : 'strength';
-    const t2 = getDay(addDays(date, 2));
+    const t2 = (await dayFor(env, addDays(date, 2), mvData, mvSettings)).day;
     const nextHard = t2.type === 'run' && ['tempo', 'long'].includes(PLAN.workouts[t2.workout].kind);
     const tomorrowHard = t.type === 'run' && ['tempo', 'long'].includes(PLAN.workouts[t.workout].kind);
     if (tomorrowHard || (['tempo', 'long'].includes(kind) && nextHard)) {
@@ -443,7 +518,7 @@ async function handle(req, env, ctx) {
       return reply({ error: 'Beinkraft nie am Tag vor Tempo oder Lang. Mach heute die Mini-Version.' }, 400);
     }
     await env.DB.prepare('INSERT INTO overrides (date, field, value, reason, created_at) VALUES (?, ?, ?, ?, ?)').bind(date, 'moved', '1', `Auf morgen verschoben.`, now()).run();
-    if (day.type === 'run') await env.DB.prepare('INSERT INTO overrides (date, field, value, reason, created_at) VALUES (?, ?, ?, ?, ?)').bind(tomorrow, 'workout', day.workout, `Von gestern verschoben: ${day.workout}.`, now()).run();
+    if (day.type === 'run') await env.DB.prepare('INSERT INTO overrides (date, field, value, reason, created_at) VALUES (?, ?, ?, ?, ?)').bind(tomorrow, 'addRun', day.workout, `Von gestern verschoben: ${day.workout}.`, now()).run();
     else await env.DB.prepare('INSERT INTO overrides (date, field, value, reason, created_at) VALUES (?, ?, ?, ?, ?)').bind(tomorrow, 'addSession', JSON.stringify({ key: day.strengthKey, probe: day.title === 'Kraft-A-Probe' }), `Von gestern verschoben: ${day.title}.`, now()).run();
     return reply({ ok: true });
   }

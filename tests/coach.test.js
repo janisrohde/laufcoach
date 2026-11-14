@@ -18,7 +18,7 @@ describe('Ampel', () => {
     const d = dayWith('2026-12-15', data);
     expect(d.workout).toBe('Locker (frei)');
     expect(d.plannedWorkout).toBe('Di Schwelle 3x6 min');
-    expect(d.note).toContain('Puls nur bis 158');
+    expect(d.note).toContain('Puls unter 158');
     expect(d.reasons[0]).toContain('Heute angepasst, weil');
     const kraft = dayWith('2026-12-16', { checks: [chk('2026-12-16', { squat: 3 })] });
     expect(kraft.items.find((i) => i.exId === 'A1')).toBeUndefined();
@@ -31,8 +31,11 @@ describe('Ampel', () => {
       expect(dayWith(d, data).type).toBe('rest');
     }
     expect(dayWith('2026-11-25', data).title).toBe('Nur Oberkörper und Rumpf');
-    // nach 7 Tagen + 2 grünen Checks wieder laufen, erster langer Lauf halbiert
-    const later = { checks: [...data.checks, chk('2026-11-30'), chk('2026-12-01')] };
+    // nur 2 Checks ohne Knochenschmerz → noch rot
+    const few = { checks: [...data.checks, chk('2026-11-30'), chk('2026-12-01')] };
+    expect(adjust('2026-12-01', few).ampel).toBe('rot');
+    // nach 7 Tagen + 5 Checks ohne Knochenschmerz wieder laufen, erster langer Lauf halbiert
+    const later = { checks: [...data.checks, ...['2026-11-27', '2026-11-28', '2026-11-29', '2026-11-30', '2026-12-01'].map((d) => chk(d))] };
     expect(adjust('2026-12-01', later).ampel).toBe('gruen');
     expect(dayWith('2026-12-06', later).workout).toBe('Lang 9 km');
   });
@@ -56,9 +59,18 @@ describe('Ampel', () => {
     const data = { runs: [run('2026-11-17', 'Di Steigerungen', { pain: 4, pain_where: 'schienbein', pain_gone: 'noch', rpe: 6 })] };
     expect(adjust('2026-11-19', data).ampel).toBe('gelb');
   });
-  it('7 Ruhepuls-Schnitt ≥ 59 → gelb', () => {
-    const data = { checks: ['2026-11-20', '2026-11-21', '2026-11-22'].map((d) => chk(d, { rhr: 61 })) };
-    expect(adjust('2026-11-22', data).ampel).toBe('gelb');
+  it('7 Ruhepuls deutlich über dem eigenen Normalwert → gelb', () => {
+    const normal = ['2026-11-10', '2026-11-11', '2026-11-12', '2026-11-13', '2026-11-14', '2026-11-15', '2026-11-16', '2026-11-17'].map((d) => chk(d, { rhr: 52 }));
+    expect(adjust('2026-11-17', { checks: normal }).ampel).toBe('gruen');
+    const data = { checks: [...normal, chk('2026-11-18', { rhr: 60 })] };
+    expect(adjust('2026-11-18', data).ampel).toBe('gelb');
+  });
+  it('7b krank → rot', () => {
+    expect(adjust('2026-11-18', { checks: [chk('2026-11-18', { sick: 1 })] }).ampel).toBe('rot');
+  });
+  it('7c wenig Schlaf → Tempo wird locker', () => {
+    const d = dayWith('2026-11-17', { wellness: [{ date: '2026-11-17', sleep_min: 380 }] });
+    expect(d.workout).toBe('Locker (frei)');
   });
 });
 
@@ -91,7 +103,7 @@ describe('Puls und Tempo', () => {
   });
   it('13 Tempo zu hart → eine Wiederholung weniger', () => {
     const d = dayWith('2026-11-24', { runs: [run('2026-11-17', 'Di Steigerungen', { rpe: 9 })] });
-    expect(d.note).toContain('nach 2 Runden Stopp');
+    expect(d.note).toContain('nach 2 Stücken Stopp');
   });
   it('14 zwei leichte Tempo-Läufe → Lob', () => {
     const a = adjust('2026-11-26', { runs: [run('2026-11-17', 'Di Steigerungen', { rpe: 5 }), run('2026-11-24', 'Di Zügig 3x6 min', { rpe: 4 })] });
@@ -105,7 +117,7 @@ describe('Tests', () => {
     expect(a.messages.some((m) => m.text.includes('6:20 → 6:12'))).toBe(true);
   });
   it('16 Schwellen-Check', () => {
-    expect(adjust('2026-12-30', { runs: [run('2026-12-29', 'Di Schwelle 2x10 min (Check)', { test_value: '174', rpe: 6 })] }).messages[0].text).toContain('eher höher');
+    expect(adjust('2026-12-30', { runs: [run('2026-12-29', 'Di Schwelle 2x10 min (Check)', { test_value: '174', rpe: 6 })] }).messages[0].text).toContain('fitter als gedacht');
     expect(adjust('2026-12-30', { runs: [run('2026-12-29', 'Di Schwelle 2x10 min (Check)', { test_value: '187', rpe: 8 })] }).messages[0].text).toContain('zu schnell');
   });
   it('17 5-km-Test → VDOT und neue Zonen', () => {
@@ -151,7 +163,7 @@ describe('Schwachstellen und Feedback', () => {
     expect(checkColor({ squat: 2 })).toBe('gruen');
     expect(checkColor({ squat: 4 })).toBe('gelb');
     expect(checkColor({ hop: 5 })).toBe('rot');
-    expect(runColor({ pain: 6, pain_gone: 'schnell' })).toBe('gelb');
+    expect(runColor({ pain: 6, pain_gone: 'schnell' })).toBe('rot');
     expect(runColor({ pain: 3, pain_gone: 'schnell' })).toBe('gruen');
   });
 });

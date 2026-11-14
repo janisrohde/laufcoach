@@ -85,7 +85,7 @@ describe('Kraft-Dosis laut 4.5/4.6', () => {
     expect(dose('A', 1, 'A3').name).toContain('Wandsitz');
     expect(dose('A', 5, 'A3').name).toContain('Ausfallschritt');
     expect(dose('A', 7, 'A3').weight).toBe('2 × 2 kg');
-    expect(dose('A', 9, 'A3').name).toContain('Step-Down');
+    expect(dose('A', 9, 'A3').name).toContain('Runtertippen');
   });
   it('Pogo-Hüpfer erst ab Level 2, nicht in leichten Wochen', () => {
     expect(dose('A', 3, 'A1')).toBeUndefined();

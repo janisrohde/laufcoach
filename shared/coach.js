@@ -1,3 +1,4 @@
+import { spotStatus, spotNom } from './followup.js';
 // Trainer-Logik: reine Funktionen, keine Datenbank.
 // Eingabe: alle Daten (Checks, Läufe, Feedback, manuelle Overrides), Ausgabe: Anpassungen für ein Datum.
 import { PLAN, getDay, addDays, diffDays, planWeek, weekInfo, weekday, mondayOf } from './plan.js';
@@ -11,11 +12,12 @@ export const AREAS = {
   wade: { label: 'Wade', extras: ['wade'] },
   huefte: { label: 'Hüfte', extras: ['huefte'] },
   schulter: { label: 'Schulter', extras: ['schulter'] },
+  ferse: { label: 'Ferse', extras: ['ferse', 'wade'] },
 };
 
 const KEYWORDS = [
   [/knie/i, 'knie'], [/schienbein|shin/i, 'schienbein'], [/au(ß|ss)en\S*\s*\S*\s*kn[öo]chel|kn[öo]chel.{0,40}au(ß|ss)en|umknick|umgeknickt/i, 'aussenknoechel'], [/innen\S*\s*\S*\s*kn[öo]chel|kn[öo]chel.{0,40}innen/i, 'innenknoechel'], [/kn[öo]chel|sprunggelenk/i, 'knoechel'],
-  [/zeh/i, 'grosszehe'], [/wade/i, 'wade'], [/h[üu]fte|leiste|po\b/i, 'huefte'], [/schulter|nacken/i, 'schulter'],
+  [/gro(ß|ss)\s?zeh|\bzeh(e|en)?\b/i, 'grosszehe'], [/ferse|achill/i, 'ferse'], [/wade/i, 'wade'], [/h[üu]fte|leiste|\bpo\b|ges[äa](ß|ss)/i, 'huefte'], [/schulter|nacken/i, 'schulter'],
 ];
 
 /** Stelle(n) und Seite aus Freitext lesen, z. B. „rechtes Knie gezwickt“. */
@@ -27,8 +29,8 @@ export function parseNote(text = '') {
     areas.push(a);
   }
   let side = null;
-  if (/recht/i.test(text)) side = 'rechte';
-  else if (/link/i.test(text)) side = 'linke';
+  if (/\brecht(e|es|en|er|em|s)?\b/i.test(text)) side = 'rechte';
+  else if (/\blink(e|es|en|er|em|s)?\b/i.test(text)) side = 'linke';
   return { areas, side };
 }
 
@@ -49,7 +51,7 @@ export function checkColor(c) {
 export function runColor(r) {
   if (!r || r.pain == null) return 'gruen';
   const gone = r.pain_gone === 'schnell';
-  if (r.pain >= 5) return gone ? 'gelb' : 'rot';
+  if (r.pain >= 5) return 'rot';
   if (r.pain >= 3 && !gone) return 'gelb';
   if (r.pain >= 3 && r.pain_when === 'ende' && !gone) return 'gelb';
   return 'gruen';
@@ -130,16 +132,18 @@ export function adjust(date, data = {}) {
   const lastRedRun = [...past(runs, 14)].reverse().find((r) => runColor(r) === 'rot');
   const redDate = [lastRed?.date, lastRedRun?.date].filter(Boolean).sort().pop();
 
-  if (lastBone && diffDays(date, lastBone.date) < 7) {
+  const okAfterBone = lastBone ? checks.filter((c) => c.date > lastBone.date && c.date <= date && !c.bone).length : 0;
+  if (lastBone && (diffDays(date, lastBone.date) < 7 || okAfterBone < 5)) {
     ampel = 'rot';
-    why = `am ${fmtDate(lastBone.date)} ein Punkt am Knochen wehtat (7 Tage kein Laufen, keine Sprünge)`;
+    why = `am ${fmtDate(lastBone.date)} ein Punkt am Knochen wehtat (mind. 7 Tage und 5 Morgen-Checks ohne Knochenschmerz, bisher ${okAfterBone})`;
     ov.bone = true;
+    messages.push({ type: 'warn', text: 'Schmerz an einem Punkt am Knochen: Sag es heute deinen Eltern. Das sollte sich ein Arzt anschauen.' });
   } else if (redDate) {
     // Rot bleibt, bis 2 Check-Tage nach dem roten Tag grün sind
     const greenAfter = checks.filter((c) => c.date > redDate && c.date <= date && checkColor(c) === 'gruen').length;
     if (greenAfter < 2) {
       ampel = 'rot';
-      why = `es am ${fmtDate(redDate)} rot war (Schmerz 5 oder mehr) – erst laufen, wenn 2 Morgen-Checks grün sind (${greenAfter} von 2)`;
+      why = `es am ${fmtDate(redDate)} rot war (Schmerz 5 oder mehr). Du läufst erst wieder, wenn 2 Morgen-Checks grün sind (${greenAfter} von 2)`;
     }
   }
   if (ampel === 'gruen') {
@@ -151,30 +155,51 @@ export function adjust(date, data = {}) {
     if (ampel === 'gruen' && r && runColor(r) === 'gelb' && diffDays(date, r.date) <= 2) {
       ampel = 'gelb'; why = `nach dem Lauf am ${fmtDate(r.date)} Schmerz ${r.pain} war und nicht schnell wegging`;
     }
-    const rhr = past(checks, 7).filter((x) => x.rhr).map((x) => x.rhr);
-    if (ampel === 'gruen' && rhr.length >= 3 && avg(rhr) >= 59) {
-      ampel = 'gelb'; why = `dein Ruhepuls im 7-Tage-Schnitt ${Math.round(avg(rhr))} ist (ab 59 = müde)`;
+    const rhrAll = [...past(checks, 30).filter((x) => x.rhr).map((x) => ({ date: x.date, v: x.rhr })), ...(data.wellness || []).filter((w) => w.rhr && w.date <= date && diffDays(date, w.date) <= 30).map((w) => ({ date: w.date, v: w.rhr }))];
+    if (ampel === 'gruen' && rhrAll.length >= 7) {
+      const sorted = rhrAll.map((x) => x.v).sort((a, b) => a - b);
+      const base = sorted[Math.floor(sorted.length / 2)];
+      const todayRhr = rhrAll.filter((x) => x.date === date).map((x) => x.v).pop();
+      const last5 = rhrAll.filter((x) => diffDays(date, x.date) <= 4).map((x) => x.v);
+      if ((todayRhr && todayRhr >= base + 7) || last5.filter((v) => v >= base + 5).length >= 3) {
+        ampel = 'gelb'; why = `dein Ruhepuls höher ist als sonst (normal ${base}). Du bist vielleicht müde oder wirst krank`;
+      }
     }
+    // Schlaf und HRV (wenn vorhanden): 1 Signal = kein Tempo, 2 Signale = gelb
+    const w = (data.wellness || []).find((x) => x.date === date);
+    const sig = [];
+    if (w?.sleep_min && w.sleep_min < 420) sig.push(`nur ${Math.floor(w.sleep_min / 60)} h ${w.sleep_min % 60} min geschlafen`);
+    if (w?.hrv && w?.hrv_base && w.hrv < w.hrv_base * 0.85) sig.push('deine Erholung (HRV) niedrig ist');
+    if (ampel === 'gruen' && sig.length >= 2) { ampel = 'gelb'; why = `du ${sig.join(' und ')}`; }
+    else if (sig.length === 1) ov.lowSleep = sig[0];
+    const sleep7 = (data.wellness || []).filter((x) => x.sleep_min && x.date <= date && diffDays(date, x.date) < 7).map((x) => x.sleep_min);
+    if (sleep7.length >= 4 && avg(sleep7) < 480) messages.push({ type: 'info', text: `Du schläfst im Schnitt ${(avg(sleep7) / 60).toFixed(1)} h. Mit 14 brauchst du 8–10 h – Schlaf macht dich schneller und schützt vor Verletzungen.` });
   }
   // krank
   const sick = [...past(checks, 3)].reverse().find((c) => c.sick);
-  if (sick && sick.date === date) { ampel = ampel === 'gruen' ? 'gelb' : ampel; }
+  if (sick && diffDays(date, sick.date) <= 1) { ampel = 'rot'; why = 'du krank bist – erst wenn du 1 Tag ohne Beschwerden bist, wieder locker laufen'; }
 
   if (ampel === 'rot') {
     ov.pause = true;
     ov.noJumps = true;
     ov.level1 = true;
-    ov.runNote = 'Heute nicht laufen. Oberkörper und Rumpf sind okay.';
+    ov.runNote = 'Heute nicht laufen. Oberkörper und Bauch darfst du trainieren.';
     ov.reasons.push(`Heute angepasst, weil ${why}.`);
   } else if (ampel === 'gelb') {
     ov.noJumps = true;
     ov.level1 = true;
     if (planned) {
       if (plannedKind === 'tempo') ov.workout = 'Locker (frei)';
-      ov.runNote = 'Ein Drittel kürzer als sonst, flach, Puls nur bis 158.';
+      ov.runNote = 'Lauf heute ein Drittel kürzer als sonst. Lauf flach. Halte den Puls unter 158.';
     }
-    ov.reasons.push(`Heute angepasst, weil ${why}. Kraft heute in der leichteren Variante, keine Sprünge.`);
+    ov.reasons.push(`Heute angepasst, weil ${why}. Mach die Kraft heute leichter und ohne Sprünge.`);
   }
+
+  if (ampel === 'gruen' && ov.lowSleep && planned && plannedKind === 'tempo') {
+    ov.workout = 'Locker (frei)';
+    ov.reasons.push(`Heute locker statt Tempo, weil du ${ov.lowSleep} hast.`);
+  }
+  delete ov.lowSleep;
 
   // Nach Rot: erster langer Lauf 2/3 (Knochen: die Hälfte)
   if (ampel !== 'rot' && planned && plannedKind === 'long' && redDate && diffDays(date, redDate) <= 21) {
@@ -184,7 +209,7 @@ export function adjust(date, data = {}) {
       const boneCase = lastBone && lastBone.date >= redDate;
       const target = floorLong(boneCase ? km / 2 : (km * 2) / 3);
       ov.workout = longName(target);
-      ov.reasons.push(`Erster langer Lauf nach der Pause: nur ${boneCase ? 'die Hälfte' : '2/3'} → „${longName(target)}“ auf der Uhr starten.`);
+      ov.reasons.push(`Erster langer Lauf nach der Pause: nur ${boneCase ? 'die Hälfte' : '2/3'} so lang. Starte auf der Uhr „${longName(target)}“.`);
     }
   }
 
@@ -201,13 +226,21 @@ export function adjust(date, data = {}) {
       km = prevKm;
       ov.reasons.push(`Langer Lauf bleibt bei ${km} km, weil die Hocke am Montag nicht grün war.`);
     }
-    const hasLong30 = runs.some((r) => kindOf(r.workout) === 'long' && r.distance_m && diffDays(date, r.date) > 0 && diffDays(date, r.date) <= 30);
-    const l30 = hasLong30 ? longest30(runs, date) : null;
+    const l30 = longest30(runs, date);
+    let shortRun = null;
     if (l30 && km > l30 * 1.1) {
-      const allowed = floorLong(l30 * 1.1);
-      if (allowed < km) { km = allowed; ov.reasons.push(`10-%-Regel: dein längster Lauf in 30 Tagen war ${l30.toFixed(1)} km, darum heute höchstens „${longName(km)}“.`); }
+      const maxKm = l30 * 1.1;
+      if (maxKm >= 9) {
+        const allowed = floorLong(maxKm);
+        if (allowed < km) { km = allowed; ov.reasons.push(`Dein längster Lauf in 30 Tagen war ${l30.toFixed(1)} km. Du darfst nur 10 % länger laufen. Darum heute höchstens „${longName(km)}“.`); }
+      } else {
+        shortRun = Math.floor(maxKm);
+        ov.workout = 'Locker (frei)';
+        ov.runNote = `Lauf heute locker ${shortRun} km, nicht mehr. Starte auf der Uhr „Locker (frei)“.`;
+        ov.reasons.push(`10-%-Regel: dein längster Lauf in 30 Tagen war ${l30.toFixed(1)} km. Mehr als ${shortRun} km wären zu viel auf einmal.`);
+      }
     }
-    if (longName(km) !== planned) ov.workout = longName(km);
+    if (!shortRun && longName(km) !== planned) ov.workout = longName(km);
   }
 
   // ---------- 3. Puls zu hoch bei locker/lang ----------
@@ -215,9 +248,9 @@ export function adjust(date, data = {}) {
   const lastTwo = easyRuns.slice(-2);
   if (lastTwo.length && lastTwo[lastTwo.length - 1].hr_avg > 164 && diffDays(date, lastTwo[lastTwo.length - 1].date) <= 7) {
     if (lastTwo.length === 2 && lastTwo.every((r) => r.hr_avg > 164)) {
-      messages.push({ type: 'warn', text: `Zweimal hintereinander zu schnell (Ø-Puls ${lastTwo.map((r) => r.hr_avg).join(' und ')}). Locker heißt wirklich locker: bergauf gehen, langsamer starten. Nur so wird deine Ausdauer besser.` });
+      messages.push({ type: 'warn', text: `Zweimal hintereinander zu schnell (Puls im Schnitt ${lastTwo.map((r) => r.hr_avg).join(' und ')}). Locker heißt: Du kannst noch reden. Geh bergauf und starte langsamer. Nur so wird deine Ausdauer besser.` });
     } else {
-      messages.push({ type: 'info', text: `Letzter lockerer Lauf etwas zu schnell (Ø-Puls ${lastTwo[lastTwo.length - 1].hr_avg}). Nächstes Mal bergauf gehen.` });
+      messages.push({ type: 'info', text: `Dein letzter lockerer Lauf war etwas zu schnell (Puls im Schnitt ${lastTwo[lastTwo.length - 1].hr_avg}). Geh nächstes Mal bergauf.` });
     }
   }
 
@@ -227,8 +260,8 @@ export function adjust(date, data = {}) {
   if (planned && plannedKind === 'tempo' && !ov.workout && lastTempo && ((lastTempo.rpe ?? 0) >= 9 || ((lastTempo.pain ?? 0) >= 3 && lastTempo.pain_gone !== 'schnell'))) {
     const reps = PLAN.workouts[planned].reps;
     if (reps > 1) {
-      ov.runNote = `Eine Wiederholung weniger: drück nach ${reps - 1} Runden Stopp und lauf aus.`;
-      ov.reasons.push(`Heute eine Wiederholung weniger, weil der letzte Tempo-Lauf ${lastTempo.rpe >= 9 ? `sehr hart war (Gefühl ${lastTempo.rpe})` : `wehgetan hat (Schmerz ${lastTempo.pain})`}.`);
+      ov.runNote = `Heute ein schnelles Stück weniger: Drück nach ${reps - 1} Stücken Stopp und lauf aus.`;
+      ov.reasons.push(`Heute ein schnelles Stück weniger, weil der letzte Tempo-Lauf ${lastTempo.rpe >= 9 ? `sehr hart war (Gefühl ${lastTempo.rpe})` : `wehgetan hat (Schmerz ${lastTempo.pain})`}.`);
     }
   }
   const lt2 = tempoRuns.slice(-2);
@@ -251,33 +284,48 @@ export function adjust(date, data = {}) {
   const thr = tests.filter((r) => PLAN.workouts[r.workout].test === 'threshold').pop();
   if (thr && diffDays(date, thr.date) <= 7) {
     const hr = Number(thr.test_value);
-    if (hr <= 176 && (thr.rpe ?? 10) <= 7) messages.push({ type: 'good', text: `Schwellen-Check: Puls ${hr} am Ende und es ging leicht – deine Schwelle liegt eher höher. Nach dem 5-km-Test gibt es neue Zonen.` });
-    else if (hr >= 185) messages.push({ type: 'info', text: `Schwellen-Check: Puls ${hr} – das war etwas zu schnell. Die Zonen bleiben.` });
-    else if (hr) messages.push({ type: 'info', text: `Schwellen-Check: Puls ${hr} – passt zu deinen Zonen.` });
+    if (hr <= 176 && (thr.rpe ?? 10) <= 7) messages.push({ type: 'good', text: `Schwellen-Check: Puls ${hr} am Ende, und es ging leicht. Du bist wohl fitter als gedacht. Nach dem 5-km-Test bekommst du neue Tempo-Werte.` });
+    else if (hr >= 185) messages.push({ type: 'info', text: `Schwellen-Check: Puls ${hr} – das war etwas zu schnell. Deine Werte bleiben gleich.` });
+    else if (hr) messages.push({ type: 'info', text: `Schwellen-Check: Puls ${hr} – passt genau zu deinen Werten.` });
   }
   const t5 = tests.filter((r) => PLAN.workouts[r.workout].test === '5k').pop();
   if (t5) {
     const sec = parseTime(t5.test_value);
     if (sec && sec > 600 && sec < 3600) {
       const z = zonesFromVdot(vdot(sec));
-      messages.push({ type: 'good', zones: z, text: `5-km-Test: ${t5.test_value} → VDOT ${z.vdot}. Neue Paces: locker ${z.locker}, zügig ${z.zuegig}, Schwelle ${z.schwelle}, schnell ${z.schnell} min/km.` });
+      messages.push({ type: 'good', zones: z, text: `5-km-Test: ${t5.test_value} → Fitness-Wert (VDOT) ${z.vdot}. Dein neues Tempo in min pro km: locker ${z.locker}, zügig ${z.zuegig}, Schwelle ${z.schwelle}, schnell ${z.schnell}.` });
     }
   }
 
   // ---------- Schwachstellen → gezieltes Krafttraining ----------
-  const focus = weakSpots(date, runs, checks, data.athleteNotes || []);
+  const status = spotStatus(date, weakSpots(date, runs, checks, data.athleteNotes || [], data.spotChecks || []), data.spotChecks || []);
+  // „weg“ gemeldet: noch 7 Tage Vorbeugung, dann fällt die Stelle raus
+  const focus = status.filter((f) => !(f.closed && f.closedDays > 7));
+  const dayType = getDay(date).type;
+  for (const f of status) {
+    if (f.worse && ['schienbein', 'knie', 'innenknoechel', 'aussenknoechel', 'wade', 'grosszehe'].includes(f.area) && dayType === 'run' && !ov.pause) {
+      ov.runNote = 'Lauf heute nur locker und flach, höchstens 30 min. Tut es beim Laufen mehr als 3 von 10 weh? Dann geh sofort.';
+      ov.reasons.push(`Du hast gesagt, ${spotNom(f.area, f.side)} ist schlimmer geworden. Darum heute vorsichtig.`);
+    }
+    if (!f.closed && f.since >= 7 && ['gleich', 'schlimmer'].includes(f.lastAnswer)) {
+      messages.push({ type: 'warn', text: `${spotNom(f.area, f.side).replace(/^d/, 'D')} ist seit über einer Woche nicht besser. Sag es bitte deinen Eltern. Vielleicht solltest du zum Arzt oder Physio.` });
+    }
+  }
   if (focus.length) {
     const extras = [];
     for (const f of focus) {
       for (const area of AREAS[f.area].extras) {
-        if (!extras.find((e) => e.area === area)) extras.push({ area, side: f.side, count: f.count >= 2 && area === f.area ? 2 : 1 });
+        const since = f.first ? diffDays(date, f.first) : 0;
+        let level = since >= 14 ? 3 : since >= 7 ? 2 : 1;
+        if (ampel === 'rot' || ['gleich', 'schlimmer'].includes(f.lastAnswer)) level = 1;
+        if (!extras.find((e) => e.area === area)) extras.push({ area, side: f.side, count: f.count >= 2 && area === f.area ? 2 : 1, level });
       }
     }
     ov.extras = extras.slice(0, 4);
-    const day = getDay(date);
-    if (day.type === 'strength') {
-      ov.reasons.push(focus.map((f) => `${f.side ? `Dein${f.side === 'rechte' ? ' rechtes' : ' linkes'} ` : 'Dein '}${AREAS[f.area].label} hat am ${fmtDate(f.last)} gezwickt${f.count > 1 ? ` (${f.count}× in 3 Wochen)` : ''}`).join('. ')
-        + '. Darum heute Extra-Übungen dafür und 1 Satz mehr bei den passenden Übungen. So wird die Stelle stärker.');
+    {
+      ov.extraReasons = ov.extraReasons || [];
+      ov.extraReasons.push(focus.map((f) => `${f.side ? `Dein${f.side === 'rechte' ? ' rechtes' : ' linkes'} ` : 'Dein '}${AREAS[f.area].label} hat am ${fmtDate(f.last)} gezwickt${f.count > 1 ? ` (${f.count}× in 3 Wochen)` : ''}`).join('. ')
+        + '. Darum machst du heute Extra-Übungen dafür. Bei passenden Übungen machst du 1 Satz mehr. So wird die Stelle stärker.');
     }
   }
 
@@ -292,11 +340,11 @@ export function adjust(date, data = {}) {
         if (AREAS[a.area] || PLAN.extraExercises[a.area]) {
           const ex = ov.extras.find((e) => e.area === a.area);
           if (ex) ex.count = Math.max(ex.count, a.count || 1);
-          else ov.extras.push({ area: a.area, side: sideWord(a.side) || null, count: a.count || 1 });
+          else ov.extras.push({ area: a.area, side: sideWord(a.side) || null, count: a.count || 1, level: ampel === 'rot' ? 1 : diffDays(date, c.date) >= 7 ? 2 : 1 });
         }
       }
       ov.extras = ov.extras.slice(0, 5);
-      if (isStrengthDay && d.reason) ov.reasons.push(`Coach: ${d.reason}`);
+      if (d.reason) (ov.extraReasons ||= []).push(`Coach: ${d.reason}`);
     }
     if (c.date !== date) continue;
     if (c.kind === 'run') {
@@ -330,6 +378,7 @@ export function adjust(date, data = {}) {
     if (m.field === 'pause') ov.pause = m.value === '1';
     if (m.field === 'moved') ov.moved = true;
     if (m.field === 'addSession') { try { ov.addSession = JSON.parse(m.value); } catch { /* alt */ } }
+    if (m.field === 'addRun' && PLAN.workouts[m.value]) ov.addRun = m.value;
     if (m.field === 'runNote') ov.runNote = m.value;
     if (m.field === 'swapTo') ov.swapTo = m.value;
     if (m.field === 'skip') ov.skip = true;
@@ -340,21 +389,23 @@ export function adjust(date, data = {}) {
 }
 
 /** Stellen, die in den letzten 21 Tagen gezwickt haben (Lauf-Eintrag, Notiz oder Morgen-Check). */
-export function weakSpots(date, runs = [], checks = [], notes = []) {
+export function weakSpots(date, runs = [], checks = [], notes = [], spotChecks = []) {
   const hits = {};
   const add = (area, side, d) => {
     if (!AREAS[area]) return;
-    const h = (hits[area] ||= { area, count: 0, side: null, last: d });
+    const h = (hits[area] ||= { area, count: 0, side: null, last: d, first: d });
     h.count++;
     if (side) h.side = side;
     if (d >= h.last) h.last = d;
+    if (d < h.first) h.first = d;
   };
   for (const r of runs) {
     if (r.date > date || diffDays(date, r.date) > 21) continue;
     const fromNote = parseNote(r.note || '');
     const side = sideWord(r.pain_side) || fromNote.side;
-    if ((r.pain ?? 0) >= 2 && r.pain_where) for (const w of String(r.pain_where).split(',')) add(w.trim(), side, r.date);
-    else if (fromNote.areas.length && /zwick|schmerz|weh|zieh|stech|drück/i.test(r.note || '')) for (const a of fromNote.areas) add(a, side, r.date);
+    const known = r.pain_where ? String(r.pain_where).split(',').map((w) => w.trim()).filter((w) => AREAS[w]) : [];
+    if ((r.pain ?? 0) >= 2 && known.length) for (const w of known) add(w, side, r.date);
+    else if (fromNote.areas.length && ((r.pain ?? 0) >= 2 || /zwick|schmerz|weh|zieh|stech|drück|komisch/i.test(r.note || ''))) for (const a of fromNote.areas) add(a, side, r.date);
   }
   for (const n of notes) {
     if (n.date > date || diffDays(date, n.date) > 21) continue;
@@ -366,6 +417,12 @@ export function weakSpots(date, runs = [], checks = [], notes = []) {
     if ((c.squat ?? 0) >= 3) add('knie', null, c.date);
     if ((c.shin ?? 0) >= 3) add('schienbein', null, c.date);
   }
+  // Antworten auf die Nachfrage: „schlimmer“ zählt wie eine neue Meldung, „gleich“ hält die Stelle aktiv
+  for (const c of spotChecks) {
+    if (c.date > date || diffDays(date, c.date) > 21 || !hits[c.area]) continue;
+    if (c.answer === 'schlimmer') add(c.area, null, c.date);
+    else if (c.answer === 'gleich' && c.date > hits[c.area].last) hits[c.area].last = c.date;
+  }
   return Object.values(hits).sort((a, b) => b.count - a.count);
 }
 
@@ -375,7 +432,7 @@ export function weekReport(date, data, doneByDate = {}) {
   const days = Array.from({ length: 7 }, (_, i) => addDays(mon, i));
   let planned = 0; let done = 0;
   for (const d of days) {
-    const day = getDay(d);
+    const day = getDay(d, { overrides: adjust(d, data).overrides });
     if (day.type === 'run' || day.type === 'strength') {
       planned++;
       const ids = doneByDate[d] || [];
@@ -390,10 +447,10 @@ export function weekReport(date, data, doneByDate = {}) {
   const amp = days.map((d) => checkColor((data.checks || []).find((c) => c.date === d)) || '–');
   const next = adjust(addDays(days[6], 1), data);
   const weekNo = planWeek(date);
-  let coach = done >= 4 ? 'Woche geschafft! 💪 ' : `Diese Woche ${done} von ${planned}. Nicht nachholen – nächste Woche normal weiter. `;
+  let coach = done >= 4 ? 'Woche geschafft! 💪 ' : `Diese Woche ${done} von ${planned}. Hol nichts nach. Mach nächste Woche normal weiter. `;
   if (easy.length && avg(easy) > 164) coach += 'Die lockeren Läufe waren zu schnell, nächste Woche bewusst langsamer. ';
   const spots = weakSpots(days[6], data.runs, data.checks);
   if (spots.length) coach += `Fokus nächste Woche: ${spots.map((s) => AREAS[s.area].label).join(', ')} – dafür gibt es Extra-Übungen in Kraft A und B. `;
-  if (weekNo >= 1 && weekNo < 12 && weekInfo(weekNo + 1).easy) coach += 'Nächste Woche ist eine leichte Woche: weniger, damit du stärker wirst.';
+  if (weekNo >= 1 && weekNo < 12 && weekInfo(weekNo + 1).easy) coach += 'Nächste Woche ist leichter. In der Pause wird dein Körper stärker.';
   return { week: weekNo, planned, done, km: Math.round(km * 10) / 10, easyHr: easy.length ? Math.round(avg(easy)) : null, longest: Math.round(longest * 10) / 10, ampel: amp, coach: coach.trim(), nextMessages: next.messages };
 }

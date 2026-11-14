@@ -106,8 +106,8 @@ function buildExercise(ex, week, ctx, prefix) {
     fp: !!dose.fp,
     shift,
   };
-  if (shift > 0) item.shiftNote = 'Du fandest das zweimal zu leicht – darum jetzt die nächste Stufe.';
-  if (shift < 0) item.shiftNote = 'Du fandest das zu schwer – darum jetzt die leichtere Stufe.';
+  if (shift > 0) item.shiftNote = 'Das war dir zweimal zu leicht. Darum kommt jetzt die schwerere Stufe.';
+  if (shift < 0) item.shiftNote = 'Das war dir zu schwer. Darum kommt jetzt die leichtere Stufe.';
   if (ctx.probe) item.doseText = `Probe: ${probeText(dose.text)}`;
   return item;
 }
@@ -144,7 +144,7 @@ export function strengthSession(key, week, ctx = {}) {
     items[0] = {
       ...items[0],
       name: items[0].name.replace(/\((\d+) min\)/, (_, m) => `(ca. ${Number(m) + 4} min)`),
-      steps: [...items[0].steps, `Functional Patterns diese Woche: ${spots.map((s) => SPOT_DE[s] || s).join(' · ')} – je Seite 1 min. Nicht direkt hinter dem Innenknöchel und nicht auf der Schienbeinkante.`],
+      steps: [...items[0].steps, `Functional Patterns diese Woche: ${spots.map((s) => SPOT_DE[s] || s).join(' · ')}. Roll jede Seite 1 min. Nie direkt hinter dem Innenknöchel. Nie auf der Schienbeinkante.`],
     };
   }
   if (ctx.mini) {
@@ -153,13 +153,18 @@ export function strengthSession(key, week, ctx = {}) {
   // Schwachstellen-Extras (vom Coach): zusätzliche Übungen für betroffene Stellen
   for (const ext of ctx.extras || []) {
     const list = PLAN.extraExercises[ext.area] || [];
-    for (const x of list.slice(0, ext.count || 1)) {
-      items.push({
+    for (const x0 of list.slice(0, ext.count || 1)) {
+      if (items.some((it) => it.exId === x0.id)) continue;
+      const lv = Math.max(1, Math.min(3, ext.level || 1));
+      const dose = (lv > 1 && x0.levels && x0.levels[lv - 2]) || x0.dose;
+      const x = { ...x0, dose };
+      items.push({ level: lv,
         id: `${prefix}:${x.id}`, kind: 'exercise', exId: x.id, extra: true, area: ext.area, side: ext.side || null,
         name: x.name, why: x.why, start: x.start, steps: x.steps, watch: x.watch, mistake: x.mistake, tool: x.tool, focus: [ext.area],
         doseText: ext.side && /je (Seite|Bein|Fuß)/.test(x.dose.text)
-          ? `${x.dose.text} – immer beide Seiten! Die ${ext.side} Seite zuerst und dort 1 Satz mehr.`
+          ? `${x.dose.text} – beide Seiten! ${ext.side[0].toUpperCase() + ext.side.slice(1)} Seite zuerst und 1 Satz mehr.`
           : x.dose.text,
+        cue: x.cue || null,
         sideExtra: !!ext.side && /je (Seite|Bein|Fuß)/.test(x.dose.text),
         sets: x.dose.sets, hold: x.dose.hold || null, weight: x.dose.weight, perSide: !!x.dose.perSide, fp: false,
       });
@@ -188,7 +193,7 @@ function fpMonday(week, fpFree) {
     title: fpw ? fpw.title : 'Wiederholung',
     goal: fpw ? fpw.goal : null,
     tools: fpw ? fpw.tools : 'Ball, Rolle',
-    text: fpWeekNo || !f.fpWeek ? f.monday : `Die FP-Woche ${f.fpWeek} ist bei dir noch nicht frei. Mach diese Woche einfach die aktuelle Woche weiter oder wiederhole Woche 2–3. Kein Stress.`,
+    text: fpWeekNo || !f.fpWeek ? f.monday : `FP-Woche ${f.fpWeek} ist bei dir noch gesperrt. Mach mit deiner aktuellen Woche weiter. Oder wiederhole Woche 2–3. Kein Stress.`,
     shopping: f.shopping || null,
     weekUrl: PLAN.fp.classUrl + (fpWeekNo || Math.max(2, Math.min(fpFree, 10))),
     lessons,
@@ -201,7 +206,7 @@ function runItems(date, workoutName, week, ctx) {
   items.push({ id: 'run:check', kind: 'check', name: 'Morgen-Check (30 s)', hop: w.kind !== 'easy', questions: PLAN.rules.morningCheck });
   items.push({ id: 'run:watch', kind: 'watch', name: `Auf der Uhr starten: ${workoutName}`, workout: workoutName, summary: w.summary, steps: w.steps, howto: PLAN.runCards[w.kind] });
   if (w.kind === 'long' && week >= 7 && (ctx.fpFree ?? expectedFpWeek(week)) >= 7) {
-    items.push({ id: 'run:stretch', kind: 'exercise', exId: 'PCS', name: 'Posterior Chain Stretch (FP)', why: 'Beinrückseite nach dem langen Lauf entspannen.', start: 'Nach dem Lauf, stehend oder auf der Matte.', steps: ['So wie im Kurs Woche 7 gezeigt.', 'Ruhig atmen.', '2 min insgesamt.'], watch: 'Nur angenehm ziehen.', mistake: 'Wippen.', tool: 'Matte', focus: [], doseText: '2 min', sets: 1, hold: 120, weight: 'ohne Gewicht' });
+    items.push({ id: 'run:stretch', kind: 'exercise', exId: 'PCS', name: 'Posterior Chain Stretch (FP)', why: 'Entspannt die Rückseite der Beine nach dem langen Lauf.', start: 'Direkt nach dem Lauf. Im Stehen oder auf der Matte.', steps: ['Mach es wie im Kurs in Woche 7.', 'Atme ruhig.', 'Mach insgesamt 2 min.'], watch: 'Nur angenehm ziehen.', mistake: 'Wippen.', tool: 'Matte', focus: [], doseText: '2 min', sets: 1, hold: 120, weight: 'ohne Gewicht' });
   }
   items.push({ id: 'run:log', kind: 'runlog', name: 'Nach dem Lauf eintragen', workout: workoutName, test: w.test || null, testLabel: w.testLabel || null });
   return items;
@@ -250,16 +255,16 @@ function getDayBase(date, ctx = {}) {
 
   // Anpassungen vom Coach
   if (ov.moved && (type === 'run' || type === 'strength')) {
-    return { ...base, type: 'rest', title: 'Auf morgen verschoben', minutes: 0, note: 'Heute frei – das Training ist auf morgen verschoben.', items: [], adjusted: true };
+    return { ...base, type: 'rest', title: 'Auf morgen verschoben', minutes: 0, note: 'Heute frei. Dein Training ist morgen.', items: [], adjusted: true };
   }
   if (type === 'strength' && ov.pause) {
     // Rot: nur Oberkörper und Rumpf
     const s = strengthSession('B', Math.max(week, 0), { fpFree, level1: true, noJumps: true });
     const items = s.items.filter((it) => ['B0', 'B4', 'B5', 'B6'].includes(it.exId));
-    return { ...base, type: 'strength', strengthKey: 'B', title: 'Nur Oberkörper und Rumpf', minutes: 20, note: 'Beine haben heute Pause. Oberkörper und Rumpf sind okay.', items, general: s.general, adjusted: true, hasMini: false };
+    return { ...base, type: 'strength', strengthKey: 'B', title: 'Nur Oberkörper und Rumpf', minutes: 20, note: 'Deine Beine haben heute Pause. Oberkörper und Bauch darfst du trainieren.', items, general: s.general, adjusted: true, hasMini: false };
   }
   if (type === 'run' && ov.pause) {
-    return { ...base, type: 'rest', title: 'Heute kein Lauf – Pause', minutes: 0, plannedWorkout: workout, note: ov.runNote || 'Heute nicht laufen. Oberkörper und Rumpf sind okay.', items: [], adjusted: true };
+    return { ...base, type: 'rest', title: 'Heute kein Lauf – Pause', minutes: 0, plannedWorkout: workout, note: ov.runNote || 'Heute nicht laufen. Oberkörper und Bauch darfst du trainieren.', items: [], adjusted: true };
   }
   if (type === 'run' && ov.workout && PLAN.workouts[ov.workout]) {
     base.plannedWorkout = workout; workout = ov.workout; base.adjusted = true;
@@ -272,12 +277,12 @@ function getDayBase(date, ctx = {}) {
     minutes = PLAN.workouts[workout].kind === 'long' ? PLAN.workouts[workout].km * 6.5 : 50;
     extra.runKind = PLAN.workouts[workout].kind;
     if (ov.runNote) note = ov.runNote;
-    if (ov.workout === 'Locker (frei)' && base.plannedWorkout && PLAN.workouts[base.plannedWorkout].kind === 'tempo') note = (note ? note + ' ' : '') + `Auf der Uhr „Locker (frei)“ starten statt „${base.plannedWorkout}“.`;
+    if (ov.workout === 'Locker (frei)' && base.plannedWorkout && PLAN.workouts[base.plannedWorkout].kind === 'tempo') note = (note ? note + ' ' : '') + `Starte auf der Uhr „Locker (frei)“, nicht „${base.plannedWorkout}“.`;
     if (week >= 1 && week <= 12 && wd === 0 && fpFree >= 7 && week >= 7) extra.postRunFp = true;
   } else if (type === 'strength') {
     const s = strengthSession(strengthKey, Math.max(week, 0), { fpFree, probe, mini: ctx.mini, level1: ov.level1, noJumps: ov.noJumps, extras: ov.extras, exShift: ov.exShift });
     title = probe ? title : s.title; minutes = s.minutes; items = s.items; extra.general = s.general; extra.strengthKey = strengthKey;
-    if (strengthKey === 'B' && week >= 11 && week <= 12) extra.general += ' Woche 11–12: Du darfst bei Übung 4–6 auch deine Lieblings-FP-Übungen aus Woche 5–10 nehmen (z. B. One Arm Row, The Press, Plank with Hip Extension).';
+    if (strengthKey === 'B' && week >= 11 && week <= 12) extra.general += ' Woche 11–12: Bei Übung 4–6 darfst du auch deine liebsten FP-Übungen aus Woche 5–10 nehmen. Zum Beispiel One Arm Row, The Press oder Plank with Hip Extension.';
     extra.hasMini = !probe;
   } else if (type === 'fp') {
     const fp = fpMonday(week, fpFree);
@@ -286,7 +291,7 @@ function getDayBase(date, ctx = {}) {
     title = title || 'Ruhetag';
     note = note || PLAN.runCards.rest;
     if (wd === 6 && week >= 1 && week <= 12) {
-      extra.optional = 'Freiwillig (10–15 min): Follow-Along-Video der FP-Woche abspielen und nur die „Machen“-Stellen mitmachen.';
+      extra.optional = 'Freiwillig (10–15 min): Spiel das Mitmach-Video der FP-Woche ab. Mach nur die „Machen“-Stellen mit.';
     }
   }
   if (week === 4) extra.dailyReminder = 'Heute 1 min Standing Neutral, z. B. beim Zähneputzen.';
@@ -295,7 +300,29 @@ function getDayBase(date, ctx = {}) {
   return { ...base, type, title, workout, minutes: Math.round(minutes), note, items, ...extra };
 }
 
+const CHECK_ITEM = () => ({ id: 'day:check', kind: 'check', name: 'Morgen-Check (30 s)', hop: false, questions: PLAN.rules.morningCheck });
+
 export function getDay(date, ctx = {}) {
+  let d = withSession(date, ctx);
+  const ov = ctx.overrides || {};
+  if (d.type === 'before') return d;
+  // Verschobener Lauf
+  if (ov.addRun && PLAN.workouts[ov.addRun]) {
+    const run = runItems(date, ov.addRun, Math.max(d.week, 0), { fpFree: d.fpFree });
+    if (d.type === 'rest' || d.type === 'fp') {
+      d = { ...d, type: 'run', workout: ov.addRun, title: `${ov.addRun} (verschoben)`, items: run, runKind: PLAN.workouts[ov.addRun].kind, minutes: 50, adjusted: true, note: null };
+    } else if (d.type === 'strength') {
+      d = { ...d, workout: ov.addRun, runKind: PLAN.workouts[ov.addRun].kind, items: [...run.filter((i) => i.kind !== 'check').map((i) => ({ ...i, id: i.id === 'run:watch' || i.id === 'run:log' ? i.id : `plus:${i.id}` })), { id: 'plus:section', kind: 'section', name: 'Danach: Krafttraining' }, ...d.items], minutes: d.minutes + 50, adjusted: true };
+    }
+  }
+  // Morgen-Check jeden Tag (für Ampel, Montags-Hocke, Rückkehr nach Rot)
+  if (!d.items.some((i) => i.kind === 'check')) d = { ...d, items: [CHECK_ITEM(), ...d.items] };
+  // Gründe für Extra-Übungen nur, wenn heute wirklich welche drin sind
+  if (ov.extraReasons?.length && d.items.some((i) => i.extra)) d = { ...d, reasons: [...d.reasons, ...ov.extraReasons.map((r, i) => (i === 0 ? r : r))] };
+  return d;
+}
+
+function withSession(date, ctx = {}) {
   const d = getDayBase(date, ctx);
   const ov = ctx.overrides || {};
   const add = ov.addSession;

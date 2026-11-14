@@ -42,7 +42,7 @@ describe('Verschieben zeigt die ganze Einheit', () => {
     const data = { manual: [{ date: '2026-11-21', field: 'addSession', value: JSON.stringify({ key: 'B' }) }] };
     const d = dayWith('2026-11-21', data);
     expect(d.type).toBe('strength');
-    expect(d.items[0].steps.length).toBeGreaterThanOrEqual(3);
+    expect(d.items.find((i) => i.kind === 'exercise').steps.length).toBeGreaterThanOrEqual(3);
   });
 });
 
@@ -73,6 +73,39 @@ describe('Extra-Übungen immer beidseitig', () => {
     const d = getDay('2026-11-18', { overrides: { extras: [{ area: 'knie', side: 'rechte', count: 2 }] } });
     const ex = d.items.filter((i) => i.extra);
     expect(ex.length).toBe(2);
-    for (const i of ex) expect(i.doseText).toContain('beide Seiten');
+    for (const i of ex.filter((x) => /je (Seite|Bein|Fuß)/.test(x.doseText))) expect(i.doseText).toContain('beide Seiten');
+    expect(ex.some((x) => x.doseText.includes('Rechte Seite zuerst'))).toBe(true);
+  });
+});
+
+describe('Fehler aus der Code-Prüfung', () => {
+  it('verschobener Lauf erscheint am Krafttag', () => {
+    const data = { manual: [{ date: '2026-11-18', field: 'addRun', value: 'Di Steigerungen' }] };
+    const d = dayWith('2026-11-18', data);
+    expect(d.items.some((i) => i.id === 'run:watch')).toBe(true);
+    expect(d.items.some((i) => i.kind === 'exercise')).toBe(true);
+  });
+  it('Morgen-Check gibt es jeden Tag', () => {
+    for (const d of ['2026-11-16', '2026-11-18', '2026-11-21']) expect(getDay(d).items.some((i) => i.kind === 'check')).toBe(true);
+  });
+  it('„Sonstiges“ + Notiz „rechtes Knie zwickt“ → Knie-Extras', () => {
+    const data = { runs: [{ date: '2026-11-17', workout: 'Di Steigerungen', pain: 4, pain_where: 'sonstiges', note: 'rechtes Knie zwickt' }] };
+    const d = dayWith('2026-11-18', data);
+    expect(d.items.some((i) => i.extra && i.area === 'knie')).toBe(true);
+  });
+  it('Extras steigen nach einer Woche auf Stufe 2', () => {
+    const data = { athleteNotes: [{ date: '2026-11-16', text: 'rechtes Schienbein zwickt' }] };
+    expect(dayWith('2026-11-18', data).items.find((i) => i.extra).level).toBe(1);
+    expect(dayWith('2026-11-25', { athleteNotes: [...data.athleteNotes, { date: '2026-11-24', text: 'Schienbein zwickt noch etwas' }] }).items.find((i) => i.extra).level).toBe(2);
+  });
+  it('Nachfrage am Tag nach der Meldung', async () => {
+    const { spotStatus } = await import('../shared/followup.js');
+    const { weakSpots } = await import('../shared/coach.js');
+    const notes = [{ date: '2026-11-17', text: 'rechtes Schienbein tut weh' }];
+    const st = spotStatus('2026-11-18', weakSpots('2026-11-18', [], [], notes, []), []);
+    expect(st[0].due).toBe(true);
+    expect(st[0].question).toBe("Wie geht's deinem rechten Schienbein heute?");
+    const st2 = spotStatus('2026-11-18', weakSpots('2026-11-18', [], [], notes, []), [{ date: '2026-11-18', area: 'schienbein', answer: 'besser' }]);
+    expect(st2[0].due).toBe(false);
   });
 });

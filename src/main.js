@@ -127,7 +127,7 @@ const ONB = [
   ['So funktioniert deine Woche', `<p>Jeden Tag steht hier genau, was dran ist – in der richtigen Reihenfolge. Du hakst ab, fertig.</p>
     <ul><li><b>Mo</b> Ruhetag + Functional Patterns</li><li><b>Di</b> Tempo-Lauf</li><li><b>Mi</b> Kraft A (Beine & Fuß)</li><li><b>Do</b> Lockerer Lauf</li><li><b>Fr</b> Kraft B (Hüfte, Rumpf, Oberkörper)</li><li><b>Sa</b> Ruhetag</li><li><b>So</b> Langer Lauf</li></ul>
     <p>Nach jedem Lauf trägst du kurz ein, wie es war. Dann passe ich den Plan an – wie ein echter Trainer.</p>`],
-  ['Deine Zonen in einem Satz', `<p><b>Locker heißt: Puls 154–162, du kannst ganze Sätze reden.</b> Die Uhr piept über 164 – dann langsamer oder gehen.</p>
+  ['Deine Zonen in einem Satz', `<p><b>Locker heißt: Puls 145–162 – du kannst noch ganze Sätze reden.</b> Die Uhr piept über 164 – dann langsamer oder gehen.</p>
     <p class="muted">Schnelle Stücke am Dienstag sagt dir die Uhr. Bergauf zählt nur der Puls, Gehen ist richtig.</p>`],
   ['So startest du ein Training auf der Uhr', `<ol><li>Laufen-Taste drücken</li><li><b>Up</b> lange halten</li><li>Training → Trainingskalender</li><li>Heutiges Training wählen → <b>Training ausführen</b></li></ol>
     <p class="muted">Welches Training es heute ist, steht immer oben in der App.</p>`],
@@ -168,68 +168,89 @@ async function enablePush() {
   return true;
 }
 
+const SPOTS = [['knie', 'Knie'], ['schienbein', 'Schienbein'], ['aussenknoechel', 'Knöchel außen'], ['innenknoechel', 'Knöchel innen'], ['ferse', 'Ferse'], ['wade', 'Wade'], ['grosszehe', 'Großzehe'], ['huefte', 'Hüfte'], ['schulter', 'Schulter'], ['sonstiges', 'Sonstiges']];
+// ---------- Icons (SVG statt Emojis) ----------
+const IC = {
+  run: '<path d="M13 4.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0"/><path d="M7 21l3-6 3 2v5M10 15l1-5 4 3 3-1M8 9l3-2 2 1"/>',
+  strength: '<path d="M6 7v10M18 7v10M3 9.5v5M21 9.5v5M6 12h12"/>',
+  fp: '<circle cx="12" cy="5" r="2"/><path d="M12 7v6l-4 7M12 13l4 7M6 10l6-1 6 1"/>',
+  rest: '<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/>',
+  before: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  coach: '<path d="M4 5h16v11H8l-4 4z"/><path d="M8 9h8M8 12h5"/>',
+  check: '<path d="M9 4h6v3H9z"/><path d="M7 5H5v15h14V5h-2"/><path d="M8.5 13l2.5 2.5L16 10"/>',
+  watch: '<rect x="6" y="6" width="12" height="12" rx="3"/><path d="M9 6l1-3h4l1 3M9 18l1 3h4l1-3M12 9v3l2 1"/>',
+  heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.01"/>',
+  send: '<path d="M4 12l16-8-6 16-2-6z"/>',
+};
+const icon = (k, cls = '') => `<svg class="ic ${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[k] || IC.info}</svg>`;
+const AREA_NAMES = { knie: 'Knie', schienbein: 'Schienbein', innenknoechel: 'Innenknöchel', aussenknoechel: 'Außenknöchel', grosszehe: 'Großzehe', wade: 'Wade', huefte: 'Hüfte', schulter: 'Schulter', ferse: 'Ferse' };
+
 // ---------- Heute ----------
 function exerciseCard(it, idx, done, fb) {
   const setsDone = done[it.id] || 0;
   const isDone = it.sets > 1 ? setsDone >= it.sets : setsDone > 0;
   const kg = it.weight && it.weight !== 'ohne Gewicht';
+  const isStart = it.exId.endsWith('0');
   return `
-  <div class="card ${isDone ? 'done' : ''}" data-id="${esc(it.id)}">
+  <div class="card ex-card ${isDone ? 'done' : ''} ${it.extra ? 'extra' : ''}" data-id="${esc(it.id)}">
     <div class="ex">
       <div class="num">${idx}</div>
-      <div>
-        ${it.extra ? '<div class="extra-badge">EXTRA FÜR DEINE SCHWACHSTELLE</div>' : ''}
+      <div class="ex-main">
+        ${it.extra ? `<div class="tag accent">Extra · ${esc(AREA_NAMES[it.area] || '')}${it.level > 1 ? ` · Stufe ${it.level}` : ''}</div>` : ''}
         <h3>${esc(it.name)}</h3>
         <div class="dose">${esc(it.doseText)}</div>
-        <span class="weight ${kg ? 'kg' : ''}">${kg ? '🏋️ ' : ''}${esc(it.weight)}</span>${it.tool ? `<span class="weight">🧰 ${esc(it.tool)}</span>` : ''}
-        ${it.extraSet ? `<div class="small" style="color:var(--accent);font-weight:650;margin-top:6px">${esc(it.extraSet)}</div>` : ''}
-        ${it.shiftNote ? `<div class="small muted" style="margin-top:6px">${esc(it.shiftNote)}</div>` : ''}
+        ${kg || it.extraSet ? `<div class="chips-inline">${kg ? `<span class="weight kg">${esc(it.weight)}</span>` : ''}${it.extraSet ? `<span class="weight acc">${esc(it.extraSet)}</span>` : ''}</div>` : ''}
+        ${it.cue ? `<div class="cue">„${esc(it.cue)}“</div>` : ''}
         <div class="collapse-when-done">
-          <div class="why">${esc(it.why)}</div>
-          ${it.sets > 1 ? `<div class="sets">${Array.from({ length: it.sets }, (_, k) => `<button class="set ${k < setsDone ? 'on' : ''}" data-set="${k + 1}">${k + 1}</button>`).join('')}</div>` : ''}
-          ${it.holds ? `<div class="row"><button class="btn small hold" data-holds="${it.holds.join(',')}">⏱ Runde starten (${it.holds.join(' / ')} s)</button></div>` : it.hold ? `<div class="row"><button class="btn small hold" data-hold="${it.hold}">⏱ ${fmtSec(it.hold)} halten</button></div>` : ''}
+          ${it.sets > 1 ? `<div class="sets" aria-label="Sätze">${Array.from({ length: it.sets }, (_, k) => `<button class="set ${k < setsDone ? 'on' : ''}" data-set="${k + 1}" aria-label="Satz ${k + 1}">${k + 1}</button>`).join('')}<span class="sets-hint">Satz antippen = Pause-Timer</span></div>` : ''}
+          ${it.holds ? `<button class="btn small hold" data-holds="${it.holds.join(',')}">Timer: ${it.holds.join(' / ')} s</button>` : it.hold ? `<button class="btn small hold" data-hold="${it.hold}">Timer: ${fmtSec(it.hold)} halten</button>` : ''}
           <details class="how"><summary>So geht's</summary><div class="how-body">
-            <h4>Startposition</h4><div>${esc(it.start)}</div>
-            <h4>Bewegung</h4><ol>${(it.steps || []).map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
-            <h4>Achte darauf</h4><div>${esc(it.watch)}</div>
-            <h4>Häufiger Fehler</h4><div>${esc(it.mistake)}</div>
-            ${it.perSide ? '<h4>Seiten</h4><div>Erst eine Seite, dann die andere. Die andere Seite ist die Pause.</div>' : ''}
+            <div class="how-start"><b>Start:</b> ${esc(it.start)}</div>
+            <ol class="how-steps">${(it.steps || []).map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
+            <div class="how-row ok"><b>Richtig:</b> ${esc(it.watch)}</div>
+            <div class="how-row bad"><b>Fehler:</b> ${esc(it.mistake)}</div>
+            ${it.perSide ? '<div class="how-row"><b>Seiten:</b> Erst eine Seite, dann die andere. Die andere Seite ist deine Pause.</div>' : ''}
+            ${it.tool ? `<div class="how-row"><b>Du brauchst:</b> ${esc(it.tool)}</div>` : ''}
+            <div class="how-row muted"><b>Wofür:</b> ${esc(it.why)}</div>
+            ${it.shiftNote ? `<div class="how-row muted">${esc(it.shiftNote)}</div>` : ''}
           </div></details>
         </div>
-        ${isDone && !it.exId.endsWith('0') && !it.extra ? `<div class="fb">Wie war's? <button data-fb="leicht" class="${fb[it.exId] === 'leicht' ? 'on' : ''}">zu leicht</button><button data-fb="ok" class="${!fb[it.exId] ? '' : ''}">passt</button><button data-fb="schwer" class="${fb[it.exId] === 'schwer' ? 'on' : ''}">zu schwer</button></div>` : ''}
+        ${isDone && !isStart && !it.extra ? `<div class="fb"><span>Wie war's?</span><button data-fb="leicht" class="${fb[it.exId] === 'leicht' ? 'on' : ''}">zu leicht</button><button data-fb="ok" class="${fb[it.exId] === 'ok' ? 'on' : ''}">passt</button><button data-fb="schwer" class="${fb[it.exId] === 'schwer' ? 'on' : ''}">zu schwer</button></div>` : ''}
       </div>
-      <button class="tick" aria-label="Erledigt">${TICK}</button>
+      <button class="tick" aria-label="Übung erledigt">${TICK}</button>
     </div>
   </div>`;
 }
 
-function checkCard(it, check) {
+function checkCard(it, check, day) {
   const v = check || {};
   const done = !!check;
-  return `<div class="card ${done ? 'done' : ''}" id="check" data-id="run:check">
-    <div class="ex"><div class="num">✓</div><div>
-      <h3>${esc(it.name)}</h3><div class="why">Vor dem Lauf. 0 = nichts, 10 = sehr schlimm.</div>
-      <div class="collapse-when-done">
-        ${slider('squat', 'Tief in die Hocke und hoch – Schmerz?', v.squat ?? 0)}
-        ${slider('shin', 'Schienbein abdrücken – Schmerz?', v.shin ?? 0)}
-        ${it.hop ? slider('hop', '10 Hüpfer je Bein – Schmerz?', v.hop ?? 0) : ''}
-        <label class="check"><input type="checkbox" id="c-bone" ${v.bone ? 'checked' : ''}> Ein Punkt am Knochen tut beim Drücken weh</label>
-        <label class="check"><input type="checkbox" id="c-limp" ${v.limp ? 'checked' : ''}> Ich hinke</label>
-        <label class="check"><input type="checkbox" id="c-sick" ${v.sick ? 'checked' : ''}> Ich bin krank</label>
-        <label class="f">Ruhepuls heute (optional, von der Uhr)</label><input class="in" id="c-rhr" inputmode="numeric" value="${v.rhr ?? ''}" placeholder="z. B. 54">
-        <button class="btn primary block" id="save-check" style="margin-top:14px">Check speichern</button>
-      </div>
-      ${done ? '<div class="small muted" style="margin-top:6px">Gespeichert. Antippen zum Ändern.</div>' : ''}
-    </div><button class="tick" aria-label="Erledigt">${TICK}</button></div></div>`;
+  const needed = day.type === 'run' || day.weekday === 1 || (state.data?.ampel && state.data.ampel !== 'gruen');
+  return `<div class="card check-card ${done ? 'done' : ''}" id="check" data-id="${esc(it.id)}">
+    <div class="row-head">${icon('check')}<div><h3>Wie geht's dir heute?</h3>
+      <div class="sub">${done ? 'Check gemacht ✓' : needed ? '30 Sekunden – entscheidet, ob heute alles passt.' : 'Optional heute.'}</div></div>
+      <button class="btn small ${done ? '' : 'primary'}" id="check-open">${done ? 'Ändern' : 'Check'}</button></div>
+    <div class="check-body" hidden>
+      ${slider('squat', 'Tief in die Hocke und wieder hoch. Tut etwas weh?', v.squat ?? 0)}
+      ${slider('shin', 'Mit dem Daumen innen am Schienbein entlang drücken. Schmerz?', v.shin ?? 0)}
+      ${it.hop ? slider('hop', '10 Hüpfer auf jedem Bein. Schmerz?', v.hop ?? 0) : ''}
+      <p class="small muted">0 = nichts · 3 = merkbar · 5 = stark</p>
+      <label class="check"><input type="checkbox" id="c-bone" ${v.bone ? 'checked' : ''}> Ein Punkt am Knochen tut beim Drücken weh</label>
+      <label class="check"><input type="checkbox" id="c-limp" ${v.limp ? 'checked' : ''}> Ich hinke</label>
+      <label class="check"><input type="checkbox" id="c-sick" ${v.sick ? 'checked' : ''}> Ich bin krank (Fieber, Halsweh, Husten)</label>
+      <label class="f" for="c-rhr">Ruhepuls von der Uhr (optional)</label><input class="in" id="c-rhr" inputmode="numeric" value="${v.rhr ?? ''}" placeholder="z. B. 54">
+      <button class="btn primary block" id="save-check" style="margin-top:14px">Speichern</button>
+    </div></div>`;
 }
 function slider(id, label, val) {
-  return `<label class="f">${esc(label)}</label><div class="slider"><input type="range" min="0" max="10" step="1" id="s-${id}" value="${val}" oninput="this.nextElementSibling.value=this.value"><output>${val}</output></div>`;
+  return `<label class="f" for="s-${id}">${esc(label)}</label><div class="slider"><input type="range" min="0" max="10" step="1" id="s-${id}" value="${val}" oninput="this.nextElementSibling.value=this.value"><output>${val}</output></div>`;
 }
 function watchCard(it, day) {
-  return `<div class="card" data-id="run:watch"><div class="label">Auf der Uhr starten</div>
-    <h3 style="font-size:20px">⌚ ${esc(it.workout)}</h3>
-    ${day.plannedWorkout ? `<div class="small" style="color:var(--accent);font-weight:650;margin-top:4px">Statt „${esc(day.plannedWorkout)}“ (angepasst)</div>` : ''}
-    <p class="why">${esc(it.summary)}</p>
+  return `<div class="card watch-card" data-id="run:watch">
+    <div class="row-head">${icon('watch')}<div><div class="label">Auf der Uhr starten</div><h3>${esc(it.workout)}</h3></div></div>
+    ${day.plannedWorkout ? `<div class="tag accent">statt „${esc(day.plannedWorkout)}“</div>` : ''}
+    <p class="lead">${esc(it.summary)}</p>
     <ol class="steps-list">${it.steps.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
     <details class="how"><summary>So startest du es auf der Uhr</summary><div class="how-body"><ol>${it.howto.map((s) => `<li>${esc(s)}</li>`).join('')}</ol></div></details>
   </div>`;
@@ -238,23 +259,41 @@ function analysisHtml(r) {
   const a = r.auto;
   if (!a && !r.analysis) return '';
   const cls = a ? (a.verdict === 'gut' ? 'good' : a.verdict === 'achtung' ? 'warn' : 'info') : 'info';
-  return `<div class="card note ${cls}"><div class="label">Coach-Auswertung · ${esc(r.workout || 'Lauf')}</div>
-    ${a ? `<h3 style="margin-bottom:6px">${esc(a.title)}</h3>${a.points.map((p) => `<p style="margin:4px 0">${p.icon} ${esc(p.text)}</p>`).join('')}${a.tip ? `<p style="margin-top:8px"><b>Tipp:</b> ${esc(a.tip)}</p>` : ''}` : ''}
-    ${r.analysis ? `<div class="label" style="margin-top:12px">Nachricht von Claude</div><p style="margin:0">${esc(r.analysis)}</p>` : ''}
+  return `<div class="card note ${cls}"><div class="label">Auswertung · ${esc(r.workout || 'Lauf')}</div>
+    ${r.analysis ? `<p class="coach-text">${esc(r.analysis)}</p>` : ''}
+    ${a ? `<details class="how"><summary>${esc(a.title)} – Details</summary><div class="how-body">${a.points.map((p) => `<p style="margin:4px 0">${p.icon} ${esc(p.text)}</p>`).join('')}${a.tip ? `<p style="margin-top:8px"><b>Tipp:</b> ${esc(a.tip)}</p>` : ''}</div></details>` : ''}
   </div>`;
 }
 function runSummary(r) {
   const pace = r.distance_m && r.duration_s ? r.duration_s / (r.distance_m / 1000) : null;
-  return [r.distance_m ? (r.distance_m / 1000).toFixed(1) + ' km' : null, r.duration_s ? fmtSec(r.duration_s) + ' min' : null, pace ? fmtSec(Math.round(pace)) + ' /km' : null, r.hr_avg ? 'Ø ' + r.hr_avg + ' Puls' : null, r.cadence ? r.cadence + ' Schritte/min' : null, r.source === 'garmin' ? 'von Garmin' : r.source === 'strava' ? 'von Strava' : null].filter(Boolean).join(' · ');
+  return [r.distance_m ? (r.distance_m / 1000).toFixed(1) + ' km' : null, r.duration_s ? Math.round(r.duration_s / 60) + ' min' : null, pace ? fmtSec(Math.round(pace)) + ' /km' : null, r.hr_avg ? 'Puls ' + r.hr_avg : null].filter(Boolean).join(' · ');
 }
-function runlogCard(it, runs) {
-  const r = runs[0];
-  return `<div class="card ${r && r.rpe ? 'done' : ''}" data-id="run:log"><div class="ex"><div class="num">📝</div><div>
-    <h3>${esc(it.name)}</h3>
-    ${r ? `<div class="dose">${esc(runSummary(r))}</div>` : ''}
-    <div class="why">${r && r.rpe ? 'Eingetragen ✓ – antippen zum Ändern.' : r ? 'Die Uhr hat die Werte geschickt. Trag noch ein, wie es sich angefühlt hat und ob etwas gezwickt hat.' : 'Kommt nach dem Lauf automatisch von der Uhr. Oder selbst eintragen – dauert 1 Minute.'}</div>
-    <div class="row"><a class="btn primary" href="#lauf">${r && r.rpe ? 'Ändern' : 'Jetzt eintragen'}</a></div>
-  </div><div></div></div></div>`;
+const FEELS = [[2, '😌', 'locker'], [4, '🙂', 'gut'], [6, '😐', 'mittel'], [8, '😓', 'hart'], [10, '🥵', 'Limit']];
+/** Kurze Frage nach dem Lauf: Gefühl + Schmerz. */
+function feelCard(r) {
+  return `<div class="card feel-card" data-run="${r.id}">
+    <div class="row-head">${icon('run')}<div><h3>Wie war dein Lauf?</h3><div class="sub">${esc(runSummary(r))}</div></div></div>
+    <div class="feels">${FEELS.map(([v, e, l]) => `<button class="feel" data-v="${v}"><span>${e}</span>${l}</button>`).join('')}</div>
+    <div class="feel-more" hidden>
+      <div class="label" style="margin-top:14px">Hat etwas wehgetan oder gezwickt?</div>
+      <div class="chips" id="hurt"><button class="chip" data-k="nein">Nein, alles gut</button><button class="chip" data-k="ja">Ja</button></div>
+      <div id="hurt-more" hidden>
+        <div class="mini-label">Wo?</div><div class="chips" id="fwhere">${SPOTS.map(([k, l]) => `<button class="chip" data-k="${k}">${l}</button>`).join('')}</div>
+        <div class="mini-label">Welche Seite?</div><div class="chips" id="fside">${['links', 'rechts', 'beide'].map((s) => `<button class="chip" data-k="${s}">${s}</button>`).join('')}</div>
+        ${slider('fpain', 'Wie stark? (0–10)', 2)}
+        <div class="mini-label">Ist es wieder weg?</div><div class="chips" id="fgone"><button class="chip" data-k="schnell">war schnell weg</button><button class="chip" data-k="noch">ist noch da</button></div>
+        <textarea class="in" id="fnote" placeholder="Optional: z. B. „beim Bergablaufen“"></textarea>
+      </div>
+      <button class="btn primary block" id="feel-save" style="margin-top:12px">Fertig</button>
+    </div>
+    <div id="feel-reply"></div>
+  </div>`;
+}
+function followCard(f) {
+  return `<div class="card follow-card" data-area="${esc(f.area)}" data-side="${esc(f.side || '')}">
+    <div class="row-head">${icon('heart')}<div><div class="label">Kurze Nachfrage</div><h3>${esc(f.question)}</h3></div></div>
+    <div class="answers">${[['weg', 'Weg'], ['besser', 'Besser'], ['gleich', 'Gleich'], ['schlimmer', 'Schlimmer']].map(([k, l]) => `<button class="ans ${k}" data-a="${k}">${l}</button>`).join('')}</div>
+    <div class="follow-reply"></div></div>`;
 }
 
 function fpView(day, done) {
@@ -264,26 +303,53 @@ function fpView(day, done) {
   const n = fp.lessons.filter((l) => done[l.id]).length;
   const links = state.data?.settings?.fpLinks || {};
   return `
-  <div class="card"><div class="label">Functional Patterns</div>
-    <h3>${fp.fpWeek ? `FP-Woche ${fp.fpWeek} von 10 · ${esc(fp.title)}` : 'Wiederholungswoche'}</h3>
-    ${fp.goal ? `<p class="why">${esc(fp.goal)}</p>` : ''}
-    <p>${esc(fp.text)}</p>
-    <p class="small"><b>Werkzeug:</b> ${esc(fp.tools)}</p>
+  <div class="card"><div class="label">Functional Patterns · Woche ${fp.fpWeek || day.fpFree} von 10</div>
+    <h3>${fp.fpWeek ? esc(fp.title) : 'Wiederholungswoche'}</h3>
+    <p class="lead">${esc(fp.text)}</p>
     <div class="bar"><i style="width:${((fp.fpWeek || Math.min(day.fpFree, 10)) / 10) * 100}%"></i></div>
-    <div class="small muted" style="margin-top:4px">Functional Patterns: Woche ${fp.fpWeek || day.fpFree} von 10</div>
     <div class="row"><a class="btn primary" href="${esc(fp.weekUrl)}" target="_blank" rel="noopener">Woche im Kurs öffnen</a></div>
-    <details class="how"><summary>Was ist Functional Patterns?</summary><div class="how-body"><p>${esc(PLAN.fp.explain)}</p><h4>Regeln fürs Rollen</h4><p>${esc(PLAN.fp.rollRules)}</p><h4>Wichtig</h4><p>${esc(PLAN.fp.unlockNote)}</p></div></details>
+    <details class="how"><summary>Was ist Functional Patterns?</summary><div class="how-body"><p>${esc(PLAN.fp.explain)}</p><p><b>Rollen:</b> ${esc(PLAN.fp.rollRules)}</p><p><b>Werkzeug:</b> ${esc(fp.tools)}</p>${fp.goal ? `<p><b>Ziel:</b> ${esc(fp.goal)}</p>` : ''}</div></details>
   </div>
-  ${day.shopping ? `<div class="card note warn"><b>🛒 ${esc(day.shopping)}</b></div>` : ''}
-  ${total ? `<div class="label" style="margin:16px 4px 8px">Lektionen der Reihe nach · ${n} von ${total}</div>` : ''}
+  ${day.shopping ? `<div class="card note warn"><b>Einkaufen:</b> ${esc(day.shopping)}</div>` : ''}
+  ${total ? `<div class="sec-label">Lektionen · ${n} von ${total}</div>` : ''}
   ${fp.lessons.map((l, i) => `
-    <div class="card ${done[l.id] ? 'done' : ''}" data-id="${esc(l.id)}">
-      <div class="ex"><div class="num">${i + 1}</div><div>
-        <h3>${esc(l.name)} <span class="lesson-mode ${l.mode}">${l.mode === 'machen' ? 'Machen' : l.mode === 'freiwillig' ? 'Freiwillig' : 'Nur ansehen'}</span></h3>
-        <div class="why">${esc(l.how)}</div>
-        <div class="row collapse-when-done"><a class="btn small" href="${esc(links[l.lessonId] || l.url)}" target="_blank" rel="noopener">▶ Video öffnen</a></div>
-      </div><button class="tick" aria-label="Erledigt">${TICK}</button></div>
+    <div class="card ex-card ${done[l.id] ? 'done' : ''}" data-id="${esc(l.id)}">
+      <div class="ex"><div class="num">${i + 1}</div><div class="ex-main">
+        <h3>${esc(l.name)}</h3><span class="lesson-mode ${l.mode}">${l.mode === 'machen' ? 'Mitmachen' : l.mode === 'freiwillig' ? 'Freiwillig' : 'Nur ansehen'}</span>
+        <div class="collapse-when-done"><div class="sub">${esc(l.how)}</div><div class="row"><a class="btn small" href="${esc(links[l.lessonId] || l.url)}" target="_blank" rel="noopener">Video öffnen</a></div></div>
+      </div><button class="tick" aria-label="Lektion erledigt">${TICK}</button></div>
     </div>`).join('')}`;
+}
+
+function coachCard(data, day) {
+  const notes = data.notes || [];
+  const reasons = day.reasons || [];
+  const msgs = data.messages || [];
+  if (!notes.length && !reasons.length && !msgs.length && !day.note) return '';
+  const latest = notes[0];
+  const warn = msgs.find((m) => m.type === 'warn');
+  const more = [...notes.slice(1).map((n) => n.text), ...msgs.filter((m) => m !== warn).map((m) => m.text)];
+  return `<div class="card coach-card ${warn ? 'warn' : ''}">
+    <div class="row-head">${icon('coach')}<div class="label">Dein Coach</div></div>
+    ${warn ? `<p class="coach-text strong">${esc(warn.text)}</p>` : ''}
+    ${latest ? `<p class="coach-text">${esc(latest.text)}</p>` : ''}
+    ${reasons.length ? `<div class="adjusted"><b>Heute angepasst:</b> ${esc(reasons[0])}</div>${reasons.length > 1 ? `<details class="how"><summary>Mehr Gründe (${reasons.length - 1})</summary><div class="how-body">${reasons.slice(1).map((r) => `<p>${esc(r)}</p>`).join('')}</div></details>` : ''}` : ''}
+    ${!latest && !reasons.length && day.note ? `<p class="coach-text">${esc(day.note)}</p>` : ''}
+    ${more.length ? `<details class="how"><summary>Weitere Hinweise (${more.length})</summary><div class="how-body">${more.map((t) => `<p>${esc(t)}</p>`).join('')}</div></details>` : ''}
+  </div>`;
+}
+
+function chatCard(data) {
+  const mine = (data.myNotes || []).map((n) => ({ t: n.created_at || '', me: true, text: n.text }));
+  const firstMine = mine.map((m) => m.t).sort()[0];
+  const theirs = (data.notes || []).filter((n) => n.date === state.date && firstMine && (n.created_at || '') > firstMine).map((n) => ({ t: n.created_at || '', me: false, text: n.text }));
+  const conv = [...mine, ...theirs].sort((a, b) => a.t.localeCompare(b.t)).slice(-6);
+  return `<div class="card chat-card" id="coachnote">
+    <div class="row-head">${icon('coach')}<div><h3>Schreib deinem Coach</h3><div class="sub">Zwickt was? Müde? Frage? Er antwortet gleich.</div></div></div>
+    <div class="bubbles" id="bubbles">${conv.map((m) => `<div class="bubble ${m.me ? 'me' : ''}">${esc(m.text)}</div>`).join('')}</div>
+    <div class="chat-input"><textarea class="in" id="cn-text" rows="2" placeholder="z. B. „Rechtes Schienbein hat beim Laufen etwas wehgetan“"></textarea>
+    <button class="btn primary send" id="cn-send" aria-label="Senden">${icon('send')}</button></div>
+  </div>`;
 }
 
 async function renderToday() {
@@ -296,62 +362,65 @@ async function renderToday() {
     state.data = data;
   } catch (e) {
     if (e instanceof AuthError) return renderLogin(e.message);
-    // offline: Plan trotzdem zeigen
     data = { day: getDay(state.date, { mini: state.mini }), done: {}, runs: [], notes: [], messages: [], feedback: {}, ampel: null, offline: true, settings: {} };
     state.data = data;
   }
   if (data.settings && data.settings.onboarded === false && !sessionStorage.getItem('onbSkip')) { sessionStorage.setItem('onbSkip', '1'); return renderOnboarding(0); }
-  const { day, done, runs, notes, messages, feedback, ampel, check } = data;
+  const { day, done, runs, feedback, ampel, check } = data;
   const isToday = state.date === today();
-  const weekLabel = day.week === 0 ? 'Woche 0 · Vorbereitung' : day.week > 12 ? 'Nach dem Plan' : `Woche ${day.week} · Level ${day.level}${day.easy ? ' · leichte Woche' : ''}`;
-  const typeIcon = { run: '🏃', strength: '💪', fp: '🧘', rest: '😴', before: '⏳' }[day.type] || '';
-  const ampelPill = ampel ? `<span class="pill ${ampel}">${ampel === 'gruen' ? 'Grün' : ampel === 'gelb' ? 'Gelb' : 'Rot'}</span>` : '';
+  const weekLabel = day.week === 0 ? 'Vorbereitung' : day.week > 12 ? 'Nach dem Plan' : `Woche ${day.week} von 12${day.easy ? ' · leichte Woche' : ''}`;
+  const AMPEL = { gruen: ['Grün', 'Alles okay'], gelb: ['Gelb', 'Heute vorsichtiger'], rot: ['Rot', 'Heute Pause für die Beine'] };
 
-  const counted = day.items.filter((it) => it.kind !== 'watch' && it.kind !== 'section');
+  const counted = day.items.filter((it) => !['watch', 'section'].includes(it.kind) && !(it.kind === 'check' && day.type !== 'run'));
   const doneCount = counted.filter((it) => isItemDone(it, done, runs, check)).length;
   const allDone = counted.length > 0 && doneCount === counted.length;
+  const pct = counted.length ? Math.round((doneCount / counted.length) * 100) : 0;
 
   let html = `
-  <div class="head">
-    <div class="date">${isToday ? '' : '<span class="muted" style="font-size:16px;font-weight:600;display:block">Vorschau</span>'}${esc(day.label)}</div>
-    <div class="meta">${esc(weekLabel)}</div>
-    <div class="type">${typeIcon} ${esc(day.title)}${day.minutes ? ` <span class="pill">${day.minutes} min</span>` : ''} ${ampelPill}</div>
-    <div class="dayswitch"><button data-go="-1">‹ Gestern</button>${isToday ? '' : '<button data-go="0">Heute</button>'}<button data-go="1">Morgen ›</button></div>
-  </div>`;
+  <header class="head">
+    <div class="head-top"><span class="meta">${isToday ? 'Heute' : 'Vorschau'} · ${esc(day.label)}</span><span class="meta">${esc(weekLabel)}</span></div>
+    <div class="head-main">
+      <div class="type-ic ${day.type}">${icon(day.type)}</div>
+      <div class="head-title"><h1>${esc(day.title)}</h1>
+        <div class="chips-inline">${day.minutes ? `<span class="pill">${day.minutes} min</span>` : ''}${ampel ? `<span class="pill ${ampel}" title="${AMPEL[ampel][1]}"><i class="dot-c"></i>${AMPEL[ampel][0]} · ${AMPEL[ampel][1]}</span>` : ''}</div></div>
+      ${counted.length > 1 ? `<div class="ring" style="--p:${pct}"><span>${doneCount}/${counted.length}</span></div>` : ''}
+    </div>
+    <div class="dayswitch"><button data-go="-1" aria-label="Vorheriger Tag">‹</button>${isToday ? '' : '<button data-go="0">Heute</button>'}<button data-go="1" aria-label="Nächster Tag">›</button></div>
+  </header>`;
   if (data.offline) html += '<div class="card note warn small">Offline – Haken werden gerade nicht gespeichert.</div>';
-  for (const n of notes || []) html += `<div class="card note claude"><div class="label">Nachricht von Claude</div>${esc(n.text)}</div>`;
-  for (const r of day.reasons || []) html += `<div class="card note"><div class="label">Heute angepasst</div>${esc(r)}</div>`;
-  for (const m of messages || []) html += `<div class="card note ${m.type}"><div class="label">Coach</div>${esc(m.text)}</div>`;
-  if (day.note) html += `<div class="card"><p style="margin:0">${esc(day.note)}</p></div>`;
-  if (day.dailyReminder) html += `<div class="card note info">🧍 ${esc(day.dailyReminder)}</div>`;
-  if (day.general) html += `<div class="card note info small">${esc(day.general)}</div>`;
 
+  // 1. Fragen zuerst: Nachfrage, Lauf-Gefühl
+  for (const f of data.followups || []) if (isToday) html += followCard(f);
+  const openRun = runs.find((r) => !r.rpe);
+  if (openRun && state.date <= today()) html += feelCard(openRun);
+
+  // 2. Coach
+  html += coachCard(data, day);
+  if (day.general && day.type === 'strength') html += `<details class="how general"><summary>So läuft die Einheit ab</summary><div class="how-body">${esc(day.general)}</div></details>`;
+  if (day.dailyReminder) html += `<div class="card note info small">${esc(day.dailyReminder)}</div>`;
+
+  // 3. Training
   if (day.type === 'fp') html += fpView(day, done);
   let idx = 0;
   for (const it of day.items) {
     if (it.kind === 'exercise') html += exerciseCard(it, idx++, done, feedback || {});
-    else if (it.kind === 'check') html += checkCard(it, check);
+    else if (it.kind === 'check') html += checkCard(it, check, day);
     else if (it.kind === 'watch') html += watchCard(it, day);
-    else if (it.kind === 'runlog') { html += runlogCard(it, runs); for (const r of runs) html += analysisHtml(r); }
-    else if (it.kind === 'section') { html += `<div class="label" style="margin:22px 4px 8px;font-size:14px;color:var(--accent)">${esc(it.name)}</div>`; if (it.general) html += `<div class="card note info small">${esc(it.general)}</div>`; idx = 0; }
+    else if (it.kind === 'runlog') {
+      for (const r of runs) html += (r.rpe ? `<div class="card done-run"><div class="row-head">${icon('run')}<div><h3>Lauf eingetragen ✓</h3><div class="sub">${esc(runSummary(r))} · Gefühl ${r.rpe}/10</div></div><a class="btn small" href="#lauf/${state.date}">Ändern</a></div></div>` : '') + analysisHtml(r);
+      if (!runs.length) html += `<div class="card"><div class="row-head">${icon('run')}<div><h3>Nach dem Lauf</h3><div class="sub">Dein Lauf kommt automatisch von der Uhr. Dann fragt dich die App kurz, wie es war.</div></div></div><div class="row"><a class="btn small" href="#lauf/${state.date}">Selbst eintragen</a></div></div>`;
+    } else if (it.kind === 'section') { html += `<div class="sec-label accent">${esc(it.name)}</div>`; if (it.general) html += `<details class="how general"><summary>So läuft es ab</summary><div class="how-body">${esc(it.general)}</div></details>`; idx = 0; }
   }
   if (!day.items.some((it) => it.kind === 'runlog') && runs.length) {
-    html += '<div class="label" style="margin:18px 4px 8px">Dein Lauf heute</div>';
-    for (const r of runs) html += `<div class="card"><h3>${esc(r.workout || 'Lauf')}</h3><div class="dose">${esc(runSummary(r))}</div><div class="row"><a class="btn small" href="#lauf">${r.rpe ? 'Ändern' : 'Gefühl und Schmerz eintragen'}</a></div></div>` + analysisHtml(r);
+    html += '<div class="sec-label">Dein Lauf heute</div>';
+    for (const r of runs) html += (r.rpe ? `<div class="card"><h3>${esc(r.workout || 'Lauf')}</h3><div class="sub">${esc(runSummary(r))}</div></div>` : '') + analysisHtml(r);
   }
-  if (day.optional) html += `<div class="card note info">${esc(day.optional)}</div>`;
-  if (day.type === 'rest' && !day.optional && day.week >= 0) html += `<div class="card note info small">${esc(PLAN.rules.food)}</div>`;
+  if (day.optional) html += `<div class="card note info small">${esc(day.optional)}</div>`;
 
-  if (state.date <= today()) {
-    html += `<div class="card" id="coachnote"><div class="label">Sag deinem Coach, wie's dir geht</div>
-      ${(data.myNotes || []).map((n) => `<p class="small" style="margin:4px 0">💬 ${esc(n.text)}</p>`).join('')}
-      <textarea class="in" id="cn-text" placeholder="z. B. „Knöchel heute komisch, wenn ich ihn nach außen biege“ oder „Beine schwer, schlecht geschlafen“"></textarea>
-      <button class="btn primary block" id="cn-send" style="margin-top:10px">An den Coach senden</button>
-      <div id="cn-reply"></div></div>`;
-  }
-  if (allDone) html += `<div class="card finished"><div class="big">Erledigt ✓</div><div class="muted" id="weekprog">Stark gemacht!</div><p class="small">${esc(PLAN.rules.food)}</p></div>`;
+  if (allDone) html += `<div class="card finished"><div class="big">Geschafft!</div><div class="muted" id="weekprog">Stark gemacht.</div></div>`;
+  if (state.date <= today()) html += chatCard(data);
   if (day.type === 'strength' || day.type === 'run') {
-    html += `<div class="row" style="margin-top:4px">${day.hasMini ? `<button class="btn" id="mini">${state.mini ? 'Ganze Einheit zeigen' : 'Mini-Version (15 min)'}</button>` : ''}${isToday ? '<button class="btn" id="move">Heute verschieben</button>' : ''}</div>`;
+    html += `<div class="row bottom-actions">${day.hasMini ? `<button class="btn" id="mini">${state.mini ? 'Ganze Einheit' : 'Mini-Version (15 min)'}</button>` : ''}${isToday ? '<button class="btn" id="move">Auf morgen verschieben</button>' : ''}</div>`;
   }
   app.innerHTML = html;
   bindToday(day, done, runs);
@@ -360,7 +429,7 @@ async function renderToday() {
     api(`/week?date=${state.date}`).then((w) => {
       const tr = w.days.filter((d) => d.type === 'run' || d.type === 'strength');
       const el = document.getElementById('weekprog');
-      if (el) el.textContent = `${tr.filter((d) => d.complete).length} von ${tr.length} diese Woche`;
+      if (el) el.textContent = `${tr.filter((d) => d.complete).length} von ${tr.length} Einheiten diese Woche`;
     }).catch(() => {});
   }
 }
@@ -383,78 +452,107 @@ function bindToday(day, done) {
     done[id] = value;
     try { await api('/done', { method: 'POST', body: { date: state.date, item_id: id, value } }); } catch (e) { toast(e.message); }
   };
-  app.querySelectorAll('.card[data-id]').forEach((card) => {
+  // Check
+  const cc = app.querySelector('.check-card');
+  if (cc) {
+    cc.querySelector('#check-open').onclick = () => { const b = cc.querySelector('.check-body'); b.hidden = !b.hidden; };
+    if (location.hash.startsWith('#check')) cc.querySelector('.check-body').hidden = false;
+    cc.querySelector('#save-check').onclick = async (ev) => {
+      ev.target.disabled = true;
+      const body = { date: state.date, squat: +cc.querySelector('#s-squat').value, shin: +cc.querySelector('#s-shin').value, hop: cc.querySelector('#s-hop') ? +cc.querySelector('#s-hop').value : null,
+        bone: cc.querySelector('#c-bone').checked, limp: cc.querySelector('#c-limp').checked, sick: cc.querySelector('#c-sick').checked, rhr: cc.querySelector('#c-rhr').value };
+      try { await api('/check', { method: 'POST', body }); toast('Check gespeichert'); renderToday(); } catch (e) { toast(e.message); ev.target.disabled = false; }
+    };
+  }
+  app.querySelectorAll('.ex-card[data-id]').forEach((card) => {
     const id = card.dataset.id;
-    const it = day.items.find((x) => x.id === id);
+    const it = day.items.find((x) => x.id === id) || day.fp?.lessons.find((x) => x.id === id);
     if (!it) return;
     const tick = card.querySelector('.tick');
-    if (it.kind === 'check') {
-      tick.onclick = () => { card.classList.toggle('done'); };
-      card.querySelector('#save-check').onclick = async () => {
-        const body = { date: state.date, squat: +card.querySelector('#s-squat').value, shin: +card.querySelector('#s-shin').value, hop: card.querySelector('#s-hop') ? +card.querySelector('#s-hop').value : null,
-          bone: card.querySelector('#c-bone').checked, limp: card.querySelector('#c-limp').checked, sick: card.querySelector('#c-sick').checked, rhr: card.querySelector('#c-rhr').value };
-        try { await api('/check', { method: 'POST', body }); toast('Check gespeichert'); renderToday(); } catch (e) { toast(e.message); }
-      };
-      return;
-    }
-    if (!tick) return;
-    if (it.kind === 'exercise' || it.kind === 'lesson') {
-      tick.onclick = async () => {
-        const cur = done[id] || 0;
-        const full = it.sets > 1 ? it.sets : 1;
-        const next = cur >= full ? 0 : full;
-        await save(id, next);
-        if (next && navigator.vibrate) navigator.vibrate(15);
+    tick.onclick = async () => {
+      const cur = done[id] || 0;
+      const full = it.sets > 1 ? it.sets : 1;
+      const next = cur >= full ? 0 : full;
+      await save(id, next);
+      if (next && navigator.vibrate) navigator.vibrate(15);
+      renderToday();
+    };
+    card.querySelectorAll('.set').forEach((s) => s.onclick = async () => {
+      const n = +s.dataset.set;
+      const cur = done[id] || 0;
+      const next = cur === n ? n - 1 : n;
+      await save(id, next);
+      if (next > cur && next < it.sets) startTimer(60, 'Pause');
+      renderToday();
+    });
+    card.querySelectorAll('.hold').forEach((h) => h.onclick = () => (h.dataset.holds ? startTimerSeq(h.dataset.holds.split(',').map(Number)) : startTimer(+h.dataset.hold, 'Halten')));
+    card.querySelectorAll('[data-fb]').forEach((b) => b.onclick = async () => {
+      try {
+        await api('/feedback', { method: 'POST', body: { date: state.date, ex_id: it.exId, value: b.dataset.fb } });
+        toast(b.dataset.fb === 'leicht' ? 'Notiert. Zweimal „zu leicht“ → nächste Stufe.' : b.dataset.fb === 'schwer' ? 'Notiert. Nächstes Mal leichter.' : 'Gut so!');
         renderToday();
-      };
-      card.querySelectorAll('.set').forEach((s) => s.onclick = async () => {
-        const n = +s.dataset.set;
-        const cur = done[id] || 0;
-        const next = cur === n ? n - 1 : n;
-        await save(id, next);
-        if (next > cur && next < it.sets) startTimer(60, 'Pause');
-        renderToday();
-      });
-      card.querySelectorAll('.hold').forEach((h) => h.onclick = () => (h.dataset.holds ? startTimerSeq(h.dataset.holds.split(',').map(Number)) : startTimer(+h.dataset.hold, 'Halten')));
-      card.querySelectorAll('[data-fb]').forEach((b) => b.onclick = async () => {
-        try {
-          await api('/feedback', { method: 'POST', body: { date: state.date, ex_id: it.exId, value: b.dataset.fb } });
-          toast(b.dataset.fb === 'leicht' ? 'Notiert. Zweimal „zu leicht“ → nächste Stufe.' : b.dataset.fb === 'schwer' ? 'Notiert. Nächstes Mal leichtere Stufe.' : 'Gut so!');
-          renderToday();
-        } catch (e) { toast(e.message); }
-      });
-    }
+      } catch (e) { toast(e.message); }
+    });
   });
+  // Nachfrage
+  app.querySelectorAll('.follow-card').forEach((card) => card.querySelectorAll('.ans').forEach((b) => b.onclick = async () => {
+    card.querySelectorAll('.ans').forEach((x) => { x.disabled = true; x.classList.toggle('on', x === b); });
+    try {
+      const r = await api('/spotcheck', { method: 'POST', body: { date: state.date, area: card.dataset.area, side: card.dataset.side || null, answer: b.dataset.a } });
+      card.querySelector('.follow-reply').innerHTML = `<p class="coach-text">${esc(r.text)}</p>`;
+    } catch (e) { toast(e.message); card.querySelectorAll('.ans').forEach((x) => { x.disabled = false; }); }
+  }));
+  // Wie war dein Lauf?
+  const fc = app.querySelector('.feel-card');
+  if (fc) {
+    const f = { rpe: null, hurt: null, where: new Set(), side: null, gone: null };
+    fc.querySelectorAll('.feel').forEach((b) => b.onclick = () => { f.rpe = +b.dataset.v; fc.querySelectorAll('.feel').forEach((x) => x.classList.toggle('on', x === b)); fc.querySelector('.feel-more').hidden = false; });
+    fc.querySelectorAll('#hurt .chip').forEach((c) => c.onclick = () => { f.hurt = c.dataset.k; fc.querySelectorAll('#hurt .chip').forEach((x) => x.classList.toggle('on', x === c)); fc.querySelector('#hurt-more').hidden = f.hurt !== 'ja'; });
+    fc.querySelectorAll('#fwhere .chip').forEach((c) => c.onclick = () => { const k = c.dataset.k; f.where.has(k) ? f.where.delete(k) : f.where.add(k); c.classList.toggle('on'); });
+    for (const [g, key] of [['fside', 'side'], ['fgone', 'gone']]) fc.querySelectorAll(`#${g} .chip`).forEach((c) => c.onclick = () => { f[key] = f[key] === c.dataset.k ? null : c.dataset.k; fc.querySelectorAll(`#${g} .chip`).forEach((x) => x.classList.toggle('on', x.dataset.k === f[key])); });
+    fc.querySelector('#feel-save').onclick = async (ev) => {
+      if (!f.rpe) return toast('Tipp erst an, wie sich der Lauf angefühlt hat.');
+      const hurt = f.hurt === 'ja';
+      ev.target.disabled = true; ev.target.textContent = 'Coach schaut sich das an …';
+      try {
+        const r = await api('/run/feel', { method: 'POST', body: { id: +fc.dataset.run, date: state.date, rpe: f.rpe, pain: hurt ? +fc.querySelector('#s-fpain').value : 0, pain_where: hurt ? [...f.where].join(',') || null : null, pain_side: hurt ? f.side : null, pain_gone: hurt ? f.gone : null, note: fc.querySelector('#fnote').value.trim() || null } });
+        fc.querySelector('.feel-more').hidden = true; fc.querySelector('.feels').hidden = true;
+        fc.querySelector('#feel-reply').innerHTML = `<p class="coach-text">${esc(r.coach || 'Danke! Ist gespeichert – ich passe deinen Plan an.')}</p><button class="btn small" id="feel-ok">Okay</button>`;
+        fc.querySelector('#feel-ok').onclick = () => renderToday();
+      } catch (e) { toast(e.message); ev.target.disabled = false; ev.target.textContent = 'Fertig'; }
+    };
+  }
+  // Chat
   const cn = document.getElementById('cn-send');
   if (cn) cn.onclick = async () => {
-    const text = document.getElementById('cn-text').value.trim();
+    const ta = document.getElementById('cn-text');
+    const text = ta.value.trim();
     if (!text) return toast('Schreib kurz, wie es dir geht.');
     cn.disabled = true;
+    const bubbles = document.getElementById('bubbles');
+    bubbles.insertAdjacentHTML('beforeend', `<div class="bubble me">${esc(text)}</div><div class="bubble typing" id="typing">Coach schreibt …</div>`);
+    ta.value = '';
     try {
       const r = await api('/note', { method: 'POST', body: { date: state.date, text } });
-      const NAMES = { knie: 'Knie', schienbein: 'Schienbein', innenknoechel: 'Innenknöchel', aussenknoechel: 'Außenknöchel', grosszehe: 'Großzehe', wade: 'Wade', huefte: 'Hüfte', schulter: 'Schulter' };
-      document.getElementById('cn-reply').innerHTML = `<div class="card note good" style="margin:12px 0 0">${r.areas.length ? `Verstanden: <b>${r.areas.map((a) => NAMES[a] || a).join(', ')}</b>. ` : 'Danke, ist angekommen. '}${r.upcoming.length ? r.upcoming.map((u) => `${esc(u.label)}: Extra-Übungen ${esc(u.extras.join(', '))}.`).join(' ') : ''} Heute Abend schaut sich Claude das genau an und passt deinen Plan an.</div>`;
-      document.getElementById('cn-text').value = '';
-    } catch (e) { toast(e.message); }
+      const fallback = `${r.areas.length ? `Verstanden: ${r.areas.map((a) => AREA_NAMES[a] || a).join(', ')}. ` : 'Danke, ist angekommen. '}${r.upcoming.length ? r.upcoming.map((u) => `${u.label}: Extra-Übungen ${u.extras.join(', ')}.`).join(' ') : ''}`;
+      document.getElementById('typing').outerHTML = `<div class="bubble">${esc(r.coach || fallback)}</div>`;
+    } catch (e) { document.getElementById('typing')?.remove(); toast(e.message); ta.value = text; }
     cn.disabled = false;
   };
   const mini = document.getElementById('mini');
   if (mini) mini.onclick = () => { state.mini = !state.mini; renderToday(); };
   const move = document.getElementById('move');
   if (move) move.onclick = async () => {
-    if (!confirm('Training auf morgen verschieben? (Regeln: höchstens 1 Tag, nicht nachholen)')) return;
+    if (!confirm('Training auf morgen verschieben? (höchstens 1 Tag, nicht nachholen)')) return;
     try { await api('/move', { method: 'POST', body: { date: state.date } }); toast('Auf morgen verschoben'); renderToday(); } catch (e) { alert(e.message); }
   };
 }
 
 // ---------- Lauf eintragen ----------
-const SPOTS = [['knie', 'Knie'], ['schienbein', 'Schienbein'], ['innenknoechel', 'Innenknöchel'], ['aussenknoechel', 'Außenknöchel'], ['grosszehe', 'Großzehe'], ['wade', 'Wade'], ['huefte', 'Hüfte'], ['schulter', 'Schulter'], ['sonstiges', 'Sonstiges']];
 async function renderRunForm() {
   nav('heute');
-  let data = state.data;
-  if (!data || data.day.date !== state.date) {
-    try { data = await api(`/day?date=${state.date}`); state.data = data; } catch (e) { if (e instanceof AuthError) return renderLogin(); }
-  }
+  let data = null;
+  try { data = await api(`/day?date=${state.date}`); state.data = data; } catch (e) { if (e instanceof AuthError) return renderLogin(); }
   const day = data?.day || getDay(state.date);
   const r = (data?.runs || [])[0] || {};
   const wname = day.workout || r.workout || 'Locker (frei)';
@@ -513,9 +611,9 @@ async function renderRunForm() {
       const res = await api('/run', { method: 'POST', body });
       state.data = null;
       const up = res.upcoming || [];
-      app.querySelector('#reply').innerHTML = `<div class="card note good" style="margin-top:14px"><div class="label">Gespeichert ✓ – das passe ich an</div>
+      app.querySelector('#reply').innerHTML = `<div class="card note good" style="margin-top:14px"><div class="label">Gespeichert ✓</div>${res.coach ? `<p class="coach-text">${esc(res.coach)}</p>` : ''}
         ${(res.messages || []).map((m) => `<p>💬 ${esc(m.text)}</p>`).join('')}
-        ${up.length ? up.map((u) => `<p><b>${esc(u.label)}:</b> ${esc(u.reasons.join(' '))}</p>`).join('') : '<p>Alles grün – der Plan bleibt, wie er ist. 💪</p>'}
+        ${up.length ? `<details class="how"><summary>Was sich ändert (${up.length})</summary><div class="how-body">${up.map((u) => `<p><b>${esc(u.label)}:</b> ${esc(u.reasons.join(' '))}</p>`).join('')}</div></details>` : res.coach ? '' : '<p>Alles grün – der Plan bleibt, wie er ist.</p>'}
         <a class="btn primary block" href="#heute" style="margin-top:10px">Fertig</a></div>`;
       app.querySelector('#save').style.display = 'none';
       app.querySelector('#reply').scrollIntoView({ behavior: 'smooth' });
@@ -621,16 +719,22 @@ async function renderHistory() {
   const trend = avgN(last5) && avgN(prev5) ? avgN(last5) - avgN(prev5) : null;
   const weekKm = km[km.length - 1].v;
   const monthRuns = runs.filter((r) => r.date >= addDays(today(), -30) && (r.distance_m || 0) > 2000).length;
+  const feels = asc.filter((r) => r.rpe && ['easy', 'long'].includes(PLAN.workouts[r.workout]?.kind)).slice(-5).map((r) => r.rpe);
+  const feelAvg = feels.length ? (feels.reduce((a, b) => a + b, 0) / feels.length).toFixed(1) : null;
+  const SA = { weg: ['Weg', 'gruen'], besser: ['Besser', 'gruen'], gleich: ['Gleich', 'gelb'], schlimmer: ['Schlimmer', 'rot'] };
+  const spots = (h.spots || []).map((s) => `<div class="spot-row"><div><b>${esc(AREA_NAMES[s.area] || s.area)}${s.side ? ` (${esc(s.side)})` : ''}</b><div class="sub">zuletzt ${+s.last.slice(8)}.${+s.last.slice(5, 7)}. · ${s.count}× gemeldet</div></div><span class="pill ${s.closed ? 'gruen' : s.lastAnswer ? SA[s.lastAnswer][1] : 'gelb'}">${s.closed ? 'Weg' : s.lastAnswer ? SA[s.lastAnswer][0] : 'Wird beobachtet'}</span></div>`).join('');
   app.innerHTML = `<h2 class="sec">Verlauf</h2>
     <div class="card"><div class="grid2">
-      <div><div class="label">Diese Woche</div><div style="font-size:26px;font-weight:800">${weekKm} km</div></div>
-      <div><div class="label">Läufe (30 Tage)</div><div style="font-size:26px;font-weight:800">${monthRuns}</div></div>
-      <div><div class="label">Ø-Puls locker</div><div style="font-size:26px;font-weight:800">${avgN(last5) ?? '–'}</div><div class="small muted">letzte 5 Läufe · Ziel 154–162</div></div>
-      <div><div class="label">Trend</div><div style="font-size:26px;font-weight:800">${trend == null ? '–' : trend <= -2 ? '📈 besser' : trend >= 2 ? '📉 höher' : '➡️ gleich'}</div><div class="small muted">${trend == null ? 'braucht 10 Läufe' : `${trend > 0 ? '+' : ''}${trend} Schläge zu vorher`}</div></div>
+      <div><div class="label">Diese Woche</div><div class="stat">${weekKm} km</div></div>
+      <div><div class="label">Läufe in 30 Tagen</div><div class="stat">${monthRuns}</div></div>
+      <div><div class="label">Puls locker</div><div class="stat">${avgN(last5) ?? '–'}</div><div class="sub">Schnitt der letzten 5 · Ziel 145–162</div></div>
+      <div><div class="label">Gefühl locker</div><div class="stat">${feelAvg ?? '–'}</div><div class="sub">Schnitt 1–10 · Ziel 2–4</div></div>
+      <div><div class="label">Ausdauer</div><div class="stat">${trend == null ? '–' : trend <= -2 ? 'besser' : trend >= 2 ? 'Puls höher' : 'gleich'}</div><div class="sub">${trend == null ? 'zeigt sich nach 10 Läufen' : `${trend > 0 ? '+' : ''}${trend} Schläge zu den 5 Läufen davor`}</div></div>
     </div></div>
+    ${spots ? `<div class="card"><div class="label">Deine Beschwerden</div><p class="sub" style="margin:0 0 4px">Der Coach fragt nach, bis alles weg ist.</p>${spots}</div>` : ''}
     <div class="card"><div class="label">Ø-Puls bei lockeren und langen Läufen</div>
-      <p class="small muted" style="margin:0 0 4px">Jeder Punkt = ein Lauf (über 3 km). Grüner Streifen = dein Ziel. 🟢 passt · 🔴 zu schnell gelaufen.</p>
-      ${lineChart(easy, { band: [154, 162], yLabel: 'Puls', color: 'var(--muted)' })}
+      <p class="small muted" style="margin:0 0 4px">Jeder Punkt ist ein Lauf (über 3 km). Grüner Streifen = dein Ziel. Grüner Punkt: passt. Roter Punkt: zu schnell gelaufen.</p>
+      ${lineChart(easy, { band: [145, 162], yLabel: 'Puls', color: 'var(--muted)' })}
       <p class="small muted">Liegen die Punkte im grünen Streifen, läufst du wirklich locker. Wird der Puls bei gleichem Tempo niedriger, wird deine Ausdauer besser.</p></div>
     <div class="card"><div class="label">Kilometer pro Woche</div>${barChart(km, { unit: '', highlightLast: true })}
       <p class="small muted">Gleichmäßig ist besser als hohe Spitzen: höchstens etwa 10 % mehr pro Woche.</p></div>
@@ -681,7 +785,7 @@ function renderHelp() {
     ['Functional Patterns', `<p>${esc(PLAN.fp.explain)}</p><p><b>Routine:</b> Montag Lektionen der Reihe nach · Mittwoch und Freitag 2 Stellen im Start-Teil · Samstag freiwillig Follow-Along · Woche 4 täglich 1 min Standing Neutral.</p><p><b>Rollen:</b> ${esc(PLAN.fp.rollRules)}</p><p>${esc(PLAN.fp.unlockNote)}</p><p><a href="${PLAN.fp.courseUrl}" target="_blank" rel="noopener">Kurs öffnen</a></p>`],
     ['Deine Ausstattung', `<ul>${PLAN.equipment.have.map((s) => `<li>${esc(s)}</li>`).join('')}</ul><p><b>Hantel-Regeln:</b></p><ul>${PLAN.equipment.rules.map((s) => `<li>${esc(s)}</li>`).join('')}</ul><p><b>Fehlt noch:</b> ${esc(PLAN.equipment.missing)}</p>`],
     ['Essen', `<p>${esc(PLAN.rules.food)}</p>`],
-    ['Woche 0 (12.–15.11.)', '<ul><li>Do 12.11.: Kraft-A-Probe (1 Satz je Übung, 15 min)</li><li>Fr 13.11.: Ruhe</li><li>Sa 14.11.: Probelauf „Locker (frei)“ 5–6 km flach – testen, ob die Uhr bei Puls über 164 piept</li><li>So 15.11.: Ruhe</li></ul>'],
+    ['Dein Coach', '<p>Schreib ihm unten auf „Heute“, wenn etwas zwickt, du müde bist oder eine Frage hast. Er antwortet gleich und passt deinen Plan an.</p><p>Nach jedem Lauf fragt dich die App kurz: <b>Wie war es?</b> und <b>Hat etwas wehgetan?</b> Hast du eine Stelle genannt, fragt er in den nächsten Tagen nach, wie es ihr geht. Die Extra-Übungen werden mit der Zeit schwerer (Stufe 1–3) und fallen weg, wenn alles gut ist.</p>'],
   ];
   app.innerHTML = `<h2 class="sec">Hilfe</h2><div class="acc">${sections.map(([t, b]) => `<details><summary>${esc(t)}</summary><div class="body">${b}</div></details>`).join('')}</div>`;
 }
@@ -701,7 +805,7 @@ async function renderSettings() {
       <div class="row"><button class="btn primary" id="allow">Erlauben</button><button class="btn" id="test">Test-Benachrichtigung</button></div>
       <label class="check"><input type="checkbox" id="push" ${s.push ? 'checked' : ''}> Benachrichtigungen an</label>
       <div class="grid2"><div><label class="f">Morgens Mo–Fr</label><input class="in" type="time" id="mw" value="${s.morningWeek}"></div><div><label class="f">Morgens Sa/So</label><input class="in" type="time" id="me" value="${s.morningWeekend}"></div></div>
-      <p class="small muted">Außerdem: 17:30 Erinnerung, wenn noch nichts abgehakt ist · 20:00 Vorschau auf morgen · 20:30 „Lauf eintragen“ · Sonntag 19:00 Wochenbericht. Auf der Uhr: Garmin Connect → Smart Notifications an.</p>
+      <p class="small muted">Außerdem: 15:00 an Lauftagen „Wie geht's dir?“ · 17:30 Erinnerung, wenn noch nichts erledigt ist · 20:00 Vorschau auf morgen · 20:30 „Wie war dein Lauf?“ · Sonntag 19:00 Wochenbericht. Dazu Nachrichten von deinem Coach.</p>
     </div>
     <div class="card"><div class="label">Functional Patterns</div>
       <label class="f">Welche FP-Woche ist bei dir im Kurs gerade frei?</label>
@@ -741,7 +845,9 @@ function route() {
   window.scrollTo(0, 0);
   if (!getToken()) return renderLogin();
   const h = (location.hash || '#heute').slice(1);
-  if (h.startsWith('tag/')) { state.date = h.slice(4); state.mini = false; return renderToday(); }
+  const isD = (x) => /^\d{4}-\d{2}-\d{2}$/.test(x);
+  if (h.startsWith('tag/') || h.startsWith('heute/')) { const d = h.split('/')[1]; state.date = isD(d) ? d : today(); state.mini = false; return renderToday(); }
+  if (h.startsWith('lauf/')) { const d = h.split('/')[1]; if (isD(d)) state.date = d; state.data = null; return renderRunForm(); }
   switch (h) {
     case 'woche': return renderWeek();
     case 'plan': return renderPlan();
@@ -749,7 +855,7 @@ function route() {
     case 'hilfe': return renderHelp();
     case 'einstellungen': return renderSettings();
     case 'bericht': return renderReport();
-    case 'lauf': return renderRunForm();
+    case 'lauf': state.data = null; return renderRunForm();
     case 'check': state.date = today(); return renderToday().then(() => document.getElementById('check')?.scrollIntoView());
     default:
       state.date = today(); state.mini = false;
@@ -771,14 +877,20 @@ async function checkUpdate() {
   if (BUILD === 'dev') return;
   try {
     const v = await fetch('./version.json?t=' + Date.now(), { cache: 'no-store' }).then((r) => r.json());
-    if (v.build && v.build !== BUILD) location.reload();
+    if (!v.build || v.build === BUILD) return;
+    const h = location.hash;
+    const busy = timer || h.startsWith('#lauf') || [...document.querySelectorAll('textarea, input.in')].some((x) => x.value && x !== document.getElementById('c-rhr')) || document.querySelector('.feel.on');
+    let tried = null; try { tried = sessionStorage.getItem('reloadedFor'); } catch { /* egal */ }
+    if (busy || tried === v.build) return;
+    try { sessionStorage.setItem('reloadedFor', v.build); } catch { /* egal */ }
+    location.reload();
   } catch { /* offline */ }
 }
 function softRefresh() {
   const h = (location.hash || '#heute').slice(1);
   const typing = document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
-  if (typing || timer || document.querySelector('details[open]') || h === 'lauf' || document.getElementById('cn-text')?.value) return;
-  if (h === 'heute' || h.startsWith('tag/')) renderToday();
+  if (typing || timer || document.querySelector('details[open]') || h.startsWith('lauf') || document.getElementById('cn-text')?.value || document.querySelector('.feel.on, .check-body:not([hidden]), .ans:disabled')) return;
+  if (h === 'heute' || h.startsWith('tag/') || h.startsWith('heute/')) renderToday();
   else if (['woche', 'verlauf', 'bericht'].includes(h)) route();
 }
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { checkUpdate(); softRefresh(); } });
