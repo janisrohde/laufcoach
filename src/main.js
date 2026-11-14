@@ -345,11 +345,18 @@ function chatCard(data) {
   const theirs = (data.notes || []).filter((n) => n.date === state.date && firstMine && (n.created_at || '') > firstMine).map((n) => ({ t: n.created_at || '', me: false, text: n.text }));
   const conv = [...mine, ...theirs].sort((a, b) => a.t.localeCompare(b.t)).slice(-6);
   return `<div class="card chat-card" id="coachnote">
-    <div class="row-head">${icon('coach')}<div><h3>Schreib deinem Coach</h3><div class="sub">Zwickt was? Müde? Frage? Er antwortet gleich.</div></div></div>
+    <div class="row-head">${icon('coach')}<div><h3>Schreib deinem Coach</h3><div class="sub">Zwickt was? Müde? Frage? Die App passt sofort an, Claude antwortet um 7, 10, 13, 18, 20 und 22 Uhr.</div></div></div>
     <div class="bubbles" id="bubbles">${conv.map((m) => `<div class="bubble ${m.me ? 'me' : ''}">${esc(m.text)}</div>`).join('')}</div>
     <div class="chat-input"><textarea class="in" id="cn-text" rows="2" placeholder="z. B. „Rechtes Schienbein hat beim Laufen etwas wehgetan“"></textarea>
     <button class="btn primary send" id="cn-send" aria-label="Senden">${icon('send')}</button></div>
   </div>`;
+}
+
+/** Wann schaut Claude das nächste Mal drauf? */
+function nextRound() {
+  const h = +new Intl.DateTimeFormat('de-DE', { timeZone: 'Europe/Berlin', hour: '2-digit', hourCycle: 'h23' }).format(new Date());
+  const n = [7, 10, 13, 18, 20, 22].find((x) => x > h);
+  return n ? `Claude schaut es sich um ${n} Uhr genau an und antwortet dir.` : 'Claude schaut es sich morgen um 7 Uhr genau an und antwortet dir.';
 }
 
 async function renderToday() {
@@ -517,7 +524,7 @@ function bindToday(day, done) {
       try {
         const r = await api('/run/feel', { method: 'POST', body: { id: +fc.dataset.run, date: state.date, rpe: f.rpe, pain: hurt ? +fc.querySelector('#s-fpain').value : 0, pain_where: hurt ? [...f.where].join(',') || null : null, pain_side: hurt ? f.side : null, pain_gone: hurt ? f.gone : null, note: fc.querySelector('#fnote').value.trim() || null } });
         fc.querySelector('.feel-more').hidden = true; fc.querySelector('.feels').hidden = true;
-        fc.querySelector('#feel-reply').innerHTML = `<p class="coach-text">${esc(r.coach || 'Danke! Ist gespeichert – ich passe deinen Plan an.')}</p><button class="btn small" id="feel-ok">Okay</button>`;
+        fc.querySelector('#feel-reply').innerHTML = `<p class="coach-text">${esc(r.coach || `Danke, ist gespeichert! ${nextRound()}`)}</p><button class="btn small" id="feel-ok">Okay</button>`;
         fc.querySelector('#feel-ok').onclick = () => renderToday();
       } catch (e) { toast(e.message); ev.target.disabled = false; ev.target.textContent = 'Fertig'; }
     };
@@ -534,7 +541,7 @@ function bindToday(day, done) {
     ta.value = '';
     try {
       const r = await api('/note', { method: 'POST', body: { date: state.date, text } });
-      const fallback = `${r.areas.length ? `Verstanden: ${r.areas.map((a) => AREA_NAMES[a] || a).join(', ')}. ` : 'Danke, ist angekommen. '}${r.upcoming.length ? r.upcoming.map((u) => `${u.label}: Extra-Übungen ${u.extras.join(', ')}.`).join(' ') : ''}`;
+      const fallback = `${r.areas.length ? `Verstanden: ${r.areas.map((a) => AREA_NAMES[a] || a).join(', ')}. ` : 'Danke, ist angekommen. '}${r.upcoming.length ? r.upcoming.map((u) => `${u.label}: Extra-Übungen ${u.extras.join(', ')}.`).join(' ') + ' ' : ''}${nextRound()}`;
       document.getElementById('typing').outerHTML = `<div class="bubble">${esc(r.coach || fallback)}</div>`;
     } catch (e) { document.getElementById('typing')?.remove(); toast(e.message); ta.value = text; }
     cn.disabled = false;
@@ -785,7 +792,7 @@ function renderHelp() {
     ['Functional Patterns', `<p>${esc(PLAN.fp.explain)}</p><p><b>Routine:</b> Montag Lektionen der Reihe nach · Mittwoch und Freitag 2 Stellen im Start-Teil · Samstag freiwillig Follow-Along · Woche 4 täglich 1 min Standing Neutral.</p><p><b>Rollen:</b> ${esc(PLAN.fp.rollRules)}</p><p>${esc(PLAN.fp.unlockNote)}</p><p><a href="${PLAN.fp.courseUrl}" target="_blank" rel="noopener">Kurs öffnen</a></p>`],
     ['Deine Ausstattung', `<ul>${PLAN.equipment.have.map((s) => `<li>${esc(s)}</li>`).join('')}</ul><p><b>Hantel-Regeln:</b></p><ul>${PLAN.equipment.rules.map((s) => `<li>${esc(s)}</li>`).join('')}</ul><p><b>Fehlt noch:</b> ${esc(PLAN.equipment.missing)}</p>`],
     ['Essen', `<p>${esc(PLAN.rules.food)}</p>`],
-    ['Dein Coach', '<p>Schreib ihm unten auf „Heute“, wenn etwas zwickt, du müde bist oder eine Frage hast. Er antwortet gleich und passt deinen Plan an.</p><p>Nach jedem Lauf fragt dich die App kurz: <b>Wie war es?</b> und <b>Hat etwas wehgetan?</b> Hast du eine Stelle genannt, fragt er in den nächsten Tagen nach, wie es ihr geht. Die Extra-Übungen werden mit der Zeit schwerer (Stufe 1–3) und fallen weg, wenn alles gut ist.</p>'],
+    ['Dein Coach', '<p>Schreib ihm unten auf „Heute“, wenn etwas zwickt, du müde bist oder eine Frage hast. Die App passt deinen Plan sofort an. Claude liest es um 7, 10, 13, 18, 20 und 22 Uhr und antwortet dir.</p><p>Nach jedem Lauf fragt dich die App kurz: <b>Wie war es?</b> und <b>Hat etwas wehgetan?</b> Hast du eine Stelle genannt, fragt er in den nächsten Tagen nach, wie es ihr geht. Die Extra-Übungen werden mit der Zeit schwerer (Stufe 1–3) und fallen weg, wenn alles gut ist.</p>'],
   ];
   app.innerHTML = `<h2 class="sec">Hilfe</h2><div class="acc">${sections.map(([t, b]) => `<details><summary>${esc(t)}</summary><div class="body">${b}</div></details>`).join('')}</div>`;
 }
