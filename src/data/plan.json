@@ -1497,7 +1497,7 @@
         "tool": "Dickes Buch",
         "dose": {
           "sets": 2,
-          "text": "2×8 nur auf der betroffenen Seite extra",
+          "text": "2×8 je Bein",
           "weight": "ohne Gewicht",
           "perSide": false
         }
@@ -1517,7 +1517,7 @@
         "tool": "Matte",
         "dose": {
           "sets": 2,
-          "text": "2×15 je Seite, betroffene Seite 1 Satz mehr",
+          "text": "2×15 je Seite",
           "weight": "ohne Gewicht",
           "perSide": true
         }

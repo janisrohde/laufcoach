@@ -67,3 +67,12 @@ describe('Nachricht an den Coach', () => {
     expect(d.items.some((i) => i.extra && i.area === 'aussenknoechel')).toBe(true);
   });
 });
+
+describe('Extra-Übungen immer beidseitig', () => {
+  it('rechtes Knie → beide Beine, rechts 1 Satz mehr', () => {
+    const d = getDay('2026-11-18', { overrides: { extras: [{ area: 'knie', side: 'rechte', count: 2 }] } });
+    const ex = d.items.filter((i) => i.extra);
+    expect(ex.length).toBe(2);
+    for (const i of ex) expect(i.doseText).toContain('beide Seiten');
+  });
+});

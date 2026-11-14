@@ -157,7 +157,10 @@ export function strengthSession(key, week, ctx = {}) {
       items.push({
         id: `${prefix}:${x.id}`, kind: 'exercise', exId: x.id, extra: true, area: ext.area, side: ext.side || null,
         name: x.name, why: x.why, start: x.start, steps: x.steps, watch: x.watch, mistake: x.mistake, tool: x.tool, focus: [ext.area],
-        doseText: ext.side ? `${x.dose.text} – betroffene Seite: ${ext.side}` : x.dose.text,
+        doseText: ext.side && /je (Seite|Bein|Fuß)/.test(x.dose.text)
+          ? `${x.dose.text} – immer beide Seiten! Die ${ext.side} Seite zuerst und dort 1 Satz mehr.`
+          : x.dose.text,
+        sideExtra: !!ext.side && /je (Seite|Bein|Fuß)/.test(x.dose.text),
         sets: x.dose.sets, hold: x.dose.hold || null, weight: x.dose.weight, perSide: !!x.dose.perSide, fp: false,
       });
     }
@@ -165,7 +168,7 @@ export function strengthSession(key, week, ctx = {}) {
   // Extra-Satz auf der betroffenen Seite bei passenden Übungen
   for (const ext of ctx.extras || []) {
     items = items.map((it) => (!it.extra && !it.extraSet && it.focus.includes(ext.area) && !it.exId.endsWith('0') && !ctx.mini
-      ? { ...it, extraSet: ext.side && it.perSide ? `+1 Satz extra auf der ${ext.side}n Seite` : '+1 Satz extra', sets: it.sets + 1 }
+      ? { ...it, extraSet: ext.side && it.perSide ? `Beide Seiten wie immer, auf der ${ext.side}n Seite 1 Satz mehr` : '+1 Satz extra', sets: it.sets + 1 }
       : it));
   }
   return { title: def.title, minutes: ctx.probe ? 15 : ctx.mini ? 15 : def.minutes, general: def.general, items };
