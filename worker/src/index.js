@@ -237,6 +237,27 @@ async function handle(req, env, ctx) {
   }
 
   // Login
+  if (path === '/wellness/in') {
+    // Schlaf vom iPhone-Kurzbefehl (Apple Health). Eigener Schlüssel, kann nur Schlafdaten schreiben.
+    const k = url.searchParams.get('k') || '';
+    const row = await env.DB.prepare("SELECT value FROM settings WHERE key = 'wellnessKey'").first();
+    if (!row || !safeEqual(k, row.value)) return new Response('Link ungültig – bitte in der App neu kopieren.', { status: 401 });
+    const raw = req.method === 'POST' ? await req.text() : '';
+    let b = {};
+    try { b = raw ? JSON.parse(raw) : {}; } catch { b = { sleep: raw }; }
+    for (const [key, v] of url.searchParams) if (key !== 'k' && b[key] == null) b[key] = v;
+    const num = (v) => { if (v == null || v === '') return null; const n = parseFloat(String(v).replace(',', '.').replace(/[^0-9.]/g, '')); return Number.isFinite(n) ? n : null; };
+    // Schlaf: Sekunden (> 1000), Stunden (< 24) oder Minuten
+    let s = num(b.sleep_min ?? b.sleep ?? b.schlaf);
+    if (s != null) s = s > 1000 ? Math.round(s / 60) : s < 24 ? Math.round(s * 60) : Math.round(s);
+    if (s != null && (s < 60 || s > 960)) s = null;
+    const rhr = num(b.rhr ?? b.ruhepuls); const hrv = num(b.hrv);
+    const day = isDate(b.date) ? b.date : berlinDate();
+    if (s == null && !rhr && !hrv) return new Response('Keine Werte gefunden. Kommt der Schlaf in Apple Health an?', { status: 400 });
+    await env.DB.prepare('INSERT INTO wellness (date, sleep_min, rhr, hrv, source, created_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT(date) DO UPDATE SET sleep_min = COALESCE(excluded.sleep_min, sleep_min), rhr = COALESCE(excluded.rhr, rhr), hrv = COALESCE(excluded.hrv, hrv), source = excluded.source')
+      .bind(day, s, rhr ? Math.round(rhr) : null, hrv ? Math.round(hrv) : null, 'iphone', now()).run();
+    return new Response(`Laufcoach: ${s != null ? `Schlaf ${Math.floor(s / 60)} h ${s % 60} min gespeichert` : 'gespeichert'}${rhr ? `, Ruhepuls ${Math.round(rhr)}` : ''} ✓`, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+  }
   if (path === '/auth' && req.method === 'POST') {
     const ip = req.headers.get('CF-Connecting-IP') || 'x';
     const since = Date.now() - 15 * 60000;
@@ -533,7 +554,10 @@ async function handle(req, env, ctx) {
     }
     const s = await getSettings(env);
     const strava = await env.DB.prepare("SELECT value FROM settings WHERE key = 'strava'").first();
-    return reply({ ...s, strava: !!strava, stravaClientId: env.STRAVA_CLIENT_ID || null, vapidPublicKey: env.VAPID_PUBLIC_KEY || null });
+    let wk = (await env.DB.prepare("SELECT value FROM settings WHERE key = 'wellnessKey'").first())?.value;
+    if (!wk) { wk = b64url(crypto.getRandomValues(new Uint8Array(18))); await env.DB.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES ('wellnessKey', ?)").bind(wk).run(); }
+    const lastW = await env.DB.prepare('SELECT * FROM wellness ORDER BY date DESC LIMIT 1').first();
+    return reply({ ...s, wellnessUrl: `${url.origin}/wellness/in?k=${wk}`, lastWellness: lastW || null, strava: !!strava, stravaClientId: env.STRAVA_CLIENT_ID || null, vapidPublicKey: env.VAPID_PUBLIC_KEY || null });
   }
   if (path === '/strava/connect' && req.method === 'GET') {
     if (!env.STRAVA_CLIENT_ID) return reply({ error: 'Strava ist noch nicht eingerichtet.' }, 400);

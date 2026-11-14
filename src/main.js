@@ -389,7 +389,7 @@ async function renderToday() {
     <div class="head-main">
       <div class="type-ic ${day.type}">${icon(day.type)}</div>
       <div class="head-title"><h1>${esc(day.title)}</h1>
-        <div class="chips-inline">${day.minutes ? `<span class="pill">${day.minutes} min</span>` : ''}${ampel ? `<span class="pill ${ampel}" title="${AMPEL[ampel][1]}"><i class="dot-c"></i>${AMPEL[ampel][0]} · ${AMPEL[ampel][1]}</span>` : ''}</div></div>
+        <div class="chips-inline">${day.minutes ? `<span class="pill">${day.minutes} min</span>` : ''}${data.wellness?.sleep_min ? `<span class="pill ${data.wellness.sleep_min < 420 ? 'gelb' : ''}">Schlaf ${Math.floor(data.wellness.sleep_min / 60)}:${String(data.wellness.sleep_min % 60).padStart(2, '0')} h</span>` : ''}${ampel ? `<span class="pill ${ampel}" title="${AMPEL[ampel][1]}"><i class="dot-c"></i>${AMPEL[ampel][0]} · ${AMPEL[ampel][1]}</span>` : ''}</div></div>
       ${counted.length > 1 ? `<div class="ring" style="--p:${pct}"><span>${doneCount}/${counted.length}</span></div>` : ''}
     </div>
     <div class="dayswitch"><button data-go="-1" aria-label="Vorheriger Tag">‹</button>${isToday ? '' : '<button data-go="0">Heute</button>'}<button data-go="1" aria-label="Nächster Tag">›</button></div>
@@ -814,6 +814,12 @@ async function renderSettings() {
       <div class="grid2"><div><label class="f">Morgens Mo–Fr</label><input class="in" type="time" id="mw" value="${s.morningWeek}"></div><div><label class="f">Morgens Sa/So</label><input class="in" type="time" id="me" value="${s.morningWeekend}"></div></div>
       <p class="small muted">Außerdem: 15:00 an Lauftagen „Wie geht's dir?“ · 17:30 Erinnerung, wenn noch nichts erledigt ist · 20:00 Vorschau auf morgen · 20:30 „Wie war dein Lauf?“ · Sonntag 19:00 Wochenbericht. Dazu Nachrichten von deinem Coach.</p>
     </div>
+    <div class="card"><div class="label">Schlaf von der Uhr</div>
+      <p>${s.lastWellness ? `Zuletzt angekommen: <b>${+s.lastWellness.date.slice(8)}.${+s.lastWellness.date.slice(5, 7)}.</b>${s.lastWellness.sleep_min ? ` · ${Math.floor(s.lastWellness.sleep_min / 60)} h ${s.lastWellness.sleep_min % 60} min` : ''}${s.lastWellness.rhr ? ` · Ruhepuls ${s.lastWellness.rhr}` : ''} ✓` : 'Noch keine Schlafdaten angekommen.'}</p>
+      <p class="small muted">Der Kurzbefehl auf deinem iPhone schickt jeden Morgen deinen Schlaf aus Apple Health hierher. Dafür brauchst du diesen Link:</p>
+      <div class="row"><button class="btn primary" id="wcopy">Link kopieren</button></div>
+      <p class="small muted">Den Link nur im Kurzbefehl einfügen, nirgends sonst.</p>
+    </div>
     <div class="card"><div class="label">Functional Patterns</div>
       <label class="f">Welche FP-Woche ist bei dir im Kurs gerade frei?</label>
       <select class="in" id="fp">${Array.from({ length: 10 }, (_, i) => `<option value="${i + 1}" ${(s.fpFree ?? fpExpected) === i + 1 ? 'selected' : ''}>Woche ${i + 1}${i + 1 === fpExpected ? ' (laut Plan)' : ''}</option>`).join('')}</select>
@@ -828,6 +834,10 @@ async function renderSettings() {
     <div class="card"><button class="btn block" id="onb">Einführung nochmal ansehen</button><button class="btn block" id="logout" style="margin-top:10px">Abmelden</button></div>`;
   const saveS = async (b) => { try { await api('/settings', { method: 'POST', body: b }); toast('Gespeichert'); } catch (e) { toast(e.message); } };
   app.querySelector('#allow').onclick = enablePush;
+  app.querySelector('#wcopy').onclick = async () => {
+    try { await navigator.clipboard.writeText(s.wellnessUrl); toast('Link kopiert ✓ – jetzt im Kurzbefehl einfügen'); }
+    catch { prompt('Link lange antippen und kopieren:', s.wellnessUrl); }
+  };
   app.querySelector('#test').onclick = async () => { try { const r = await api('/push/test', { method: 'POST' }); toast(r.sent ? 'Gesendet – schau aufs Handy und die Uhr.' : 'Kein Gerät angemeldet. Erst „Erlauben“ tippen.', 4000); } catch (e) { toast(e.message); } };
   app.querySelector('#push').onchange = (e) => saveS({ push: e.target.checked });
   app.querySelector('#mw').onchange = (e) => saveS({ morningWeek: e.target.value });
