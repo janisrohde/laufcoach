@@ -194,7 +194,7 @@ export function adjust(date, data = {}) {
   }
   if (lastBone && diffDays(date, lastBone.date) <= 7) {
     ov.bone = true;
-    messages.push({ type: 'warn', text: 'Punkt am Knochen: Drück vor dem Lauf mit dem Finger auf die Stelle. Tut ein Punkt richtig weh, lauf heute nicht und sag es deinen Eltern – das sollte sich ein Arzt anschauen.' });
+    messages.push({ type: 'warn', text: `Punkt am Knochen: Drück ${getDay(date).type === 'run' ? 'vor dem Lauf ' : ''}mit dem Finger auf die Stelle. Tut ein Punkt richtig weh, ${getDay(date).type === 'run' ? 'lauf heute nicht' : 'lass Laufen und Sprünge weg'} und sag es deinen Eltern – das sollte sich ein Arzt anschauen.` });
   }
   if (ampel === 'gruen') {
     const c = freshCheck;

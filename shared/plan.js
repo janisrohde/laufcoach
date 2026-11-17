@@ -197,7 +197,7 @@ function fpMonday(week, fpFree, ov = {}) {
     title: fpw ? fpw.title : 'Wiederholung',
     goal: fpw ? fpw.goal : null,
     tools: [...new Set([...stations, ...neu].flatMap((s) => String(s.tool || '').split(/\s*\(|\)/)[0]).filter((t) => t && t !== 'nichts'))].join(', ') || 'nichts',
-    text: f.monday,
+    text: shin && (f.stations || []).includes('innenwade') ? f.monday.replace('Innenwade, ', '') : f.monday,
     minutes: f.minutes || 12,
     shopping: f.shopping || null,
     weekUrl: PLAN.fp.classUrl + (fpWeekNo || Math.max(2, Math.min(fpFree, 10))),
@@ -272,7 +272,7 @@ function getDayBase(date, ctx = {}) {
   if (type === 'run' && ov.pause) {
     return { ...base, type: 'rest', title: 'Heute kein Lauf – Pause', minutes: 0, plannedWorkout: workout, note: ov.runNote || 'Heute nicht laufen. Oberkörper und Bauch darfst du trainieren.', items: [], adjusted: true };
   }
-  if (type === 'run' && ov.workout && PLAN.workouts[ov.workout]) {
+  if (type === 'run' && ov.workout && PLAN.workouts[ov.workout] && ov.workout !== workout) {
     base.plannedWorkout = workout; workout = ov.workout; base.adjusted = true;
   }
 
