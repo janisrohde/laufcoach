@@ -24,27 +24,68 @@ describe('Ampel', () => {
     expect(kraft.items.find((i) => i.exId === 'A1')).toBeUndefined();
     expect(kraft.items.find((i) => i.exId === 'A2').doseText).toContain('beidbeinig');
   });
-  it('3 Rot mit Knochenpunkt → 7 Tage kein Laufen', () => {
+  it('3 Knochenpunkt frisch → heute und morgen Pause, danach nur leicht statt 7 Tage Pause', () => {
     const data = { checks: [chk('2026-11-23', { shin: 6, bone: 1 })] };
-    for (const d of ['2026-11-24', '2026-11-26', '2026-11-29']) {
-      expect(adjust(d, data).ampel).toBe('rot');
-      expect(dayWith(d, data).type).toBe('rest');
-    }
-    expect(dayWith('2026-11-25', data).title).toBe('Nur Oberkörper und Rumpf');
-    // nur 2 Checks ohne Knochenschmerz → noch rot
+    expect(adjust('2026-11-24', data).ampel).toBe('rot');
+    expect(dayWith('2026-11-24', data).type).toBe('rest');
+    // 2 Tage später ohne neuen Check: nicht abgesagt, aber locker
+    const d26 = adjust('2026-11-26', data);
+    expect(d26.ampel).toBe('gelb');
+    expect(d26.overrides.pause).toBeUndefined();
+    expect(d26.messages.some((m) => m.text.includes('Drück'))).toBe(true);
+    expect(dayWith('2026-11-26', data).type).not.toBe('rest');
+    // nur 2 Checks ohne Knochenschmerz → noch leicht
     const few = { checks: [...data.checks, chk('2026-11-30'), chk('2026-12-01')] };
-    expect(adjust('2026-12-01', few).ampel).toBe('rot');
-    // nach 7 Tagen + 5 Checks ohne Knochenschmerz wieder laufen, erster langer Lauf halbiert
+    expect(adjust('2026-12-01', few).ampel).toBe('gelb');
+    // nach 7 Tagen + 5 Checks ohne Knochenschmerz wieder normal, erster langer Lauf halbiert
     const later = { checks: [...data.checks, ...['2026-11-27', '2026-11-28', '2026-11-29', '2026-11-30', '2026-12-01'].map((d) => chk(d))] };
     expect(adjust('2026-12-01', later).ampel).toBe('gruen');
     expect(dayWith('2026-12-06', later).workout).toBe('Lang 9 km');
   });
-  it('4 Rot ohne Knochen → Pause bis 2 grüne Checks, dann langer Lauf 2/3', () => {
+  it('3b Knochenpunkt, aber danach „ich kann laufen“ → läuft (locker), nicht abgesagt', () => {
+    const data = {
+      checks: [{ ...chk('2026-11-16', { shin: 2, bone: 1 }), created_at: '2026-11-16T20:21:00Z' }],
+      athleteNotes: [{ date: '2026-11-17', text: 'Nein Bro keine Pause ich kann laufen', created_at: '2026-11-17T06:39:00Z' }],
+    };
+    const a = adjust('2026-11-17', data);
+    expect(a.ampel).toBe('gelb');
+    expect(a.overrides.pause).toBeUndefined();
+    expect(dayWith('2026-11-17', data).type).toBe('run');
+  });
+  it('4 Rot ohne Knochen → am Tag danach Pause, dann leichter bis 2 grüne Checks, langer Lauf 2/3', () => {
+    expect(adjust('2026-11-24', { checks: [chk('2026-11-24', { squat: 6 })] }).ampel).toBe('rot');
     const data = { checks: [chk('2026-11-24', { squat: 6 }), chk('2026-11-25')] };
-    expect(adjust('2026-11-26', data).ampel).toBe('rot');
+    expect(adjust('2026-11-26', data).ampel).toBe('gelb');
+    expect(adjust('2026-11-26', data).overrides.pause).toBeUndefined();
     const ok = { checks: [...data.checks, chk('2026-11-26')] };
     expect(adjust('2026-11-26', ok).ampel).toBe('gruen');
     expect(dayWith('2026-11-29', ok).workout).toBe('Lang 9 km'); // 2/3 von 11 = 7,3 → kleinstes Lang 9
+  });
+  it('4b Hinken → Pause', () => {
+    expect(adjust('2026-11-24', { checks: [chk('2026-11-24', { limp: 1 })] }).overrides.pause).toBe(true);
+  });
+  it('4c Schlaf, HRV, Ruhepuls, Zwicken → nie Pause', () => {
+    const normal = ['2026-11-10', '2026-11-11', '2026-11-12', '2026-11-13', '2026-11-14', '2026-11-15', '2026-11-16'].map((d) => chk(d, { rhr: 52 }));
+    const data = {
+      checks: [...normal, chk('2026-11-17', { rhr: 62, shin: 3 })],
+      wellness: [{ date: '2026-11-17', sleep_min: 300, hrv: 40, hrv_base: 70 }],
+      athleteNotes: [{ date: '2026-11-17', text: 'Schienbein zwickt ein bisschen' }],
+    };
+    const a = adjust('2026-11-17', data);
+    expect(a.ampel).toBe('gelb');
+    expect(a.overrides.pause).toBeUndefined();
+    expect(dayWith('2026-11-17', data).type).toBe('run');
+  });
+  it('4d Coach sagt Pause ohne echten Grund → lockerer Lauf statt Absage', () => {
+    const data = { coachPlan: [{ date: '2026-11-17', kind: 'run', data: JSON.stringify({ pause: true, reason: 'Wade' }) }] };
+    const a = adjust('2026-11-17', data);
+    expect(a.overrides.pause).toBeUndefined();
+    expect(dayWith('2026-11-17', data).workout).toBe('Locker (frei)');
+  });
+  it('4e Janis will Pause oder ist krank → Pause', () => {
+    expect(adjust('2026-11-17', { athleteNotes: [{ date: '2026-11-17', text: 'Ich brauche heute mal Pause' }] }).overrides.pause).toBe(true);
+    expect(adjust('2026-11-17', { athleteNotes: [{ date: '2026-11-17', text: 'bin krank, Fieber' }] }).overrides.pause).toBe(true);
+    expect(adjust('2026-11-17', { athleteNotes: [{ date: '2026-11-17', text: 'keine Pause bitte' }] }).overrides.pause).toBeUndefined();
   });
   it('5 Schmerz nach dem Lauf, aber schnell weg → Laufen bleibt, Kraft bekommt Extras', () => {
     const data = { runs: [run('2026-11-17', 'Di Steigerungen', { pain: 3, pain_where: 'knie', pain_side: 'rechts', pain_gone: 'schnell', rpe: 6 })] };

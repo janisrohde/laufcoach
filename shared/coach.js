@@ -34,6 +34,25 @@ export function parseNote(text = '') {
   return { areas, side };
 }
 
+/** „Ich kann laufen“, „alles normal“, „keine Pause“ … */
+export function isOkNote(text = '') {
+  const t = String(text);
+  if (/nicht\s+(mehr\s+)?(normal|gut|ok)|kann\s+nicht/i.test(t) && !/keine\s+pause/i.test(t)) return false;
+  return /kann\s+(wieder\s+|ganz\s+)?(normal\s+)?laufen|alles\s+(ist\s+)?(ganz\s+)?(normal|gut|ok|okay|fit)|keine\s+pause|mir\s+geht'?s?\s+(es\s+)?gut|\bbin\s+fit|(schmerz|es)\s+(ist\s+)?weg|tut\s+nicht(s)?\s+(mehr\s+)?weh|training\s+(heute\s+)?wieder\s+rein|mach\S*\s+(\S+\s+){0,3}wieder\s+rein/i.test(t);
+}
+/** Janis will selbst Pause. „Keine Pause“ zählt nicht. */
+export function wantsPause(text = '') {
+  const t = String(text);
+  if (/kein(e)?\s+pause/i.test(t)) return false;
+  return /(will|möchte|brauch\S*|mach\S*|lieber|nehm\S*)\s+(\S+\s+){0,3}(pause|ruhetag)\b|(will|möchte|kann)\s+(heute\s+)?nicht\s+laufen|\bkein\s+training\b/i.test(t);
+}
+/** Krank laut Nachricht. */
+export function isSickNote(text = '') {
+  const t = String(text);
+  if (/nicht\s+(krank|erkältet)/i.test(t)) return false;
+  return /\b(bin|fühl\S*\s+mich|werde)\s+(\S+\s+){0,2}(krank|erkältet)|\bfieber\b|\bgrippe\b|halsschmerz|magen-?darm/i.test(t);
+}
+
 const sideWord = (s) => (s === 'rechts' || s === 'rechte' ? 'rechte' : s === 'links' || s === 'linke' ? 'linke' : null);
 const fmtDate = (s) => `${+s.slice(8, 10)}.${+s.slice(5, 7)}.`;
 const kindOf = (w) => (PLAN.workouts[w] ? PLAN.workouts[w].kind : null);
@@ -126,31 +145,61 @@ export function adjust(date, data = {}) {
   let ampel = 'gruen';
   let why = null;
 
-  // Rot mit Knochenpunkt: 7 Tage kein Laufen ab letztem Knochen-Check
+  // Grundsatz: anpassen statt absagen. Abgesagt wird nur bei echtem Grund
+  // (krank, Schmerz ≥ 5, Hinken, Punkt am Knochen – frisch gemeldet) oder wenn Janis selbst Pause will.
+  // Schreibt Janis danach „kann laufen“ / „alles normal“, gilt das: dann nur leichter.
+  const notes = (data.athleteNotes || []).filter((n) => n.date <= date && diffDays(date, n.date) <= 2);
+  const okAfter = (d, at) => notes.some((n) => isOkNote(n.text) && (n.date > d || (n.date === d && (!at || !n.created_at || n.created_at > at))));
+  const todayNotes = notes.filter((n) => n.date === date);
+  const lastNoteOf = (fn) => [...todayNotes].reverse().find((n) => fn(n.text) || isOkNote(n.text));
+  const wantsPauseNote = lastNoteOf(wantsPause);
+  const sickNote = lastNoteOf(isSickNote);
+  const wantsPauseToday = !!wantsPauseNote && wantsPause(wantsPauseNote.text);
+  const sickToday = !!sickNote && isSickNote(sickNote.text);
+
   const lastBone = [...past(checks, 30)].reverse().find((c) => c.bone);
   const lastRed = [...recentChecks].reverse().find((c) => checkColor(c) === 'rot');
   const lastRedRun = [...past(runs, 14)].reverse().find((r) => runColor(r) === 'rot');
   const redDate = [lastRed?.date, lastRedRun?.date].filter(Boolean).sort().pop();
 
+  // Frischer roter Check (heute, sonst gestern) oder roter Lauf gestern/heute = echter Grund
+  const freshCheck = todayCheck || [...past(checks, 1)].reverse()[0];
+  const freshRun = [...past(runs, 1)].reverse().find((r) => runColor(r) === 'rot' && r.pain_gone !== 'schnell');
+  const newerCheckAfterRun = freshRun && checks.some((c) => c.date > freshRun.date && c.date <= date && checkColor(c) !== 'rot');
+  let hard = null;
+  if (freshCheck && checkColor(freshCheck) === 'rot' && !okAfter(freshCheck.date, freshCheck.created_at)) {
+    hard = freshCheck.bone ? `ein Punkt am Knochen wehtut (Check vom ${fmtDate(freshCheck.date)})`
+      : freshCheck.limp ? `du gehinkt hast (Check vom ${fmtDate(freshCheck.date)})`
+        : `der Check vom ${fmtDate(freshCheck.date)} Schmerz 5 oder mehr hatte`;
+  } else if (freshRun && !newerCheckAfterRun && !okAfter(freshRun.date, freshRun.created_at)) {
+    hard = `beim Lauf am ${fmtDate(freshRun.date)} Schmerz ${freshRun.pain} war`;
+  }
+
+  // Nach einem Knochenpunkt: 7 Tage (und bis 5 Checks ohne Knochenschmerz) nur leicht – nicht absagen
   const okAfterBone = lastBone ? checks.filter((c) => c.date > lastBone.date && c.date <= date && !c.bone).length : 0;
-  if (lastBone && (diffDays(date, lastBone.date) < 7 || okAfterBone < 5)) {
+  const boneRecent = lastBone && (diffDays(date, lastBone.date) < 7 || okAfterBone < 5) && diffDays(date, lastBone.date) <= 21;
+  if (hard) {
     ampel = 'rot';
-    why = `am ${fmtDate(lastBone.date)} ein Punkt am Knochen wehtat (mind. 7 Tage und 5 Morgen-Checks ohne Knochenschmerz, bisher ${okAfterBone})`;
-    ov.bone = true;
-    messages.push({ type: 'warn', text: 'Schmerz an einem Punkt am Knochen: Sag es heute deinen Eltern. Das sollte sich ein Arzt anschauen.' });
+    why = hard;
+  } else if (boneRecent) {
+    ampel = 'gelb';
+    why = `am ${fmtDate(lastBone.date)} ein Punkt am Knochen wehtat. Bis 7 Tage um sind und 5 Checks ohne Knochenschmerz da sind (bisher ${okAfterBone}), läufst du nur locker`;
   } else if (redDate) {
-    // Rot bleibt, bis 2 Check-Tage nach dem roten Tag grün sind
+    // Nach Rot: leichter, bis 2 Check-Tage nach dem roten Tag grün sind
     const greenAfter = checks.filter((c) => c.date > redDate && c.date <= date && checkColor(c) === 'gruen').length;
     if (greenAfter < 2) {
-      ampel = 'rot';
-      why = `es am ${fmtDate(redDate)} rot war (Schmerz 5 oder mehr). Du läufst erst wieder, wenn 2 Morgen-Checks grün sind (${greenAfter} von 2)`;
+      ampel = 'gelb';
+      why = `es am ${fmtDate(redDate)} rot war (Schmerz 5 oder mehr). Bis 2 Morgen-Checks grün sind (${greenAfter} von 2), läufst du nur locker`;
     }
   }
+  if (lastBone && diffDays(date, lastBone.date) <= 7) {
+    ov.bone = true;
+    messages.push({ type: 'warn', text: 'Punkt am Knochen: Drück vor dem Lauf mit dem Finger auf die Stelle. Tut ein Punkt richtig weh, lauf heute nicht und sag es deinen Eltern – das sollte sich ein Arzt anschauen.' });
+  }
   if (ampel === 'gruen') {
-    const c = todayCheck || [...past(checks, 1)].reverse()[0];
+    const c = freshCheck;
     const col = checkColor(c);
-    if (col === 'gelb') { ampel = 'gelb'; why = `der Morgen-Check ${c.date === date ? 'heute' : 'gestern'} gelb war (Schmerz 3–4)`; }
-    if (col === 'rot') { ampel = 'rot'; why = 'der Morgen-Check rot war'; }
+    if (col === 'gelb' || col === 'rot') { ampel = 'gelb'; why = `der Morgen-Check ${c.date === date ? 'heute' : 'gestern'} ${col === 'rot' ? 'Schmerz zeigte, du aber laufen kannst' : 'gelb war (Schmerz 3–4)'}`; }
     const r = [...recentRuns].reverse().find((x) => runColor(x) !== 'gruen' && x.date < date);
     if (ampel === 'gruen' && r && runColor(r) === 'gelb' && diffDays(date, r.date) <= 2) {
       ampel = 'gelb'; why = `nach dem Lauf am ${fmtDate(r.date)} Schmerz ${r.pain} war und nicht schnell wegging`;
@@ -177,7 +226,8 @@ export function adjust(date, data = {}) {
   }
   // krank
   const sick = [...past(checks, 3)].reverse().find((c) => c.sick);
-  if (sick && diffDays(date, sick.date) <= 1) { ampel = 'rot'; why = 'du krank bist – erst wenn du 1 Tag ohne Beschwerden bist, wieder locker laufen'; }
+  if ((sick && diffDays(date, sick.date) <= 1 && !okAfter(sick.date, sick.created_at)) || sickToday) { ampel = 'rot'; why = 'du krank bist – erst wenn du 1 Tag ohne Beschwerden bist, wieder locker laufen'; }
+  if (wantsPauseToday) { ampel = 'rot'; why = 'du heute Pause willst. Das ist okay'; }
 
   if (ampel === 'rot') {
     ov.pause = true;
@@ -190,7 +240,9 @@ export function adjust(date, data = {}) {
     ov.level1 = true;
     if (planned) {
       if (plannedKind === 'tempo') ov.workout = 'Locker (frei)';
-      ov.runNote = 'Lauf heute ein Drittel kürzer als sonst. Lauf flach. Halte den Puls unter 158.';
+      ov.runNote = plannedKind === 'long' && redDate && diffDays(date, redDate) <= 21
+        ? 'Lauf flach und locker. Halte den Puls unter 158.'
+        : 'Lauf heute ein Drittel kürzer als sonst. Lauf flach. Halte den Puls unter 158.';
     }
     ov.reasons.push(`Heute angepasst, weil ${why}. Mach die Kraft heute leichter und ohne Sprünge.`);
   }
@@ -350,7 +402,12 @@ export function adjust(date, data = {}) {
     if (c.kind === 'run') {
       if (d.workout && PLAN.workouts[d.workout]) ov.workout = d.workout;
       if (d.runNote) ov.runNote = d.runNote;
-      if (d.pause) ov.pause = true;
+      // Coach darf nur bei echtem Grund absagen, sonst wird es ein leichter Lauf
+      if (d.pause && (hard || ov.pause)) ov.pause = true;
+      else if (d.pause && planned && !okAfter(date)) {
+        if (!d.workout && plannedKind !== 'easy') ov.workout = 'Locker (frei)';
+        if (!d.runNote) ov.runNote = 'Lauf heute nur locker und flach, höchstens 30 min. Tut es beim Laufen mehr als 3 von 10 weh? Dann geh nach Hause.';
+      }
       if (d.reason) ov.reasons.push(`Coach: ${d.reason}`);
     }
     if (c.kind === 'strength') {

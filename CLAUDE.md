@@ -8,3 +8,12 @@ Wenn Janis schreibt **„ich bin wieder da“** (oder „weiter“, „weitermac
 
 Auftrag: Obsidian `Projekte/Laufcoach-App Auftrag.md` · Stand: Obsidian `Projekte/Laufcoach-App.md`.
 Begleit-Modus: alles selbst machen, Janis nur Logins und Handy. Schritte nummeriert, „Schreib mir ‚erledigt‘, wenn du fertig bist.“
+
+## Offener Auftrag (17.11.2026): „verbessere die Laufcoach-App“
+Wenn Janis das schreibt, ohne Nachfrage komplett umsetzen:
+1. Prüfen, ob das Training von Di 17.11. wieder drin ist (sonst `TRAINING-HEUTE.cmd` bzw. `scripts/heute-training.sql` ausführen).
+2. Regeln in `shared/coach.js` lockerer: anpassen statt absagen. Absagen (pause) nur bei echtem Grund (krank, Schmerz ≥ 5, Hinken, Knochenpunkt) oder wenn Janis Pause will. Schlaf/HRV/Ruhepuls/kleines Zwicken → höchstens leichter machen. Tests anpassen, `npm test` grün, deployen, pushen.
+3. Prompt der Trainer-Routine (claude.ai/code/routines/trig_01J4pL9GAaocm5yPvZoNAnLE) durch `COACH-PROMPT-NEU.txt` ersetzen (Claude darf sie nicht selbst ändern → Janis Schritt für Schritt anleiten: Seite öffnen, Text einfügen, speichern).
+4. Coach-Chat soll Janis' Nachrichten von heute (athlete_notes 2026-11-17) nochmal lesen und antworten: Routine einmal „Jetzt ausführen“.
+5. Functional-Patterns-Teil in der App überprüfen – Janis findet die FP-Übung dort schlecht/unklar: einfacher, klarer, passend zum Plan.
+6. Kurz zeigen, was geändert wurde; Gehirn `Projekte/Laufcoach-App.md` aktualisieren.
