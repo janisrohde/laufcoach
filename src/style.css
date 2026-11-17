@@ -314,3 +314,8 @@ details.general summary { color: var(--muted); }
 .timer-sheet button { min-height: 46px; border-radius: 14px; border: 0; font-weight: 700; font-size: 15px; background: color-mix(in srgb, var(--bg) 18%, transparent); color: var(--bg); cursor: pointer; }
 .timer-sheet button.main { background: var(--bg); color: var(--text); }
 body.has-timer #app { padding-bottom: calc(var(--safe-b) + 260px); }
+.fp-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; font-weight: 650; margin: 4px 0 2px; }
+.warn-text { color: var(--warn); }
+.fp-videos { margin: 6px 0; padding-left: 20px; font-size: 14.5px; }
+.fp-videos li { margin: 4px 0; }
+details.card.how summary { color: var(--accent); }

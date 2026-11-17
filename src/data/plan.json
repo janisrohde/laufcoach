@@ -2535,9 +2535,9 @@
     "courseUrl": "https://learning.functionalpatterns.app/courses/142637",
     "lessonUrl": "https://learning.functionalpatterns.app/courses/142637/lessons/",
     "classUrl": "https://learning.functionalpatterns.app/courses/142637/classes/",
-    "explain": "Functional Patterns hat 3 Teile. Teil 1: Du lockerst feste Stellen mit Ball und Rolle. Teil 2: Du lernst, gerade zu stehen. Teil 3: Du übst für Bauch, Rücken, Hüfte und Schultern. Rollen macht dich nicht stärker. Aber du wirst lockerer und beweglicher. Darum rollst du zum Aufwärmen vor der Kraft. Die Übungen aus Teil 3 kommen später in deine Kraft-Einheiten.",
-    "rollRules": "Roll jede Seite 1–2 min. Roll langsam. Bleib an einer festen Stelle 20–30 s liegen. Atme ruhig durch die Nase. Es darf nur „angenehm weh“ tun: höchstens 4–5 von 10. Roll nie auf der Schienbeinkante, der Kniescheibe oder direkt hinter dem Innenknöchel. Roll nie auf Stellen, die richtig wehtun.",
-    "unlockNote": "Die nächste Lektion wird erst frei, wenn die vorige erledigt ist. Schau darum jede Lektion einmal an. Markier sie dann im Kurs als erledigt. Das gilt auch für Lektionen, die du nur ansiehst.",
+    "explain": "Functional Patterns ist ein Online-Kurs (auf Englisch). Du brauchst die Videos nicht, um mitzumachen: Die App sagt dir auf Deutsch, was du tust. Teil 1 (Woche 1–3) ist Lockern mit Ball und Rolle. Ab Woche 4 lernst du pro Woche 1–2 neue Übungen (Haltung, Rumpf, Atmung, Hüfte, Ziehen und Drücken). Die besten davon kommen später in deine Kraft-Tage.",
+    "rollRules": "Langsam rollen, ruhig atmen. Feste Stelle: 20–30 s draufbleiben. Es darf nur „angenehm weh“ tun (höchstens 4 von 10). Nie auf Knochen rollen: Schienbeinkante, Kniescheibe, Knöchel. Tut dein Schienbein weh oder drückt ein Punkt am Knochen? Dann heute keine Innenwade und die Wade nur ganz sanft, weit weg vom Schienbein. Schreib es dem Coach.",
+    "unlockNote": "Nur wenn du die Videos sehen willst: Im Kurs wird die nächste Lektion erst frei, wenn du die vorige als erledigt markierst. Für die App musst du nichts freischalten.",
     "weeks": {
       "1": {
         "title": "Lockern (Teil 1)",
@@ -2842,7 +2842,7 @@
             "id": 51,
             "name": "Unilateral Stance",
             "mode": "machen",
-            "how": "Probieren. Ist ab Mittwoch Übung 1 in Kraft B."
+            "how": "Probieren. Ist Übung 1 in Kraft B (Freitag)."
           }
         ],
         "midweek": [
@@ -2959,67 +2959,362 @@
     "byPlanWeek": {
       "1": {
         "fpWeek": 2,
-        "monday": "Videos von Woche 2 der Reihe nach ansehen. Rollen: Hüfte vorne außen (TFL), Gluteus Medius, Waden, Latissimus."
+        "monday": "Heute 12 min Lockern: Wade, Fußsohle, Po seitlich, Wade dehnen.",
+        "stations": [
+          "wade",
+          "fusssohle",
+          "po",
+          "wadedehnen"
+        ],
+        "minutes": 12
       },
       "2": {
         "fpWeek": 3,
-        "monday": "Videos von Woche 3 ansehen. Rollen: Innenwade (nie direkt hinter dem Innenknöchel), Fußsohle, Beinrückseite, Brust oben."
+        "monday": "Heute 12 min Lockern: Wade, Innenwade, Fußsohle, Wade dehnen.",
+        "stations": [
+          "wade",
+          "innenwade",
+          "fusssohle",
+          "wadedehnen"
+        ],
+        "minutes": 12
       },
       "3": {
         "fpWeek": null,
         "repeat": true,
-        "monday": "Wiederholung: Follow-Along von Woche 2 oder 3 und nur die „Machen“-Stellen. Lieblingsstellen: Waden, Fußsohle, Gluteus Medius, Oberschenkel innen.",
+        "monday": "Heute 12 min Lockern: deine 4 wichtigsten Stellen.",
         "midweek": [
           "Waden",
           "Gluteus Medius"
-        ]
+        ],
+        "stations": [
+          "wade",
+          "fusssohle",
+          "po",
+          "wadedehnen"
+        ],
+        "minutes": 12
       },
       "4": {
         "fpWeek": 4,
-        "monday": "Alle 4 Haltungs-Videos ansehen. Rollen: Waden, Gluteus Medius. Ab heute jeden Tag 1 min Standing Neutral (Zähneputzen)."
+        "monday": "Heute 10 min Lockern und 1 neue Übung: gerade stehen.",
+        "stations": [
+          "wade",
+          "fusssohle",
+          "po",
+          "wadedehnen"
+        ],
+        "neu": [
+          {
+            "id": 36,
+            "name": "Gerade stehen",
+            "time": "1 min, danach jeden Tag beim Zähneputzen",
+            "how": [
+              "Füße hüftbreit, Zehen nach vorne.",
+              "Gewicht gleich auf Ferse und Ballen.",
+              "Knie ganz leicht locker, Becken gerade (kein Hohlkreuz).",
+              "Brust leicht hoch, Kinn leicht zurück, ruhig atmen."
+            ],
+            "why": "Wer gerade steht, läuft auch gerader.",
+            "tool": "nichts"
+          }
+        ],
+        "minutes": 10
       },
       "5": {
         "fpWeek": 5,
-        "monday": "Videos ansehen und je einmal probieren. Danach 4 Lieblingsstellen rollen."
+        "monday": "Heute 8 min Lockern und 2 neue Rumpf-Übungen.",
+        "stations": [
+          "wade",
+          "wadedehnen"
+        ],
+        "neu": [
+          {
+            "id": 39,
+            "name": "Unterarmstütz (Plank)",
+            "time": "2× 20–30 s",
+            "how": [
+              "Unterarme auf den Boden, Ellbogen unter den Schultern.",
+              "Körper gerade wie ein Brett, Po nicht hoch und nicht durchhängen.",
+              "Bauch fest, ruhig weiteratmen."
+            ],
+            "why": "Ein fester Rumpf hält dich beim Laufen stabil.",
+            "tool": "Matte"
+          },
+          {
+            "id": 42,
+            "name": "Vierfüßler (Quad Ped)",
+            "time": "2× 20–30 s",
+            "how": [
+              "Hände unter den Schultern, Knie unter der Hüfte.",
+              "Knie 2 cm vom Boden anheben.",
+              "Rücken gerade halten, ruhig atmen."
+            ],
+            "why": "Bauch und Schultern lernen, zusammenzuarbeiten.",
+            "tool": "Matte"
+          }
+        ],
+        "minutes": 8
       },
       "6": {
         "fpWeek": 6,
-        "monday": "Videos ansehen. Diaphragm Exercise und Wall Retractions ausprobieren."
+        "monday": "Heute 10 min Lockern und 2 neue Übungen für Atmung und Schultern.",
+        "stations": [
+          "wade",
+          "fusssohle",
+          "wadedehnen"
+        ],
+        "neu": [
+          {
+            "id": 44,
+            "name": "Bauchatmung",
+            "time": "2 min",
+            "how": [
+              "Auf den Rücken legen, Knie angewinkelt, Hände auf den Bauch.",
+              "Durch die Nase einatmen: Bauch und Seiten werden weit.",
+              "Langsam durch den Mund ausatmen."
+            ],
+            "why": "Ruhiges Atmen hilft dir, auch beim Laufen locker zu bleiben.",
+            "tool": "Matte, Wand"
+          },
+          {
+            "id": 47,
+            "name": "Schulterblätter an der Wand",
+            "time": "2× 10",
+            "how": [
+              "Mit dem Rücken an die Wand stellen.",
+              "Ellbogen angewinkelt an die Wand drücken.",
+              "Schulterblätter nach hinten-unten zusammenziehen, 2 s halten, lösen."
+            ],
+            "why": "Gegen runde Schultern und das Schulter-Zwicken beim Laufen.",
+            "tool": "Matte, Wand"
+          }
+        ],
+        "minutes": 10
       },
       "7": {
         "fpWeek": 7,
-        "monday": "Videos ansehen. 4 Lieblingsstellen rollen."
+        "monday": "Heute 10 min Lockern und 2 neue Übungen für Hüfte und Stand.",
+        "stations": [
+          "wade",
+          "po",
+          "wadedehnen"
+        ],
+        "neu": [
+          {
+            "id": 49,
+            "name": "Beinrückseite dehnen (nach dem langen Lauf)",
+            "time": "2 min",
+            "how": [
+              "Ein Bein gestreckt vor dich auf die Ferse stellen.",
+              "Mit geradem Rücken aus der Hüfte nach vorne beugen.",
+              "Nur angenehm ziehen lassen, nicht wippen."
+            ],
+            "why": "Kommt ab jetzt nach dem langen Lauf.",
+            "tool": "Matte"
+          },
+          {
+            "id": 51,
+            "name": "Auf einem Bein stehen",
+            "time": "je Bein 30 s",
+            "how": [
+              "Auf ein Bein stellen, Knie leicht locker.",
+              "Becken gerade halten, nicht zur Seite kippen.",
+              "Ruhig atmen."
+            ],
+            "why": "Kennst du schon vom Freitag (Kraft B, Übung 1). Heute nur zum Üben, ohne Druck.",
+            "tool": "Matte"
+          }
+        ],
+        "minutes": 10
       },
       "8": {
         "fpWeek": 8,
-        "monday": "Videos ansehen.",
-        "shopping": "Einkaufsliste: Türanker für Bänder (ca. 5–10 €). Brauchst du ab Woche 9."
+        "monday": "Heute nur 8 min Lockern. Leichte Woche.",
+        "shopping": "Einkaufsliste: Türanker für Bänder (ca. 5–10 €). Brauchst du ab Woche 9.",
+        "stations": [
+          "wade",
+          "fusssohle",
+          "wadedehnen"
+        ],
+        "minutes": 8
       },
       "9": {
         "fpWeek": 9,
-        "monday": "Videos ansehen und mit Band + Türanker probieren."
+        "monday": "Heute 10 min Lockern und 2 neue Übungen mit dem Band.",
+        "stations": [
+          "wade",
+          "po",
+          "wadedehnen"
+        ],
+        "neu": [
+          {
+            "id": 57,
+            "name": "Rudern mit Band",
+            "time": "je Arm 2× 10",
+            "how": [
+              "Band mit Türanker auf Brusthöhe befestigen.",
+              "Mit einer Hand das Band zur Rippe ziehen, Schulterblatt nach hinten.",
+              "Langsam zurück."
+            ],
+            "why": "Kräftigt den Rücken für eine gute Laufhaltung.",
+            "tool": "Band + Türanker"
+          },
+          {
+            "id": 58,
+            "name": "Drücken mit Band",
+            "time": "je Arm 2× 10",
+            "how": [
+              "Mit dem Rücken zur Tür, Band auf Brusthöhe.",
+              "Einen Arm nach vorne drücken, Rumpf fest.",
+              "Langsam zurück."
+            ],
+            "why": "Der Gegenpart zum Rudern.",
+            "tool": "Band + Türanker"
+          }
+        ],
+        "minutes": 10
       },
       "10": {
         "fpWeek": 10,
-        "monday": "Videos ansehen und mit Band probieren."
+        "monday": "Heute 10 min Lockern und 1 neue Übung mit dem Band.",
+        "stations": [
+          "wade",
+          "fusssohle",
+          "wadedehnen"
+        ],
+        "neu": [
+          {
+            "id": 63,
+            "name": "Rudern und Drücken im Schritt",
+            "time": "je Seite 2× 8",
+            "tool": "Band + Türanker",
+            "how": [
+              "Ausfallschritt, Band auf Brusthöhe am Türanker.",
+              "Rudern: Zieh mit dem Arm der Seite, deren Bein vorne steht.",
+              "Drücken: Drück mit dem Arm der Seite, deren Bein hinten steht.",
+              "Rumpf fest, langsam zurück."
+            ],
+            "why": "Arm und Bein gegengleich – genau wie beim Laufen."
+          }
+        ],
+        "minutes": 10
       },
       "11": {
         "fpWeek": null,
         "repeat": true,
-        "monday": "Follow-Along einer Woche aus 1–3 und 4 Lieblingsstellen rollen.",
+        "monday": "Heute 12 min Lockern: deine 4 wichtigsten Stellen.",
         "midweek": [
           "Waden",
           "Fußsohle"
-        ]
+        ],
+        "stations": [
+          "wade",
+          "fusssohle",
+          "po",
+          "wadedehnen"
+        ],
+        "minutes": 12
       },
       "12": {
         "fpWeek": null,
         "repeat": true,
-        "monday": "Follow-Along einer Woche aus 1–3 und 4 Lieblingsstellen rollen.",
+        "monday": "Heute 12 min Lockern: deine 4 wichtigsten Stellen.",
         "midweek": [
           "Waden",
           "Fußsohle"
-        ]
+        ],
+        "stations": [
+          "wade",
+          "fusssohle",
+          "po",
+          "wadedehnen"
+        ],
+        "minutes": 12
+      }
+    },
+    "intro": "Montag ist Ruhetag. Lockern ist ein Bonus, kein Muss: Du rollst langsam über Muskeln, danach fühlen sie sich lockerer an. Das ist kein Dehnen und macht dich nicht stärker. Stärker machen dich Mittwoch und Freitag.",
+    "stations": {
+      "wade": {
+        "name": "Wade",
+        "time": "je Bein 2 min",
+        "tool": "Rolle (oder Ball)",
+        "how": [
+          "Setz dich auf den Boden, die Rolle unter eine Wade. Hände hinter dir aufstützen.",
+          "Roll langsam von der Ferse bis kurz unter das Knie.",
+          "An einer festen Stelle 20–30 s bleiben und den Fuß langsam kreisen.",
+          "Dann das andere Bein."
+        ],
+        "why": "Die Wade arbeitet bei jedem Schritt. Rollen fühlt sich danach lockerer an. Schützen tut dich das Wadenheben am Mittwoch und Freitag.",
+        "careful": "Tut die Wade gerade weh (mehr als 4 von 10)? Nur ganz sanft rollen oder weglassen."
+      },
+      "innenwade": {
+        "name": "Innenwade",
+        "time": "je Bein 1 min",
+        "tool": "Tennisball",
+        "how": [
+          "Setz dich hin, den Ball unter die Innenseite der Wade.",
+          "Roll langsam auf und ab.",
+          "Nie direkt hinter dem Innenknöchel."
+        ],
+        "why": "Die Innenwade hält deinen Fuß und Knöchel stabil.",
+        "careful": "Nicht bei Schienbeinschmerz. Nie an die Schienbeinkante."
+      },
+      "fusssohle": {
+        "name": "Fußsohle",
+        "time": "je Fuß 1 min",
+        "tool": "Tennisball",
+        "how": [
+          "Im Stehen den Ball unter die Fußsohle legen. An der Wand festhalten.",
+          "Mit etwas Gewicht langsam von der Ferse bis zu den Zehen rollen.",
+          "Dann der andere Fuß."
+        ],
+        "why": "Der Fuß fühlt sich danach lockerer an und federt angenehmer."
+      },
+      "po": {
+        "name": "Po seitlich",
+        "time": "je Seite 2 min",
+        "tool": "Tennisball",
+        "how": [
+          "Leg dich seitlich auf den Ball, die Stelle zwischen Hüftknochen und Po.",
+          "Mit dem Unterarm abstützen und langsam kleine Kreise rollen.",
+          "Dann die andere Seite."
+        ],
+        "why": "Dieser Muskel (Gluteus Medius) hält beim Laufen dein Knie gerade. Danach fühlt er sich lockerer an."
+      },
+      "huefte": {
+        "name": "Hüfte vorne außen",
+        "time": "je Seite 1 min",
+        "tool": "Tennisball",
+        "how": [
+          "Leg dich auf den Bauch, leicht zur Seite gedreht.",
+          "Ball vorne außen neben den Hüftknochen.",
+          "Ruhig liegen bleiben und atmen, ab und zu ein wenig bewegen."
+        ],
+        "why": "Wird durch viel Sitzen fest. Danach fühlt sich die Hüfte freier an."
+      },
+      "beinhinten": {
+        "name": "Oberschenkel hinten",
+        "time": "je Bein 1 min",
+        "tool": "Ball (oder Rolle)",
+        "how": [
+          "Setz dich auf einen Stuhl oder den Boden, den Ball unter den hinteren Oberschenkel.",
+          "Das Bein langsam strecken und beugen.",
+          "Den Ball etwas verschieben und wiederholen."
+        ],
+        "why": "Wird durch Sitzen fest. Danach fühlt sich das Bein freier an."
+      },
+      "wadedehnen": {
+        "name": "Wade dehnen",
+        "time": "je Bein 2× 30 s",
+        "tool": "Wand",
+        "how": [
+          "Hände an die Wand, ein Bein weit nach hinten, die Ferse bleibt am Boden.",
+          "Hinteres Knie gestreckt: 30 s halten.",
+          "Dann das hintere Knie leicht beugen: 30 s halten.",
+          "Nur angenehm ziehen, nicht wippen. Dann das andere Bein."
+        ],
+        "why": "Hält die Wade beweglich. Das ist echtes Dehnen – Rollen ist etwas anderes."
       }
     }
   },

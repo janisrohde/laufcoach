@@ -48,15 +48,27 @@ describe('Jeder Tag vom 16.11.2026 bis 07.02.2027', () => {
     it(`FP-Montag Woche ${n}`, () => {
       const fp = getDay(mon).fp;
       expect(fp.fpWeek).toBe(FP_BY_WEEK[n]);
+      // Einfacher Montag: 2–4 Lockern-Stellen + höchstens 2 neue Übungen, alles mit Anleitung, Zeit, Werkzeug, Wozu
+      const st = fp.lessons.filter((l) => l.station);
+      const neu = fp.lessons.filter((l) => l.mode === 'neu');
+      expect(st.length).toBeGreaterThanOrEqual(2);
+      expect(st.length).toBeLessThanOrEqual(4);
+      expect(neu.length).toBeLessThanOrEqual(2);
+      expect(st.some((l) => l.station === 'wade')).toBe(true);
+      for (const l of fp.lessons) {
+        expect(l.how.length).toBeGreaterThanOrEqual(2);
+        expect(l.time).toBeTruthy();
+        expect(l.tool).toBeTruthy();
+        expect(l.why).toBeTruthy();
+      }
+      expect(fp.text.length).toBeGreaterThan(10);
       if (FP_BY_WEEK[n]) {
         const [a, b] = FP_IDS[FP_BY_WEEK[n]];
-        expect(fp.lessons.map((l) => l.lessonId)).toEqual(Array.from({ length: b - a + 1 }, (_, j) => a + j));
-        for (const l of fp.lessons) {
-          expect(l.url).toBe(`https://learning.functionalpatterns.app/courses/142637/lessons/${l.lessonId}`);
-          expect(['machen', 'ansehen', 'freiwillig']).toContain(l.mode);
-        }
+        expect(fp.videos.map((l) => l.lessonId)).toEqual(Array.from({ length: b - a + 1 }, (_, j) => a + j));
+        for (const l of [...fp.videos, ...neu]) expect(l.url).toBe(`https://learning.functionalpatterns.app/courses/142637/lessons/${l.lessonId}`);
+        for (const l of neu) expect(fp.videos.some((v) => v.lessonId === l.lessonId)).toBe(true);
         expect(fp.weekUrl).toBe(`https://learning.functionalpatterns.app/courses/142637/classes/${FP_BY_WEEK[n]}`);
-      } else expect(fp.text.length).toBeGreaterThan(10);
+      }
     });
   });
   it('ab 08.02.2027 Erholungswoche', () => {

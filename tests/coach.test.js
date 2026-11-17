@@ -82,6 +82,13 @@ describe('Ampel', () => {
     expect(a.overrides.pause).toBeUndefined();
     expect(dayWith('2026-11-17', data).workout).toBe('Locker (frei)');
   });
+  it('4f FP-Montag: bei Schienbein/Knochenpunkt keine Innenwade', () => {
+    const ohne = getDay('2026-11-23').fp.lessons.map((l) => l.station);
+    expect(ohne).toContain('innenwade');
+    const mit = dayWith('2026-11-23', { checks: [chk('2026-11-20', { shin: 2, bone: 1 })] }).fp.lessons.map((l) => l.station);
+    expect(mit).not.toContain('innenwade');
+    expect(mit).toContain('wade');
+  });
   it('4e Janis will Pause oder ist krank → Pause', () => {
     expect(adjust('2026-11-17', { athleteNotes: [{ date: '2026-11-17', text: 'Ich brauche heute mal Pause' }] }).overrides.pause).toBe(true);
     expect(adjust('2026-11-17', { athleteNotes: [{ date: '2026-11-17', text: 'bin krank, Fieber' }] }).overrides.pause).toBe(true);

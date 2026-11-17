@@ -179,24 +179,30 @@ export function strengthSession(key, week, ctx = {}) {
   return { title: def.title, minutes: ctx.probe ? 15 : ctx.mini ? 15 : def.minutes, general: def.general, items };
 }
 
-function fpMonday(week, fpFree) {
+function fpMonday(week, fpFree, ov = {}) {
   const f = fpPlanFor(week);
   if (!f) return null;
-  const fpWeekNo = f.fpWeek && f.fpWeek <= fpFree ? f.fpWeek : null;
+  // Einfacher FP-Montag: feste Lockern-Runde (deutsch, mit Zeit, Werkzeug, Wozu) + höchstens 2 neue Übungen.
+  // Die Kurs-Videos (Englisch) sind freiwillig und zählen nicht zum Abhaken.
+  const fpWeekNo = f.fpWeek || null;
   const fpw = fpWeekNo ? PLAN.fp.weeks[String(fpWeekNo)] : null;
-  const lessons = fpw ? fpw.lessons.map((l) => ({
-    id: `fp:${l.id}`, kind: 'lesson', lessonId: l.id, name: l.name, mode: l.mode, how: l.how,
-    url: PLAN.fp.lessonUrl + l.id,
-  })) : [];
+  // Schienbein-Beschwerden oder Knochenpunkt: keine Innenwade
+  const shin = ov.bone || (ov.extras || []).some((e) => e.area === 'schienbein');
+  const stations = (f.stations || []).filter((k) => !(shin && k === 'innenwade')).map((k) => ({ id: `fp:st:${k}`, kind: 'lesson', station: k, mode: 'machen', ...PLAN.fp.stations[k] }));
+  const neu = (f.neu || []).map((n) => ({ id: `fp:${n.id}`, kind: 'lesson', lessonId: n.id, mode: 'neu', ...n, url: PLAN.fp.lessonUrl + n.id }));
+  const videos = fpw ? fpw.lessons.map((l) => ({ lessonId: l.id, name: l.name, mode: l.mode, how: l.how, url: PLAN.fp.lessonUrl + l.id })) : [];
   return {
     fpWeek: fpWeekNo,
+    locked: !!(fpWeekNo && fpWeekNo > fpFree),
     title: fpw ? fpw.title : 'Wiederholung',
     goal: fpw ? fpw.goal : null,
-    tools: fpw ? fpw.tools : 'Ball, Rolle',
-    text: fpWeekNo || !f.fpWeek ? f.monday : `FP-Woche ${f.fpWeek} ist bei dir noch gesperrt. Mach mit deiner aktuellen Woche weiter. Oder wiederhole Woche 2–3. Kein Stress.`,
+    tools: [...new Set([...stations, ...neu].flatMap((s) => String(s.tool || '').split(/\s*\(|\)/)[0]).filter((t) => t && t !== 'nichts'))].join(', ') || 'nichts',
+    text: f.monday,
+    minutes: f.minutes || 12,
     shopping: f.shopping || null,
     weekUrl: PLAN.fp.classUrl + (fpWeekNo || Math.max(2, Math.min(fpFree, 10))),
-    lessons,
+    lessons: [...stations, ...neu],
+    videos,
   };
 }
 
@@ -206,7 +212,7 @@ function runItems(date, workoutName, week, ctx) {
   items.push({ id: 'run:check', kind: 'check', name: 'Morgen-Check (30 s)', hop: w.kind !== 'easy', questions: PLAN.rules.morningCheck });
   items.push({ id: 'run:watch', kind: 'watch', name: `Auf der Uhr starten: ${workoutName}`, workout: workoutName, summary: w.summary, steps: w.steps, howto: PLAN.runCards[w.kind] });
   if (w.kind === 'long' && week >= 7 && (ctx.fpFree ?? expectedFpWeek(week)) >= 7) {
-    items.push({ id: 'run:stretch', kind: 'exercise', exId: 'PCS', name: 'Posterior Chain Stretch (FP)', why: 'Entspannt die Rückseite der Beine nach dem langen Lauf.', start: 'Direkt nach dem Lauf. Im Stehen oder auf der Matte.', steps: ['Mach es wie im Kurs in Woche 7.', 'Atme ruhig.', 'Mach insgesamt 2 min.'], watch: 'Nur angenehm ziehen.', mistake: 'Wippen.', tool: 'Matte', focus: [], doseText: '2 min', sets: 1, hold: 120, weight: 'ohne Gewicht' });
+    items.push({ id: 'run:stretch', kind: 'exercise', exId: 'PCS', name: 'Beinrückseite dehnen', why: 'Entspannt die Rückseite der Beine nach dem langen Lauf.', start: 'Direkt nach dem Lauf. Im Stehen oder auf der Matte.', steps: ['Ein Bein gestreckt vor dich auf die Ferse stellen.', 'Mit geradem Rücken aus der Hüfte nach vorne beugen.', 'Ruhig atmen, je Bein 1 min.'], watch: 'Nur angenehm ziehen.', mistake: 'Wippen.', tool: 'Matte', focus: [], doseText: '2 min', sets: 1, hold: 120, weight: 'ohne Gewicht' });
   }
   items.push({ id: 'run:log', kind: 'runlog', name: 'Nach dem Lauf eintragen', workout: workoutName, test: w.test || null, testLabel: w.testLabel || null });
   return items;
@@ -243,7 +249,7 @@ function getDayBase(date, ctx = {}) {
     base.recovery = true;
   } else {
     switch (wd) {
-      case 1: type = 'fp'; title = 'Ruhetag + Functional Patterns'; break;
+      case 1: type = 'fp'; title = 'Ruhetag + Lockern'; break;
       case 2: type = 'run'; workout = info.tue; break;
       case 3: type = 'strength'; strengthKey = 'A'; break;
       case 4: type = 'run'; workout = info.thu; break;
@@ -285,16 +291,16 @@ function getDayBase(date, ctx = {}) {
     if (strengthKey === 'B' && week >= 11 && week <= 12) extra.general += ' Woche 11–12: Bei Übung 4–6 darfst du auch deine liebsten FP-Übungen aus Woche 5–10 nehmen. Zum Beispiel One Arm Row, The Press oder Plank with Hip Extension.';
     extra.hasMini = !probe;
   } else if (type === 'fp') {
-    const fp = fpMonday(week, fpFree);
-    extra.fp = fp; items = fp ? fp.lessons : []; minutes = 25;
+    const fp = fpMonday(week, fpFree, ov);
+    extra.fp = fp; items = fp ? fp.lessons : []; minutes = fp?.minutes || 12;
   } else {
     title = title || 'Ruhetag';
     note = note || PLAN.runCards.rest;
     if (wd === 6 && week >= 1 && week <= 12) {
-      extra.optional = 'Freiwillig (10–15 min): Spiel das Mitmach-Video der FP-Woche ab. Mach nur die „Machen“-Stellen mit.';
+      extra.optional = 'Freiwillig (10 min): Roll deine 2 Lieblingsstellen vom Montag.';
     }
   }
-  if (week === 4) extra.dailyReminder = 'Heute 1 min Standing Neutral, z. B. beim Zähneputzen.';
+  if (week === 4) extra.dailyReminder = 'Heute 1 min gerade stehen, z. B. beim Zähneputzen.';
   if (week === 8 && wd === 1) extra.shopping = PLAN.fp.byPlanWeek['8'].shopping;
 
   return { ...base, type, title, workout, minutes: Math.round(minutes), note, items, ...extra };
@@ -352,7 +358,7 @@ export function getWeek(date, ctxFor = () => ({})) {
 export function morningText(day) {
   if (day.type === 'run') return `Heute: ${day.workout} auf der Uhr starten 🏃`;
   if (day.type === 'strength') return `Heute: ${day.title} – ${day.items.length} Übungen, ${day.minutes} min 💪`;
-  if (day.type === 'fp') return `Heute Ruhetag + FP-Mini${day.fp && day.fp.fpWeek ? ` (Woche ${day.fp.fpWeek})` : ''}`;
+  if (day.type === 'fp') return `Heute Ruhetag + ${day.fp?.minutes || 12} min Lockern`;
   if (day.type === 'before') return '';
   return 'Heute Ruhetag. Pause macht dich schneller.';
 }
@@ -366,6 +372,6 @@ export function previewText(day) {
     return `Morgen: ${day.workout}. Uhr laden.`;
   }
   if (day.type === 'strength') return `Morgen: ${day.title}. Band, Ball und Hanteln bereitlegen.`;
-  if (day.type === 'fp') return 'Morgen: FP-Tag. Ball und Rolle bereitlegen.';
+  if (day.type === 'fp') return 'Morgen: Ruhetag + Lockern. Ball und Rolle bereitlegen.';
   return 'Morgen: Ruhetag.';
 }

@@ -137,7 +137,7 @@ function renderLogin(msg = '') {
 // ---------- Onboarding ----------
 const ONB = [
   ['So funktioniert deine Woche', `<p>Jeden Tag steht hier genau, was dran ist – in der richtigen Reihenfolge. Du hakst ab, fertig.</p>
-    <ul><li><b>Mo</b> Ruhetag + Functional Patterns</li><li><b>Di</b> Tempo-Lauf</li><li><b>Mi</b> Kraft A (Beine & Fuß)</li><li><b>Do</b> Lockerer Lauf</li><li><b>Fr</b> Kraft B (Hüfte, Rumpf, Oberkörper)</li><li><b>Sa</b> Ruhetag</li><li><b>So</b> Langer Lauf</li></ul>
+    <ul><li><b>Mo</b> Ruhetag + Lockern</li><li><b>Di</b> Tempo-Lauf</li><li><b>Mi</b> Kraft A (Beine & Fuß)</li><li><b>Do</b> Lockerer Lauf</li><li><b>Fr</b> Kraft B (Hüfte, Rumpf, Oberkörper)</li><li><b>Sa</b> Ruhetag</li><li><b>So</b> Langer Lauf</li></ul>
     <p>Nach jedem Lauf trägst du kurz ein, wie es war. Dann passe ich den Plan an – wie ein echter Trainer.</p>`],
   ['Deine Zonen in einem Satz', `<p><b>Locker heißt: Puls 145–162 – du kannst noch ganze Sätze reden.</b> Die Uhr piept über 164 – dann langsamer oder gehen.</p>
     <p class="muted">Schnelle Stücke am Dienstag sagt dir die Uhr. Bergauf zählt nur der Puls, Gehen ist richtig.</p>`],
@@ -333,23 +333,34 @@ function fpView(day, done) {
   const total = fp.lessons.length;
   const n = fp.lessons.filter((l) => done[l.id]).length;
   const links = state.data?.settings?.fpLinks || {};
-  return `
-  <div class="card"><div class="label">Functional Patterns · Woche ${fp.fpWeek || day.fpFree} von 10</div>
-    <h3>${fp.fpWeek ? esc(fp.title) : 'Wiederholungswoche'}</h3>
-    <p class="lead">${esc(fp.text)}</p>
-    <div class="bar"><i style="width:${((fp.fpWeek || Math.min(day.fpFree, 10)) / 10) * 100}%"></i></div>
-    <div class="row"><a class="btn primary" href="${esc(fp.weekUrl)}" target="_blank" rel="noopener">Woche im Kurs öffnen</a></div>
-    <details class="how"><summary>Was ist Functional Patterns?</summary><div class="how-body"><p>${esc(PLAN.fp.explain)}</p><p><b>Rollen:</b> ${esc(PLAN.fp.rollRules)}</p><p><b>Werkzeug:</b> ${esc(fp.tools)}</p>${fp.goal ? `<p><b>Ziel:</b> ${esc(fp.goal)}</p>` : ''}</div></details>
-  </div>
-  ${day.shopping ? `<div class="card note warn"><b>Einkaufen:</b> ${esc(day.shopping)}</div>` : ''}
-  ${total ? `<div class="sec-label">Lektionen · ${n} von ${total}</div>` : ''}
-  ${fp.lessons.map((l, i) => `
+  const lesson = (l, i) => `
     <div class="card ex-card ${done[l.id] ? 'done' : ''}" data-id="${esc(l.id)}">
       <div class="ex"><div class="num">${i + 1}</div><div class="ex-main">
-        <h3>${esc(l.name)}</h3><span class="lesson-mode ${l.mode}">${l.mode === 'machen' ? 'Mitmachen' : l.mode === 'freiwillig' ? 'Freiwillig' : 'Nur ansehen'}</span>
-        <div class="collapse-when-done"><div class="sub">${esc(l.how)}</div><div class="row"><a class="btn small" href="${esc(links[l.lessonId] || l.url)}" target="_blank" rel="noopener">Video öffnen</a></div></div>
-      </div><button class="tick" aria-label="Lektion erledigt">${TICK}</button></div>
-    </div>`).join('')}`;
+        <h3>${esc(l.name)}</h3>${l.mode === 'neu' ? '<span class="lesson-mode freiwillig">Neu</span>' : ''}
+        <div class="fp-meta"><span>⏱ ${esc(l.time)}</span><span>🧰 ${esc(l.tool)}</span></div>
+        <div class="collapse-when-done">
+          <ol class="steps-list">${(l.how || []).map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
+          <p class="sub"><b>Wozu:</b> ${esc(l.why)}</p>
+          ${l.careful ? `<p class="sub warn-text">${esc(l.careful)}</p>` : ''}
+          ${l.url ? `<div class="row"><a class="btn small" href="${esc(links[l.lessonId] || l.url)}" target="_blank" rel="noopener">So sieht es aus (Video, Englisch)</a></div>` : ''}
+        </div>
+      </div><button class="tick" aria-label="Erledigt">${TICK}</button></div>
+    </div>`;
+  return `
+  <div class="card"><div class="label">Montag · Lockern · ${fp.minutes} min</div>
+    <h3>${esc(fp.text)}</h3>
+    <p class="lead">${esc(PLAN.fp.intro)}</p>
+    <p class="small"><b>Du brauchst:</b> ${esc(fp.tools)}</p>
+    <details class="how"><summary>Regeln fürs Rollen</summary><div class="how-body"><p>${esc(PLAN.fp.rollRules)}</p></div></details>
+  </div>
+  ${day.shopping ? `<div class="card note warn"><b>Einkaufen:</b> ${esc(day.shopping)}</div>` : ''}
+  ${total ? `<div class="sec-label">Bonus · ${n} von ${total} (darf ausfallen)</div>` : ''}
+  ${fp.lessons.map(lesson).join('')}
+  ${fp.videos.length ? `<details class="card how"><summary>Kurs-Videos dieser Woche (freiwillig, Englisch)</summary><div class="how-body">
+    <p class="small">${esc(PLAN.fp.explain)}</p><p class="small">${esc(PLAN.fp.unlockNote)}</p>
+    <ul class="fp-videos">${fp.videos.map((v) => `<li><a href="${esc(links[v.lessonId] || v.url)}" target="_blank" rel="noopener">${esc(v.name)}</a></li>`).join('')}</ul>
+    <div class="row"><a class="btn small" href="${esc(fp.weekUrl)}" target="_blank" rel="noopener">Woche im Kurs öffnen</a></div>
+  </div></details>` : ''}`;
 }
 
 function coachCard(data, day) {
@@ -825,7 +836,7 @@ function renderHelp() {
   const lib = Object.keys(PLAN.workouts).map((k) => `<li><b>${esc(k)}:</b> ${esc(PLAN.workouts[k].steps.join(' · '))}</li>`).join('');
   const ex = (key) => PLAN.strength[key].exercises.map((e) => `<li><b>${esc(e.name)}</b> – ${esc(e.why)}</li>`).join('');
   const sections = [
-    ['Deine Woche', `<ul><li>Mo: Ruhetag + Functional Patterns (20–30 min)</li><li>Di: Tempo-Lauf</li><li>Mi: Kraft A – Beine & Fuß (35 min)</li><li>Do: Lockerer Lauf</li><li>Fr: Kraft B – Hüfte, Rumpf, Oberkörper (35 min)</li><li>Sa: Ruhetag</li><li>So: Langer Lauf</li></ul><p>Level 1 = Woche 1–4, Level 2 = Woche 5–8, Level 3 = Woche 9–12. Woche 4, 8 und 12 sind leichte Wochen.</p><p>${esc(PLAN.rules.weekDone)}</p>`],
+    ['Deine Woche', `<ul><li>Mo: Ruhetag + 10–12 min Lockern</li><li>Di: Tempo-Lauf</li><li>Mi: Kraft A – Beine & Fuß (35 min)</li><li>Do: Lockerer Lauf</li><li>Fr: Kraft B – Hüfte, Rumpf, Oberkörper (35 min)</li><li>Sa: Ruhetag</li><li>So: Langer Lauf</li></ul><p>Level 1 = Woche 1–4, Level 2 = Woche 5–8, Level 3 = Woche 9–12. Woche 4, 8 und 12 sind leichte Wochen.</p><p>${esc(PLAN.rules.weekDone)}</p>`],
     ['Deine Zonen', `<table class="plan"><tr><th>Zone</th><th>Puls</th><th>Tempo</th><th>Gefühl</th></tr>${z}</table><p>${esc(PLAN.zonesNote)}</p>`],
     ['Training auf der Uhr starten', `<ol>${PLAN.runCards.tempo.map((s) => `<li>${esc(s)}</li>`).join('')}</ol>`],
     ['Alle Lauf-Trainings', `<ul>${lib}</ul>`],
@@ -835,7 +846,7 @@ function renderHelp() {
     ['Wenn etwas zwickt (Schwachstellen)', '<p>Trag nach dem Lauf ein, <b>wo</b> und auf <b>welcher Seite</b> es gezwickt hat und ob es schnell wieder weg war. War es schnell weg, bleibt dein Lauf-Plan gleich – aber die App gibt dir in Kraft A und B gezielt <b>Extra-Übungen</b> für genau diese Stelle und 1 Satz mehr bei passenden Übungen. So wird die Stelle stärker. Bleibt der Schmerz oder ist der Morgen-Check gelb oder rot, wird auch das Laufen angepasst.</p>'],
     ['Langer Lauf – Regeln', `<p>${esc(PLAN.rules.long)}</p>`],
     ['Tauschen und Verschieben', `<ul>${PLAN.rules.swap.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>`],
-    ['Functional Patterns', `<p>${esc(PLAN.fp.explain)}</p><p><b>Routine:</b> Montag Lektionen der Reihe nach · Mittwoch und Freitag 2 Stellen im Start-Teil · Samstag freiwillig Follow-Along · Woche 4 täglich 1 min Standing Neutral.</p><p><b>Rollen:</b> ${esc(PLAN.fp.rollRules)}</p><p>${esc(PLAN.fp.unlockNote)}</p><p><a href="${PLAN.fp.courseUrl}" target="_blank" rel="noopener">Kurs öffnen</a></p>`],
+    ['Functional Patterns', `<p>${esc(PLAN.fp.intro)}</p><p>${esc(PLAN.fp.explain)}</p><p><b>So läuft es:</b> Montag 8–12 min Lockern (die App zeigt dir jede Stelle) · Mittwoch und Freitag 2 Stellen beim Aufwärmen · ab Woche 4 jeden Montag 1–2 neue Übungen.</p><p><b>Rollen:</b> ${esc(PLAN.fp.rollRules)}</p><p>${esc(PLAN.fp.unlockNote)}</p><p><a href="${PLAN.fp.courseUrl}" target="_blank" rel="noopener">Kurs öffnen (freiwillig)</a></p>`],
     ['Deine Ausstattung', `<ul>${PLAN.equipment.have.map((s) => `<li>${esc(s)}</li>`).join('')}</ul><p><b>Hantel-Regeln:</b></p><ul>${PLAN.equipment.rules.map((s) => `<li>${esc(s)}</li>`).join('')}</ul><p><b>Fehlt noch:</b> ${esc(PLAN.equipment.missing)}</p>`],
     ['Essen', `<p>${esc(PLAN.rules.food)}</p>`],
     ['Dein Coach', '<p>Schreib ihm unten auf „Heute“, wenn etwas zwickt, du müde bist oder eine Frage hast. Die App passt deinen Plan sofort an. Claude liest es um 7, 10, 13, 18, 20 und 22 Uhr und antwortet dir.</p><p>Nach jedem Lauf fragt dich die App kurz: <b>Wie war es?</b> und <b>Hat etwas wehgetan?</b> Hast du eine Stelle genannt, fragt er in den nächsten Tagen nach, wie es ihr geht. Die Extra-Übungen werden mit der Zeit schwerer (Stufe 1–3) und fallen weg, wenn alles gut ist.</p>'],
