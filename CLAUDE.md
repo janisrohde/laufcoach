@@ -9,7 +9,7 @@ Wenn Janis schreibt **„ich bin wieder da“** (oder „weiter“, „weitermac
 Auftrag: Obsidian `Projekte/Laufcoach-App Auftrag.md` · Stand: Obsidian `Projekte/Laufcoach-App.md`.
 Begleit-Modus: alles selbst machen, Janis nur Logins und Handy. Schritte nummeriert, „Schreib mir ‚erledigt‘, wenn du fertig bist.“
 
-## ⭐ NEUER offener Auftrag (18.11.2026): „verbessere die Laufcoach-App“
+## (Erledigt 18.11. abends, offen nur: Routine-Prompt durch Janis ersetzen) Auftrag (18.11.2026): „verbessere die Laufcoach-App“
 Wenn Janis das schreibt: **`AUFTRAG-18-11.md` komplett ausführen, ohne Nachfrage** (tiefe Fehlersuche, alle Chats zurückholen, Übungen genau erklären, max. 60 min, Coach schlauer, Agenten-Team). Der Auftrag vom 17.11. unten ist erledigt.
 
 ## (Erledigt) Auftrag (17.11.2026): „verbessere die Laufcoach-App“
