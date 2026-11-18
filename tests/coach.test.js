@@ -99,8 +99,9 @@ describe('Ampel', () => {
     expect(adjust('2026-11-19', data).ampel).toBe('gruen');
     expect(dayWith('2026-11-19', data).workout).toBe('Locker (frei)');
     const a = dayWith('2026-11-18', data);
-    expect(a.items.some((i) => i.extra && i.area === 'knie')).toBe(true);
-    expect(a.items.some((i) => i.extra && i.area === 'huefte')).toBe(true);
+    // Mittwoch: Knie → Wandsitz 1 Satz mehr oder Knie-Extra; Freitag: Hüfte-Extra
+    expect(a.items.some((i) => (i.extra && i.area === 'knie') || (i.exId === 'A3' && i.extraSet))).toBe(true);
+    expect(dayWith('2026-11-20', data).items.some((i) => (i.extra && i.area === 'huefte') || (i.exId === 'B3' && i.extraSet))).toBe(true);
     expect(a.reasons.join(' ')).toContain('rechtes Knie');
   });
   it('6 Schmerz bleibt → gelb', () => {

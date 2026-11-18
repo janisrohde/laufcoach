@@ -2,6 +2,7 @@ import './style.css';
 import { api, getToken, setToken, AuthError, API } from './api.js';
 import { PLAN, getDay, berlinDate, addDays, formatLong, planWeek, weekInfo, weekdayName, expectedFpWeek } from '../shared/plan.js';
 import { parseTime } from '../shared/coach.js';
+import { replyPromise, coachHoursText, nextCoachRound } from '../shared/config.js';
 import { VAPID_PUBLIC_KEY } from './vapid-public.js';
 
 const app = document.getElementById('app');
@@ -57,7 +58,7 @@ function startTimerSeq(list, onDone, i = 0) {
 }
 /** kind: 'pause' | 'hold'. onDone läuft am Ende oder bei „Weiter“. */
 function startTimer(seconds, label, onDone, opts = {}) {
-  stopTimer();
+  stopTimer(true);
   try { audioCtx ||= new (window.AudioContext || window.webkitAudioContext)(); audioCtx.resume(); } catch { /* egal */ }
   const kind = opts.kind || (label === 'Pause' ? 'pause' : 'hold');
   const el = document.createElement('div');
@@ -71,6 +72,7 @@ function startTimer(seconds, label, onDone, opts = {}) {
     <div class="ts-btns">${kind === 'pause' ? '<button data-t="plus">+15 s</button>' : '<button data-t="stop">Abbrechen</button>'}<button data-t="skip" class="main">${kind === 'pause' ? 'Pause überspringen' : 'Fertig'}</button></div>`;
   document.body.appendChild(el);
   document.body.classList.add('has-timer');
+  keepAwake(true);
   const finish = (skipped) => { stopTimer(); if (!skipped) beep(kind === 'pause' ? 3 : 2); if (onDone) onDone(); else if (kind === 'pause') toast('Pause vorbei – nächster Satz!'); };
   el.querySelector('[data-t="skip"]').onclick = () => finish(true);
   const plus = el.querySelector('[data-t="plus"]'); if (plus) plus.onclick = () => { end += 15000; total += 15; };
@@ -85,10 +87,19 @@ function startTimer(seconds, label, onDone, opts = {}) {
   timer = { el, iv };
   tick();
 }
-function stopTimer() {
+function stopTimer(keep = false) {
   if (!timer) return;
   clearInterval(timer.iv); timer.el.remove(); timer = null;
   document.body.classList.remove('has-timer');
+  if (!keep) keepAwake(false);
+}
+/** Bildschirm bleibt an, solange ein Timer läuft (wenn das Handy es kann). */
+let wakeLock = null;
+async function keepAwake(on) {
+  try {
+    if (on && !wakeLock && navigator.wakeLock) { wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener?.('release', () => { wakeLock = null; }); }
+    if (!on && wakeLock) { await wakeLock.release(); wakeLock = null; }
+  } catch { wakeLock = null; }
 }
 
 // ---------- Navigation ----------
@@ -201,7 +212,8 @@ const AREA_NAMES = { knie: 'Knie', schienbein: 'Schienbein', innenknoechel: 'Inn
 // ---------- Heute ----------
 function exerciseCard(it, idx, done, fb) {
   const setsDone = done[it.id] || 0;
-  const isDone = it.sets > 1 ? setsDone >= it.sets : setsDone > 0;
+  const nSteps = (it.setList || []).length;
+  const isDone = nSteps > 1 ? setsDone >= nSteps : setsDone > 0;
   const kg = it.weight && it.weight !== 'ohne Gewicht';
   const isStart = it.exId.endsWith('0');
   return `
@@ -211,21 +223,25 @@ function exerciseCard(it, idx, done, fb) {
       <div class="ex-main">
         ${it.extra ? `<div class="tag accent">Extra · ${esc(AREA_NAMES[it.area] || '')}${it.level > 1 ? ` · Stufe ${it.level}` : ''}</div>` : ''}
         <h3>${esc(it.name)}</h3>
-        <div class="dose">${esc(it.doseText)}</div>
-        ${kg || it.extraSet ? `<div class="chips-inline">${kg ? `<span class="weight kg">${esc(it.weight)}</span>` : ''}${it.extraSet ? `<span class="weight acc">${esc(it.extraSet)}</span>` : ''}</div>` : ''}
+        <div class="dose">${esc(it.doseText)}${it.seconds ? ` · ca. ${Math.max(1, Math.round(it.seconds / 60))} min` : ''}</div>
+        ${kg ? `<div class="chips-inline"><span class="weight kg">${esc(it.weight)}</span></div>` : ''}
+        ${it.careful ? `<div class="card note warn small careful">${esc(it.careful)}</div>` : ''}
         ${it.cue ? `<div class="cue">„${esc(it.cue)}“</div>` : ''}
+        ${it.coachFixed ? `<div class="tag good">Erklärung vom Coach verbessert${typeof it.coachFixed === 'string' ? ` am ${+berlinDay(it.coachFixed).slice(8)}.${+berlinDay(it.coachFixed).slice(5, 7)}.` : ''}</div>` : ''}
         <div class="collapse-when-done">
-          ${setBlock(it, setsDone)}
-          <details class="how"><summary>So geht's</summary><div class="how-body">
+          <details class="how" ${setsDone === 0 ? 'open' : ''}><summary>So geht's</summary><div class="how-body">
             <div class="how-start"><b>Start:</b> ${esc(it.start)}</div>
             <ol class="how-steps">${(it.steps || []).map((s) => `<li>${esc(s)}</li>`).join('')}</ol>
-            <div class="how-row ok"><b>Richtig:</b> ${esc(it.watch)}</div>
-            <div class="how-row bad"><b>Fehler:</b> ${esc(it.mistake)}</div>
-            ${it.perSide ? '<div class="how-row"><b>Seiten:</b> Erst eine Seite, dann die andere. Die andere Seite ist deine Pause.</div>' : ''}
+            <div class="how-row ok"><b>Richtig, wenn:</b> ${esc(it.watch)}</div>
+            <div class="how-row bad"><b>Häufigster Fehler:</b> ${esc(it.mistake)}</div>
+            ${it.easier ? `<div class="how-row"><b>Ohne Gerät / zu schwer:</b> ${esc(it.easier)}</div>` : ''}
+            ${it.perSide ? (it.blockSides ? '<div class="how-row"><b>Seiten:</b> Erst alle Sätze rechts, dann Band umbauen und alle Sätze links. Zwischen den Sätzen läuft die Pause.</div>' : '<div class="how-row"><b>Seiten:</b> Erst eine Seite, dann sofort die andere. Die andere Seite ist deine Pause.</div>') : ''}
             ${it.tool ? `<div class="how-row"><b>Du brauchst:</b> ${esc(it.tool)}</div>` : ''}
             <div class="how-row muted"><b>Wofür:</b> ${esc(it.why)}</div>
             ${it.shiftNote ? `<div class="how-row muted">${esc(it.shiftNote)}</div>` : ''}
           </div></details>
+          ${setBlock(it, setsDone)}
+          <button class="linkbtn ask-ex" data-ask="${idx}">Frage zu Übung ${idx} an den Coach</button>
         </div>
         ${isDone && !isStart && !it.extra ? `<div class="fb"><span>Wie war's?</span><button data-fb="leicht" class="${fb[it.exId] === 'leicht' ? 'on' : ''}">zu leicht</button><button data-fb="ok" class="${fb[it.exId] === 'ok' ? 'on' : ''}">passt</button><button data-fb="schwer" class="${fb[it.exId] === 'schwer' ? 'on' : ''}">zu schwer</button></div>` : ''}
       </div>
@@ -234,23 +250,19 @@ function exerciseCard(it, idx, done, fb) {
   </div>`;
 }
 
-/** Satz-Block: Punkte + ein großer Knopf, der Satz abhakt und die Pause startet. */
+/** Satz-Block: jeder Satz (und jede Seite) einzeln in der richtigen Reihenfolge + ein großer Knopf für den nächsten. */
 function setBlock(it, setsDone) {
-  const total = it.sets || 1;
-  const isStart = it.exId.endsWith('0');
-  const timed = !!(it.holds || it.hold);
-  if (isStart || (total === 1 && !timed)) return '';
-  const n = Math.min(setsDone + 1, total);
-  const sides = it.perSide && it.hold && !it.holds;
-  const label = it.holds ? `Satz ${n}: Runde starten (${it.holds.join(' + ')} s)`
-    : it.hold ? `Satz ${n}: ${sides ? `${it.hold} s links, dann rechts` : `${it.hold < 90 ? it.hold + ' s' : fmtSec(it.hold) + ' min'} halten`}`
-    : `Satz ${n} geschafft`;
-  const hint = timed ? 'Der Timer zählt für dich. Danach startet die Pause von allein.' : (n < total ? `Mach den Satz, dann antippen. Danach läuft ${PAUSE_S / 60} min Pause.` : 'Letzter Satz – dann ist die Übung fertig.');
+  const list = it.setList || [];
+  if (!list.length) return '';
+  const cur = list[setsDone];
+  const next = list[setsDone + 1];
+  const act = !cur ? '' : cur.holds ? 'seq' : cur.hold ? 'hold' : 'set';
+  const label = !cur ? '' : cur.holds ? `▶ ${cur.label}` : cur.hold ? `▶ ${cur.label} – Timer starten` : `✓ ${cur.label} geschafft`;
+  const after = !cur ? '' : !next ? 'Danach ist die Übung fertig.' : cur.switchSide ? `Danach Band auf den anderen Fuß umbauen (${cur.pause} s), dann: ${next.label}.` : cur.pause ? `Danach ${cur.pause} s Pause (läuft von allein), dann: ${next.label}.` : `Danach sofort: ${next.label}.`;
   return `<div class="setbox">
-    <div class="setdots" aria-label="${setsDone} von ${total} Sätzen">${Array.from({ length: total }, (_, k) => `<i class="${k < setsDone ? 'on' : k === setsDone ? 'cur' : ''}"></i>`).join('')}<span>${setsDone} von ${total} Sätzen${it.perSide ? ' · je Seite' : ''}</span></div>
-    <button class="btn primary block setgo" data-act="${it.holds ? 'seq' : it.hold ? 'hold' : 'set'}">${timed ? '▶ ' : '✓ '}${esc(label)}</button>
-    <div class="sets-hint">${hint}</div>
-    ${setsDone > 0 ? '<button class="linkbtn" data-act="undo">Satz zurücknehmen</button>' : ''}
+    <ol class="setlist">${list.map((st, k) => `<li class="${k < setsDone ? 'on' : k === setsDone ? 'cur' : ''}"><span class="box">${k < setsDone ? '✓' : ''}</span><span>${esc(st.label)}</span>${st.switchSide ? '<small>umbauen</small>' : st.pause && k < list.length - 1 ? `<small>${st.pause} s Pause</small>` : ''}</li>`).join('')}</ol>
+    ${cur ? `<button class="btn primary block setgo" data-act="${act}">${esc(label)}</button><div class="sets-hint">${esc(after)}</div>` : ''}
+    ${setsDone > 0 ? '<button class="linkbtn" data-act="undo">Letzten Haken zurücknehmen</button>' : ''}
   </div>`;
 }
 
@@ -364,41 +376,59 @@ function fpView(day, done) {
 }
 
 function coachCard(data, day) {
-  const notes = data.notes || [];
+  const notes = (data.notes || []).filter((n) => n.date === state.date);
   const reasons = day.reasons || [];
   const msgs = data.messages || [];
   if (!notes.length && !reasons.length && !msgs.length && !day.note) return '';
-  const latest = notes[0];
+  // Die Nachrichten selbst stehen im Chat unten (sonst doppelt). Hier nur der Hinweis auf eine neue.
+  const latest = null;
+  const lastMine = (data.chat?.messages || []).filter((m) => m.me).map((m) => m.created_at).sort().pop() || '';
+  const newest = notes.map((n) => n.created_at || '').sort().pop() || '';
+  const chatHint = notes.length && newest > lastMine ? '<p class="coach-text"><button class="linkbtn" id="to-chat">Neue Nachricht vom Coach – unten im Chat lesen</button></p>' : '';
   const warn = msgs.find((m) => m.type === 'warn');
-  const more = [...notes.slice(1).map((n) => n.text), ...msgs.filter((m) => m !== warn).map((m) => m.text)];
+  const more = msgs.filter((m) => m !== warn).map((m) => m.text);
   return `<div class="card coach-card ${warn ? 'warn' : ''}">
     <div class="row-head">${icon('coach')}<div class="label">Dein Coach</div></div>
     ${warn ? `<p class="coach-text strong">${esc(warn.text)}</p>` : ''}
-    ${latest ? `<p class="coach-text">${esc(latest.text)}</p>` : ''}
+    ${chatHint}
     ${reasons.length ? `<div class="adjusted"><b>Heute angepasst:</b> ${esc(reasons[0])}</div>${reasons.length > 1 ? `<details class="how"><summary>Mehr Gründe (${reasons.length - 1})</summary><div class="how-body">${reasons.slice(1).map((r) => `<p>${esc(r)}</p>`).join('')}</div></details>` : ''}` : ''}
     ${!latest && !reasons.length && day.note ? `<p class="coach-text">${esc(day.note)}</p>` : ''}
     ${more.length ? `<details class="how"><summary>Weitere Hinweise (${more.length})</summary><div class="how-body">${more.map((t) => `<p>${esc(t)}</p>`).join('')}</div></details>` : ''}
   </div>`;
 }
 
+const dayLabel = (d) => { const t = today(); return d === t ? 'Heute' : d === addDays(t, -1) ? 'Gestern' : formatLong(d); };
+const timeOf = (iso) => { try { return new Intl.DateTimeFormat('de-DE', { timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit' }).format(new Date(iso)); } catch { return ''; } };
+const berlinDay = (iso) => { try { return berlinDate(new Date(iso)); } catch { return ''; } };
+function bubblesHtml(msgs) {
+  let last = '';
+  return msgs.map((m) => {
+    const d = berlinDay(m.created_at);
+    const sep = d !== last ? `<div class="chat-day">${esc(dayLabel(d))}</div>` : '';
+    last = d;
+    return `${sep}<div class="bubble ${m.me ? 'me' : ''}">${esc(m.text)}<small>${esc(timeOf(m.created_at))}</small></div>`;
+  }).join('');
+}
 function chatCard(data) {
-  const mine = (data.myNotes || []).map((n) => ({ t: n.created_at || '', me: true, text: n.text }));
-  const firstMine = mine.map((m) => m.t).sort()[0];
-  const theirs = (data.notes || []).filter((n) => n.date === state.date && firstMine && (n.created_at || '') > firstMine).map((n) => ({ t: n.created_at || '', me: false, text: n.text }));
-  const conv = [...mine, ...theirs].sort((a, b) => a.t.localeCompare(b.t)).slice(-6);
+  const chat = data.chat || { messages: [], more: false };
+  state.chat = { messages: [...chat.messages], more: chat.more };
+  const n = nextCoachRound();
   return `<div class="card chat-card" id="coachnote">
-    <div class="row-head">${icon('coach')}<div><h3>Schreib deinem Coach</h3><div class="sub">Zwickt was? Müde? Frage? Die App passt sofort an, Claude antwortet um 7, 10, 13, 18, 20 und 22 Uhr.</div></div></div>
-    <div class="bubbles" id="bubbles">${conv.map((m) => `<div class="bubble ${m.me ? 'me' : ''}">${esc(m.text)}</div>`).join('')}</div>
-    <div class="chat-input"><textarea class="in" id="cn-text" rows="2" placeholder="z. B. „Rechtes Schienbein hat beim Laufen etwas wehgetan“"></textarea>
+    <div class="row-head">${icon('coach')}<div><h3>Chat mit deinem Coach</h3><div class="sub">Claude liest alles um ${esc(coachHoursText())}. Nächste Antwort: ${n.tomorrow ? 'morgen ' : ''}${esc(n.text)} Uhr.</div></div></div>
+    ${chat.more ? '<button class="linkbtn" id="chat-older">Ältere Nachrichten laden</button>' : ''}
+    <div class="bubbles" id="bubbles">${bubblesHtml(chat.messages)}</div>
+    <div class="chat-input"><textarea class="in" id="cn-text" rows="2" placeholder="z. B. „Übung 5: wie weit weg von der Wand?“"></textarea>
     <button class="btn primary send" id="cn-send" aria-label="Senden">${icon('send')}</button></div>
   </div>`;
 }
 
-/** Wann schaut Claude das nächste Mal drauf? */
-function nextRound() {
-  const h = +new Intl.DateTimeFormat('de-DE', { timeZone: 'Europe/Berlin', hour: '2-digit', hourCycle: 'h23' }).format(new Date());
-  const n = [7, 10, 13, 18, 20, 22].find((x) => x > h);
-  return n ? `Claude schaut es sich um ${n} Uhr genau an und antwortet dir.` : 'Claude schaut es sich morgen um 7 Uhr genau an und antwortet dir.';
+/** Der eine Satz nach dem Schreiben (eine Quelle für die Uhrzeit: shared/config.js). */
+const nextRound = () => replyPromise();
+
+/** Nach einer fertigen Übung zur nächsten offenen scrollen. */
+function scrollToNextOpen() {
+  const el = document.querySelector('.ex-card:not(.done)');
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function renderToday() {
@@ -427,7 +457,8 @@ async function renderToday() {
 
   let html = `
   <header class="head">
-    <div class="head-top"><span class="meta">${isToday ? 'Heute' : 'Vorschau'} · ${esc(day.label)}</span><span class="meta">${esc(weekLabel)}</span></div>
+    <div class="head-top"><span class="meta">${isToday ? 'Heute' : state.date < today() ? 'Vergangener Tag' : 'Vorschau'}</span><span class="meta">${esc(weekLabel)}</span></div>
+    <div class="head-date">${esc(day.label)}</div>
     <div class="head-main">
       <div class="type-ic ${day.type}">${icon(day.type)}</div>
       <div class="head-title"><h1>${esc(day.title)}</h1>
@@ -445,21 +476,27 @@ async function renderToday() {
 
   // 2. Coach
   html += coachCard(data, day);
-  if (day.type === 'strength' && day.items.some((i) => i.kind === 'exercise' && !i.exId.endsWith('0'))) html += `<div class="card note info small howto-sets"><b>So geht's:</b> Mach einen Satz und tipp dann auf den orangen Knopf. Die Pause zählt von allein. Bei Halte-Übungen tippst du vorher auf ▶, dann zählt der Timer für dich.</div>`;
-  if (day.general && day.type === 'strength') html += `<details class="how general"><summary>So läuft die Einheit ab</summary><div class="how-body">${esc(day.general)}</div></details>`;
+  if (day.type === 'strength') {
+    const exs = day.items.filter((i) => i.kind === 'exercise');
+    const nExtra = exs.filter((i) => i.extra).length;
+    const tools = [...new Set(exs.flatMap((i) => String(i.tool || '').split(/,\s*|\s+oder\s+/)).map((t) => t.replace(/\(.*$|^ab Stufe 2 /, '').trim()).filter((t) => t && !/^nichts$/i.test(t)))];
+    html += `<div class="card note small overview"><b>Heute: ${exs.length} Übungen${nExtra ? ` (${nExtra} Extra)` : ''} · ca. ${day.minutes} min</b>${tools.length ? `<br>Leg dir bereit: ${esc(tools.join(', '))}.` : ''}<br>Tipp auf den orangen Knopf, wenn ein Satz fertig ist. Die Pause läuft von allein.${day.hasMini && !state.mini ? ' <button class="linkbtn" id="mini-top">Keine Zeit? Die kurze Version zählt auch</button>' : ''}</div>`;
+    html += '<details class="card how pain-rule"><summary>Schmerz-Regel</summary><div class="how-body"><p><b>0–3 von 10:</b> okay, weitermachen. <b>4:</b> leichter machen (weniger tief, weniger Wiederholungen). <b>Ab 5:</b> Übung aufhören.</p><p><b>Tut ein Punkt am Schienbeinknochen richtig weh:</b> nicht laufen und deinen Eltern Bescheid sagen – das sollte sich ein Arzt anschauen.</p></div></details>';
+  }
+
   if (day.dailyReminder) html += `<div class="card note info small">${esc(day.dailyReminder)}</div>`;
 
   // 3. Training
   if (day.type === 'fp') html += fpView(day, done);
   let idx = 0;
   for (const it of day.items) {
-    if (it.kind === 'exercise') html += exerciseCard(it, idx++, done, feedback || {});
+    if (it.kind === 'exercise') html += exerciseCard(it, ++idx, done, feedback || {});
     else if (it.kind === 'check') html += checkCard(it, check, day);
     else if (it.kind === 'watch') html += watchCard(it, day);
     else if (it.kind === 'runlog') {
       for (const r of runs) html += (r.rpe ? `<div class="card done-run"><div class="row-head">${icon('run')}<div><h3>Lauf eingetragen ✓</h3><div class="sub">${esc(runSummary(r))} · Gefühl ${r.rpe}/10</div></div><a class="btn small" href="#lauf/${state.date}">Ändern</a></div></div>` : '') + analysisHtml(r);
       if (!runs.length) html += `<div class="card"><div class="row-head">${icon('run')}<div><h3>Nach dem Lauf</h3><div class="sub">Dein Lauf kommt automatisch von der Uhr. Dann fragt dich die App kurz, wie es war.</div></div></div><div class="row"><a class="btn small" href="#lauf/${state.date}">Selbst eintragen</a></div></div>`;
-    } else if (it.kind === 'section') { html += `<div class="sec-label accent">${esc(it.name)}</div>`; if (it.general) html += `<details class="how general"><summary>So läuft es ab</summary><div class="how-body">${esc(it.general)}</div></details>`; idx = 0; }
+    } else if (it.kind === 'section') { html += `<div class="sec-label accent">${esc(it.name)}</div>`; if (it.general) html += `<details class="how general"><summary>So läuft es ab</summary><div class="how-body">${esc(it.general)}</div></details>`; }
   }
   if (!day.items.some((it) => it.kind === 'runlog') && runs.length) {
     html += '<div class="sec-label">Dein Lauf heute</div>';
@@ -470,7 +507,7 @@ async function renderToday() {
   if (allDone) html += `<div class="card finished"><div class="big">Geschafft!</div><div class="muted" id="weekprog">Stark gemacht.</div></div>`;
   if (state.date <= today()) html += chatCard(data);
   if (day.type === 'strength' || day.type === 'run') {
-    html += `<div class="row bottom-actions">${day.hasMini ? `<button class="btn" id="mini">${state.mini ? 'Ganze Einheit' : 'Mini-Version (15 min)'}</button>` : ''}${isToday ? '<button class="btn" id="move">Auf morgen verschieben</button>' : ''}</div>`;
+    html += `<div class="row bottom-actions">${day.hasMini ? `<button class="btn" id="mini">${state.mini ? 'Ganze Einheit' : 'Kurze Version'}</button>` : ''}${isToday ? '<button class="btn" id="move">Auf morgen verschieben</button>' : ''}</div>`;
   }
   app.innerHTML = html;
   bindToday(day, done, runs);
@@ -488,7 +525,8 @@ function isItemDone(it, done, runs, check) {
   if (it.kind === 'runlog') return runs && runs.some((r) => r.rpe);
   if (it.kind === 'lesson') return !!done[it.id];
   const v = done[it.id] || 0;
-  return it.sets > 1 ? v >= it.sets : v > 0;
+  const n = (it.setList || []).length;
+  return n > 1 ? v >= n : v > 0;
 }
 
 function bindToday(day, done) {
@@ -519,37 +557,52 @@ function bindToday(day, done) {
     const it = day.items.find((x) => x.id === id) || day.fp?.lessons.find((x) => x.id === id);
     if (!it) return;
     const tick = card.querySelector('.tick');
+    const steps = it.setList || [];
+    const full = steps.length > 1 ? steps.length : 1;
     tick.onclick = async () => {
       const cur = done[id] || 0;
-      const full = it.sets > 1 ? it.sets : 1;
+      if (cur < full && full > 1 && !confirm(`Alle ${full} Sätze von „${it.name}“ auf einmal abhaken?`)) return;
       const next = cur >= full ? 0 : full;
       await save(id, next);
       if (next && navigator.vibrate) navigator.vibrate(15);
-      renderToday();
+      await renderToday();
+      if (next) scrollToNextOpen();
     };
-    const total = it.sets || 1;
-    // Satz fertig → speichern → Pause (außer nach dem letzten Satz)
-    const setDone = async () => {
-      const next = Math.min((done[id] || 0) + 1, total);
-      await save(id, next);
+    // Schritt fertig → speichern → Pause (wenn eingeplant), sonst gleich der nächste
+    const stepDone = async () => {
+      const k = done[id] || 0;
+      const st = steps[k];
+      const n = Math.min(k + 1, full);
+      await save(id, n);
       if (navigator.vibrate) navigator.vibrate(30);
-      renderToday();
-      if (next < total) startTimer(PAUSE_S, 'Pause', null, { kind: 'pause', next: `Gleich: Satz ${next + 1} von ${total}` });
-      else toast(`${it.name}: fertig ✓`);
+      await renderToday();
+      if (n >= full) { toast(`${it.name}: fertig ✓`); scrollToNextOpen(); return; }
+      const nx = steps[n];
+      if (st && st.pause) startTimer(st.pause, 'Pause', null, { kind: 'pause', next: `Gleich: ${nx.label}` });
+      else toast(`Jetzt: ${nx.label}`);
     };
     const go = card.querySelector('.setgo');
     if (go) go.onclick = () => {
-      const act = go.dataset.act;
-      const n = Math.min((done[id] || 0) + 1, total);
-      if (act === 'set') return setDone();
-      if (act === 'seq') return startTimerSeq(it.holds, setDone);
-      if (it.perSide && !it.holds) {
-        return startTimer(it.hold, `Satz ${n} · linke Seite halten`, () => { beep(1); startTimer(it.hold, `Satz ${n} · rechte Seite halten`, setDone, { kind: 'hold', next: 'Danach: Pause' }); }, { kind: 'hold', next: 'Danach: rechte Seite' });
-      }
-      return startTimer(it.hold, `Satz ${n} · halten`, setDone, { kind: 'hold', next: n < total ? 'Danach: Pause' : 'Letzter Satz!' });
+      if (go.disabled) return;
+      go.disabled = true; setTimeout(() => { go.disabled = false; }, 1500);
+      const k = done[id] || 0;
+      const st = steps[k];
+      if (!st) return;
+      const nx = steps[k + 1];
+      if (st.holds) return startTimerSeq(st.holds, stepDone);
+      if (st.hold) return startTimer(st.hold, st.label, stepDone, { kind: 'hold', next: nx ? `Danach: ${st.pause ? 'Pause, dann ' : ''}${nx.label}` : 'Letzter Satz!' });
+      return stepDone();
     };
     const undo = card.querySelector('[data-act="undo"]');
     if (undo) undo.onclick = async () => { await save(id, Math.max(0, (done[id] || 0) - 1)); renderToday(); };
+    const ask = card.querySelector('.ask-ex');
+    if (ask) ask.onclick = () => {
+      const ta = document.getElementById('cn-text');
+      if (!ta) return;
+      ta.value = `Übung ${ask.dataset.ask} (${it.name}): `;
+      ta.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      ta.focus();
+    };
     card.querySelectorAll('[data-fb]').forEach((b) => b.onclick = async () => {
       try {
         await api('/feedback', { method: 'POST', body: { date: state.date, ex_id: it.exId, value: b.dataset.fb } });
@@ -581,12 +634,24 @@ function bindToday(day, done) {
       try {
         const r = await api('/run/feel', { method: 'POST', body: { id: +fc.dataset.run, date: state.date, rpe: f.rpe, pain: hurt ? +fc.querySelector('#s-fpain').value : 0, pain_where: hurt ? [...f.where].join(',') || null : null, pain_side: hurt ? f.side : null, pain_gone: hurt ? f.gone : null, note: fc.querySelector('#fnote').value.trim() || null } });
         fc.querySelector('.feel-more').hidden = true; fc.querySelector('.feels').hidden = true;
-        fc.querySelector('#feel-reply').innerHTML = `<p class="coach-text">${esc(r.coach || `Danke, ist gespeichert! ${nextRound()}`)}</p><button class="btn small" id="feel-ok">Okay</button>`;
+        fc.querySelector('#feel-reply').innerHTML = `<p class="coach-text">${esc(r.coach || nextRound())}</p><button class="btn small" id="feel-ok">Okay</button>`;
         fc.querySelector('#feel-ok').onclick = () => renderToday();
       } catch (e) { toast(e.message); ev.target.disabled = false; ev.target.textContent = 'Fertig'; }
     };
   }
   // Chat
+  const older = document.getElementById('chat-older');
+  if (older) older.onclick = async () => {
+    const first = state.chat?.messages?.[0]?.created_at;
+    try {
+      const r = await api(`/chat?before=${encodeURIComponent(first || '')}`);
+      state.chat = { messages: [...r.messages, ...state.chat.messages], more: r.more };
+      document.getElementById('bubbles').innerHTML = bubblesHtml(state.chat.messages);
+      if (!r.more) older.remove();
+    } catch (e) { toast(e.message); }
+  };
+  const bub = document.getElementById('bubbles');
+  if (bub) bub.scrollTop = bub.scrollHeight;
   const cn = document.getElementById('cn-send');
   if (cn) cn.onclick = async () => {
     const ta = document.getElementById('cn-text');
@@ -594,17 +659,24 @@ function bindToday(day, done) {
     if (!text) return toast('Schreib kurz, wie es dir geht.');
     cn.disabled = true;
     const bubbles = document.getElementById('bubbles');
-    bubbles.insertAdjacentHTML('beforeend', `<div class="bubble me">${esc(text)}</div><div class="bubble typing" id="typing">Coach schreibt …</div>`);
+    const nowIso = new Date().toISOString();
+    bubbles.insertAdjacentHTML('beforeend', `<div class="bubble me">${esc(text)}<small>${esc(timeOf(nowIso))}</small></div><div class="bubble typing" id="typing">…</div>`);
+    bubbles.scrollTop = bubbles.scrollHeight;
     ta.value = '';
     try {
       const r = await api('/note', { method: 'POST', body: { date: state.date, text } });
-      const fallback = `${r.areas.length ? `Verstanden: ${r.areas.map((a) => AREA_NAMES[a] || a).join(', ')}. ` : 'Danke, ist angekommen. '}${r.upcoming.length ? r.upcoming.map((u) => `${u.label}: Extra-Übungen ${u.extras.join(', ')}.`).join(' ') + ' ' : ''}${nextRound()}`;
-      document.getElementById('typing').outerHTML = `<div class="bubble">${esc(r.coach || fallback)}</div>`;
+      state.chat?.messages.push({ me: true, text, created_at: nowIso });
+      document.getElementById('typing').outerHTML = `<div class="bubble sys">${esc(r.coach || r.promise || nextRound())}</div>`;
+      bubbles.scrollTop = bubbles.scrollHeight;
     } catch (e) { document.getElementById('typing')?.remove(); toast(e.message); ta.value = text; }
     cn.disabled = false;
   };
   const mini = document.getElementById('mini');
   if (mini) mini.onclick = () => { state.mini = !state.mini; renderToday(); };
+  const miniTop = document.getElementById('mini-top');
+  if (miniTop) miniTop.onclick = () => { state.mini = true; renderToday(); };
+  const toChat = document.getElementById('to-chat');
+  if (toChat) toChat.onclick = () => document.getElementById('coachnote')?.scrollIntoView({ behavior: 'smooth' });
   const move = document.getElementById('move');
   if (move) move.onclick = async () => {
     if (!confirm('Training auf morgen verschieben? (höchstens 1 Tag, nicht nachholen)')) return;
@@ -843,13 +915,14 @@ function renderHelp() {
     ['Kraft A – Übungen', `<ul>${ex('A')}</ul><p>${esc(PLAN.strength.A.general)}</p>`],
     ['Kraft B – Übungen', `<ul>${ex('B')}</ul>`],
     ['Ampel: Grün, Gelb, Rot', `<p><b>Morgen-Check (30 s):</b> ${esc(PLAN.rules.morningCheck.join(' · '))}</p><p>🟢 ${esc(PLAN.rules.ampel.gruen)}</p><p>🟡 ${esc(PLAN.rules.ampel.gelb)}</p><p>🔴 ${esc(PLAN.rules.ampel.rot)}</p><p>💪 ${esc(PLAN.rules.ampel.kraft)}</p>`],
-    ['Wenn etwas zwickt (Schwachstellen)', '<p>Trag nach dem Lauf ein, <b>wo</b> und auf <b>welcher Seite</b> es gezwickt hat und ob es schnell wieder weg war. War es schnell weg, bleibt dein Lauf-Plan gleich – aber die App gibt dir in Kraft A und B gezielt <b>Extra-Übungen</b> für genau diese Stelle und 1 Satz mehr bei passenden Übungen. So wird die Stelle stärker. Bleibt der Schmerz oder ist der Morgen-Check gelb oder rot, wird auch das Laufen angepasst.</p>'],
+    ['Schmerz-Regel und wann Eltern/Arzt', '<p><b>0–3 von 10:</b> okay. <b>4:</b> leichter machen. <b>Ab 5:</b> aufhören, heute nicht laufen.</p><p><b>Sag es deinen Eltern</b>, wenn ein Punkt am Knochen beim Drücken richtig wehtut, du hinkst, nach Umknicken etwas dick wird oder eine Stelle seit über einer Woche nicht besser wird. Dann sollte ein Arzt oder Physio draufschauen.</p>'],
+    ['Wenn etwas zwickt (Schwachstellen)', '<p>Trag nach dem Lauf ein, <b>wo</b> und auf <b>welcher Seite</b> es gezwickt hat und ob es schnell wieder weg war. War es schnell weg, bleibt dein Lauf-Plan gleich – aber die App gibt dir in Kraft A und B bei der passenden Übung 1 Satz mehr (höchstens 2×) und höchstens 2 <b>Extra-Übungen</b> für genau diese Stelle. Die Einheit bleibt unter 60 min. Bleibt der Schmerz oder ist der Morgen-Check gelb oder rot, wird auch das Laufen angepasst.</p>'],
     ['Langer Lauf – Regeln', `<p>${esc(PLAN.rules.long)}</p>`],
     ['Tauschen und Verschieben', `<ul>${PLAN.rules.swap.map((s) => `<li>${esc(s)}</li>`).join('')}</ul>`],
     ['Functional Patterns', `<p>${esc(PLAN.fp.intro)}</p><p>${esc(PLAN.fp.explain)}</p><p><b>So läuft es:</b> Montag 8–12 min Lockern (die App zeigt dir jede Stelle) · Mittwoch und Freitag 2 Stellen beim Aufwärmen · ab Woche 4 jeden Montag 1–2 neue Übungen.</p><p><b>Rollen:</b> ${esc(PLAN.fp.rollRules)}</p><p>${esc(PLAN.fp.unlockNote)}</p><p><a href="${PLAN.fp.courseUrl}" target="_blank" rel="noopener">Kurs öffnen (freiwillig)</a></p>`],
     ['Deine Ausstattung', `<ul>${PLAN.equipment.have.map((s) => `<li>${esc(s)}</li>`).join('')}</ul><p><b>Hantel-Regeln:</b></p><ul>${PLAN.equipment.rules.map((s) => `<li>${esc(s)}</li>`).join('')}</ul><p><b>Fehlt noch:</b> ${esc(PLAN.equipment.missing)}</p>`],
     ['Essen', `<p>${esc(PLAN.rules.food)}</p>`],
-    ['Dein Coach', '<p>Schreib ihm unten auf „Heute“, wenn etwas zwickt, du müde bist oder eine Frage hast. Die App passt deinen Plan sofort an. Claude liest es um 7, 10, 13, 18, 20 und 22 Uhr und antwortet dir.</p><p>Nach jedem Lauf fragt dich die App kurz: <b>Wie war es?</b> und <b>Hat etwas wehgetan?</b> Hast du eine Stelle genannt, fragt er in den nächsten Tagen nach, wie es ihr geht. Die Extra-Übungen werden mit der Zeit schwerer (Stufe 1–3) und fallen weg, wenn alles gut ist.</p>'],
+    ['Dein Coach', `<p>Schreib ihm unten auf „Heute“, wenn etwas zwickt, du müde bist oder eine Frage hast. Die App passt deinen Plan sofort an. Claude liest es um ${coachHoursText()} und antwortet dir.</p><p>Nach jedem Lauf fragt dich die App kurz: <b>Wie war es?</b> und <b>Hat etwas wehgetan?</b> Hast du eine Stelle genannt, fragt er in den nächsten Tagen nach, wie es ihr geht. Die Extra-Übungen werden mit der Zeit schwerer (Stufe 1–3) und fallen weg, wenn alles gut ist.</p>`],
   ];
   app.innerHTML = `<h2 class="sec">Hilfe</h2><div class="acc">${sections.map(([t, b]) => `<details><summary>${esc(t)}</summary><div class="body">${b}</div></details>`).join('')}</div>`;
 }
@@ -954,10 +1027,12 @@ async function checkUpdate() {
     if (!v.build || v.build === BUILD) return;
     const h = location.hash;
     const busy = timer || h.startsWith('#lauf') || [...document.querySelectorAll('textarea, input.in')].some((x) => x.value && x !== document.getElementById('c-rhr')) || document.querySelector('.feel.on');
-    let tried = null; try { tried = sessionStorage.getItem('reloadedFor'); } catch { /* egal */ }
-    if (busy || tried === v.build) return;
-    try { sessionStorage.setItem('reloadedFor', v.build); } catch { /* egal */ }
-    location.reload();
+    let tried = null; try { tried = JSON.parse(sessionStorage.getItem('reloadedFor') || 'null'); } catch { /* egal */ }
+    if (busy || (tried && tried.b === v.build && Date.now() - tried.t < 120000)) return;
+    try { sessionStorage.setItem('reloadedFor', JSON.stringify({ b: v.build, t: Date.now() })); } catch { /* egal */ }
+    // Service Worker aktualisieren, dann neu laden (holt die neue index.html am Cache vorbei)
+    try { const reg = await navigator.serviceWorker?.getRegistration(); await reg?.update(); } catch { /* egal */ }
+    location.replace(location.pathname + '?v=' + encodeURIComponent(v.build) + location.hash);
   } catch { /* offline */ }
 }
 function softRefresh() {

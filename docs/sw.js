@@ -1,5 +1,5 @@
 // Service Worker: Offline-Start + Benachrichtigungen
-const CACHE = 'laufcoach-v3';
+const CACHE = 'laufcoach-v4';
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(['./', './index.html', './manifest.webmanifest'])).catch(() => {}));
   self.skipWaiting();

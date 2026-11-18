@@ -113,17 +113,23 @@ describe('Kraft-Dosis laut 4.5/4.6', () => {
     expect(dose('B', 9, 'B3').weight).toBe('1 × 3 kg');
   });
   it('FP ersetzt Level-Übung, wenn freigeschaltet', () => {
-    expect(dose('B', 5, 'B6').doseText).toContain('FP');
-    expect(strengthSession('B', 5, { fpFree: 3 }).items.find((i) => i.exId === 'B6').doseText).not.toContain('FP');
-    expect(dose('A', 8, 'A4').doseText).toContain('Supine Bridge');
-    expect(dose('B', 10, 'B4').doseText).toContain('Unilateral Row');
+    // FP-Kursvariante kommt, wenn freigeschaltet – aber ohne „(FP)“ im Namen
+    expect(dose('B', 5, 'B6').doseText).toBe('3 Runden à 40 s mit Bein heben');
+    expect(dose('B', 5, 'B6').name).not.toContain('FP');
+    expect(strengthSession('B', 5, { fpFree: 3 }).items.find((i) => i.exId === 'B6').name).toBe('Stütz-Runde mit Bein heben');
+    expect(dose('A', 8, 'A4').doseText).toContain('Brücke langsam');
+    expect(dose('B', 10, 'B4').doseText).toContain('Rudern mit einem Arm');
+    // kein Englisch mehr in den Dosis-Texten
+    expect(dose('A', 8, 'A4').doseText).not.toMatch(/Supine|Bilateral/);
   });
   it('Standing Neutral ab Woche 4', () => {
     expect(dose('A', 3, 'A8')).toBeUndefined();
     expect(dose('A', 4, 'A8').hold).toBe(120);
     expect(dose('A', 5, 'A8')).toBeUndefined();
-    expect(dose('B', 5, 'B6q').doseText).toBe('2×8 je Seite');
-    expect(dose('B', 10, 'B5b')).toBeTruthy();
+    // B6q/B5b dürfen wegfallen, wenn die Einheit sonst über 50 min käme – die Dosis gibt es aber
+    const raw = (k, id) => PLAN.strength[k].exercises.find((e) => e.id === id);
+    expect(raw('B', 'B6q').dose[0].text).toBe('2×8 je Seite');
+    expect(raw('B', 'B5b').fromWeek).toBe(10);
     expect(dose('B', 1, 'B6').holds).toEqual([30, 20, 20]);
   });
   it('Mini-Version', () => {

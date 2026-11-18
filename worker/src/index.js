@@ -5,13 +5,18 @@ import { adjust, weekReport, parseNote, weakSpots, AREAS } from '../../shared/co
 import { analyzeRun } from '../../shared/analysis.js';
 import { spotStatus, ANSWERS } from '../../shared/followup.js';
 import { coachReply } from './ai.js';
+import { replyPromise, nextCoachRound, COACH_HOURS } from '../../shared/config.js';
+import { applyExTexts, buildExText, knownExId, normDone } from '../../shared/extexts.js';
 
 const followupsFor = (date, data) => spotStatus(date, weakSpots(date, data.runs, data.checks, data.athleteNotes, data.spotChecks), data.spotChecks);
 // Sofort-Antwort von Claude, höchstens ~25 s warten
-const askCoach = (env, date, trigger, opts = {}) => Promise.race([
-  coachReply(env, date, trigger, { ...opts, sendPush: (p) => sendPush(env, p) }),
-  new Promise((r) => setTimeout(() => r(null), 25000)),
-]);
+const askCoach = (env, date, trigger, opts = {}) => {
+  const p = coachReply(env, date, trigger, { ...opts, sendPush: (x) => sendPush(env, x) });
+  let late = false;
+  // Dauert die Antwort länger als 20 s: Worker wartet im Hintergrund weiter, speichert sie und schickt dann einen Push
+  if (opts.ctx) opts.ctx.waitUntil(p.then((r) => (late && r?.reply ? sendPush(env, { title: 'Dein Coach', body: r.reply.slice(0, 140), url: './#heute' }) : null)).catch(() => {}));
+  return Promise.race([p, new Promise((r) => setTimeout(() => { late = true; r(null); }, 20000))]);
+};
 
 const enc = new TextEncoder();
 const now = () => new Date().toISOString();
@@ -88,11 +93,24 @@ async function getSettings(env) {
     fpFree: s.fpFree ? Number(s.fpFree) : null,
     fpLinks: s.fpLinks ? JSON.parse(s.fpLinks) : {},
     onboarded: s.onboarded === '1',
+    exTexts: (() => { try { return s.exTexts ? JSON.parse(s.exTexts) : {}; } catch { return {}; } })(),
   };
+}
+/** Chat: Nachrichten von Janis und vom Coach, nach Zeit sortiert (älteste zuerst). */
+async function loadChat(env, { before = null, limit = 60 } = {}) {
+  const b = before || '9999';
+  const [a, c] = await Promise.all([
+    env.DB.prepare('SELECT id, date, text, created_at FROM athlete_notes WHERE created_at < ? ORDER BY created_at DESC LIMIT ?').bind(b, limit).all(),
+    env.DB.prepare('SELECT id, date, text, created_at FROM coach_notes WHERE created_at < ? ORDER BY created_at DESC LIMIT ?').bind(b, limit).all(),
+  ]);
+  const all = [...a.results.map((n) => ({ ...n, me: true })), ...c.results.map((n) => ({ ...n, me: false }))]
+    .sort((x, y) => y.created_at.localeCompare(x.created_at));
+  const page = all.slice(0, limit).reverse();
+  return { messages: page, more: all.length > limit || a.results.length === limit || c.results.length === limit };
 }
 async function dayFor(env, date, data, settings, opts = {}) {
   const a = adjust(date, data);
-  const day = getDay(date, { overrides: a.overrides, fpFree: settings.fpFree ?? undefined, mini: opts.mini });
+  const day = applyExTexts(getDay(date, { overrides: a.overrides, fpFree: settings.fpFree ?? undefined, mini: opts.mini }), settings.exTexts);
   return { day, ampel: a.ampel, messages: a.messages };
 }
 
@@ -287,13 +305,19 @@ async function handle(req, env, ctx) {
       const { results: done } = await env.DB.prepare('SELECT * FROM done WHERE date >= ? ORDER BY date').bind(from).all();
       const { results: notes } = await env.DB.prepare('SELECT * FROM coach_notes WHERE date >= ? ORDER BY id').bind(from).all();
       const today = await dayFor(env, date, data, settings);
+      const yest = await dayFor(env, addDays(date, -1), data, settings);
+      const exList = (d, doneRows) => { let n = 0; return d.items.filter((it) => it.kind === 'exercise').map((it) => ({ nr: ++n, id: it.exId, name: it.name, extra: !!it.extra, saetze: (it.setList || []).length || it.sets, abgehakt: doneRows.find((x) => x.item_id === it.id)?.value || 0 })); };
+      const doneOf = (d) => done.filter((x) => x.date === d);
+      const chat7 = (await loadChat(env, { limit: 200 })).messages.filter((m) => m.created_at >= addDays(date, -7)).map((m) => ({ zeit: m.created_at, von: m.me ? 'Janis' : 'Coach', fuerTag: m.date, text: m.text }));
       const next = [];
       for (let i = 1; i <= 7; i++) { const d = addDays(date, i); const x = await dayFor(env, d, data, settings); next.push({ date: d, type: x.day.type, title: x.day.title, workout: x.day.workout, reasons: x.day.reasons }); }
-      return reply({ today: date, week: planWeek(date), ampel: today.ampel, todayPlan: { type: today.day.type, title: today.day.title, workout: today.day.workout, reasons: today.day.reasons }, messages: today.messages, next7: next,
+      return reply({ today: date, now: new Date().toISOString(), coachHours: COACH_HOURS, nextCoach: nextCoachRound(),
+        chat7, todayExercises: exList(today.day, doneOf(date)), yesterday: { date: addDays(date, -1), type: yest.day.type, title: yest.day.title, exercises: exList(yest.day, doneOf(addDays(date, -1))), runs: data.runs.filter((r) => r.date === addDays(date, -1)).map((r) => ({ workout: r.workout, km: r.distance_m ? r.distance_m / 1000 : null })) },
+        exTexts: settings.exTexts, week: planWeek(date), ampel: today.ampel, todayPlan: { type: today.day.type, title: today.day.title, workout: today.day.workout, reasons: today.day.reasons }, messages: today.messages, next7: next,
         followups: followupsFor(date, data).map(({ area, side, count, last, lastAnswer, lastCheckDate, closed, due }) => ({ area, side, count, last, lastAnswer, lastCheckDate, closed, due })),
         spotChecks: data.spotChecks.filter((c) => c.date >= from), wellness: data.wellness.filter((w) => w.date >= from),
         runs: data.runs.filter((r) => r.date >= from).map((r) => ({ ...r, auto: analyzeRun(r, data.runs) })), coachPlan: data.coachPlan.filter((c) => c.date >= addDays(date, -7)), athleteNotes: data.athleteNotes.filter((n) => n.date >= from),
-        allowed: { focusAreas: Object.keys(PLAN.extraExercises), workouts: Object.keys(PLAN.workouts), exerciseIds: [...PLAN.strength.A.exercises, ...PLAN.strength.B.exercises].map((e) => `${e.id} ${e.name}`) }, checks: data.checks.filter((c) => c.date >= from), feedback: data.feedback.filter((f) => f.date >= from), overrides: data.manual.filter((m) => m.date >= from), done, notes });
+        allowed: { focusAreas: Object.keys(PLAN.extraExercises), workouts: Object.keys(PLAN.workouts), exerciseIds: [...PLAN.strength.A.exercises, ...PLAN.strength.B.exercises, ...Object.values(PLAN.extraExercises).flat()].map((e) => `${e.id} ${e.name}`) }, checks: data.checks.filter((c) => c.date >= from), feedback: data.feedback.filter((f) => f.date >= from), overrides: data.manual.filter((m) => m.date >= from), done, notes });
     }
     if (path === '/coach/note' && req.method === 'POST') {
       const b = await req.json().catch(() => ({}));
@@ -361,6 +385,24 @@ async function handle(req, env, ctx) {
       await env.DB.prepare('INSERT OR REPLACE INTO coach_plan (date, kind, data, created_at) VALUES (?, ?, ?, ?)').bind(b.date, b.kind, JSON.stringify(b.data).slice(0, 4000), now()).run();
       return reply({ ok: true });
     }
+    if (path === '/coach/exercise' && req.method === 'POST') {
+      // Bessere Erklärung für eine Übung dauerhaft in der App speichern (gilt ab sofort an allen Tagen)
+      const b = await req.json().catch(() => ({}));
+      const exId = str(b.exId, 30);
+      if (!knownExId(exId)) return reply({ error: 'unbekannte exId – siehe allowed.exerciseIds in /coach/summary' }, 400);
+      const settingsEx = await getSettings(env);
+      const ex = settingsEx.exTexts;
+      // Variante: Name der Übung, wie sie heute in der App steht (A3 ist z. B. erst Wandsitz, später Ausfallschritt)
+      if (!b.undo && !b.name) {
+        const today = (await dayFor(env, date, await loadData(env, addDays(date, 1)), { ...settingsEx, exTexts: {} })).day;
+        b.name = today.items.find((it) => it.exId === exId)?.name || null;
+      }
+      const next = buildExText(ex[exId], b, now());
+      if (next?.error) return reply({ error: next.error }, 400);
+      if (next) ex[exId] = next; else delete ex[exId];
+      await env.DB.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES ('exTexts', ?)").bind(JSON.stringify(ex)).run();
+      return reply({ ok: true, exId, saved: ex[exId] || null, undo: 'POST /coach/exercise {"exId", "undo": true} stellt die vorige Version wieder her' });
+    }
     if (path === '/coach/override' && req.method === 'POST') {
       const b = await req.json().catch(() => ({}));
       if (!isDate(b.date) || !['workout', 'runNote', 'pause'].includes(b.field)) return reply({ error: 'date/field ungültig' }, 400);
@@ -385,28 +427,37 @@ async function handle(req, env, ctx) {
     const data = await loadData(env, addDays(date, 1));
     const mini = url.searchParams.get('mini') === '1';
     const { day, ampel, messages } = await dayFor(env, date, data, settings, { mini });
-    const { results: done } = await env.DB.prepare('SELECT item_id, value FROM done WHERE date = ?').bind(date).all();
-    const { results: notes } = await env.DB.prepare('SELECT * FROM coach_notes WHERE date >= ? ORDER BY id DESC LIMIT 3').bind(addDays(date, -3)).all();
+    const { results: done } = await env.DB.prepare('SELECT item_id, value, done_at FROM done WHERE date = ?').bind(date).all();
+    // Coach-Karte: nur Nachrichten, die für genau diesen Tag geschrieben wurden (nichts Veraltetes von gestern)
+    const { results: notes } = await env.DB.prepare('SELECT * FROM coach_notes WHERE date = ? ORDER BY id DESC').bind(date).all();
+    const chat = await loadChat(env, { limit: 80 });
     const fb = data.feedback.filter((f) => f.date === date);
-    return reply({ day, ampel, messages, done: Object.fromEntries(done.map((d) => [d.item_id, d.value])), check: data.checks.find((c) => c.date === date) || null,
+    return reply({ day, ampel, messages, done: normDone(day, done), check: data.checks.find((c) => c.date === date) || null,
       followups: followupsFor(date, data).filter((f) => f.due).slice(0, 2).map((f) => ({ area: f.area, side: f.side, question: f.question })),
       wellness: data.wellness.find((w) => w.date === date) || null,
-      runs: data.runs.filter((r) => r.date === date).map((r) => ({ ...r, auto: analyzeRun(r, data.runs) })), notes, myNotes: data.athleteNotes.filter((n) => n.date === date), feedback: Object.fromEntries(fb.map((f) => [f.ex_id, f.value])), settings: { fpFree: settings.fpFree, fpLinks: settings.fpLinks, onboarded: settings.onboarded } });
+      runs: data.runs.filter((r) => r.date === date).map((r) => ({ ...r, auto: analyzeRun(r, data.runs) })), notes, chat, nextCoach: nextCoachRound(), myNotes: data.athleteNotes.filter((n) => n.date === date), feedback: Object.fromEntries(fb.map((f) => [f.ex_id, f.value])), settings: { fpFree: settings.fpFree, fpLinks: settings.fpLinks, onboarded: settings.onboarded } });
+  }
+  if (path === '/chat' && req.method === 'GET') {
+    const before = url.searchParams.get('before');
+    return reply(await loadChat(env, { before: before && /^\d{4}-/.test(before) ? before : null, limit: 60 }));
   }
   if (path === '/week' && req.method === 'GET') {
     const settings = await getSettings(env);
     const mon = addDays(date, -((weekday(date) + 6) % 7));
     const data = await loadData(env, addDays(mon, 7));
-    const { results: done } = await env.DB.prepare('SELECT date, item_id FROM done WHERE date >= ? AND date <= ?').bind(mon, addDays(mon, 6)).all();
+    const { results: done } = await env.DB.prepare('SELECT date, item_id, value, done_at FROM done WHERE date >= ? AND date <= ?').bind(mon, addDays(mon, 6)).all();
     const days = [];
     for (let i = 0; i < 7; i++) {
       const d = addDays(mon, i);
       const { day } = await dayFor(env, d, data, settings);
       const ids = done.filter((x) => x.date === d).map((x) => x.item_id);
       const ran = data.runs.some((r) => r.date === d);
-      const total = day.items.filter((it) => it.kind !== 'check').length;
+      const exItems = day.items.filter((it) => it.kind === 'exercise' || it.kind === 'lesson');
+      const total = exItems.length;
+      const dn = normDone(day, done.filter((x) => x.date === d));
+      const fullDone = exItems.filter((it) => { const v = dn[it.id]; const n = (it.setList || []).length; return v && (n > 1 ? v >= n : true); }).length;
       days.push({ date: d, label: day.label, type: day.type, title: day.title, workout: day.workout, adjusted: !!day.adjusted || day.reasons.length > 0, done: ids.length, total, ran,
-        complete: day.type === 'run' ? ran : day.type === 'strength' || day.type === 'fp' ? total > 0 && ids.length >= Math.ceil(total * 0.6) : false });
+        complete: day.type === 'run' ? ran : day.type === 'strength' || day.type === 'fp' ? total > 0 && fullDone >= Math.ceil(total * 0.6) : false });
     }
     return reply({ week: planWeek(mon), days });
   }
@@ -442,20 +493,22 @@ async function handle(req, env, ctx) {
   }
   if (path === '/note' && req.method === 'POST') {
     // Nachricht von Janis an den Coach (Gefühl, Zwicken, Fragen)
-    const text = str(body.text, 1000);
+    const text = str(body.text, 2000);
     if (!text) return reply({ error: 'Text fehlt' }, 400);
-    await env.DB.prepare('INSERT INTO athlete_notes (date, text, created_at) VALUES (?, ?, ?)').bind(date, text, now()).run();
+    // Immer unter HEUTE speichern (auch wenn Janis gerade einen anderen Tag ansieht), sonst wirkt „Pause“/„krank“ nicht
+    const noteDay = berlinDate();
+    await env.DB.prepare('INSERT INTO athlete_notes (date, text, created_at) VALUES (?, ?, ?)').bind(noteDay, text, now()).run();
     const settings = await getSettings(env);
     const data = await loadData(env, addDays(date, 8));
     const parsed = parseNote(text);
     const upcoming = [];
     for (let i = 0; i <= 7 && upcoming.length < 2; i++) {
-      const d = addDays(date, i);
+      const d = addDays(noteDay, i);
       const { day } = await dayFor(env, d, data, settings);
       if (day.type === 'strength' && day.items.some((it) => it.extra)) upcoming.push({ label: day.label, extras: day.items.filter((it) => it.extra).map((it) => it.name) });
     }
-    const ai = await askCoach(env, date, `Janis schreibt dir: „${text}“`, { quiet: true });
-    return reply({ ok: true, areas: parsed.areas, upcoming, coach: ai?.reply || null });
+    const ai = await askCoach(env, noteDay, `Janis schreibt dir: „${text}“`, { quiet: true, ctx });
+    return reply({ ok: true, areas: parsed.areas, upcoming, coach: ai?.reply || null, promise: replyPromise(), nextCoach: nextCoachRound() });
   }
   if (path === '/check' && req.method === 'POST') {
     await env.DB.prepare('INSERT OR REPLACE INTO checks (date, squat, shin, hop, bone, limp, sick, rhr, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)')
@@ -487,7 +540,7 @@ async function handle(req, env, ctx) {
       if (day.reasons.length) upcoming.push({ date: d, label: day.label, title: day.title, reasons: day.reasons });
     }
     const next = adjust(addDays(date, 1), data);
-    const ai = await askCoach(env, date, `Janis hat gerade seinen Lauf eingetragen: ${JSON.stringify({ workout: body.workout, km: body.distance_m ? body.distance_m / 1000 : null, puls: body.hr_avg, gefuehl: body.rpe, schmerz: body.pain, wo: finalWhere, seite: body.pain_side, wann: body.pain_when, schnellWeg: body.pain_gone, notiz: body.note })}`, { quiet: true });
+    const ai = await askCoach(env, date, `Janis hat gerade seinen Lauf eingetragen: ${JSON.stringify({ workout: body.workout, km: body.distance_m ? body.distance_m / 1000 : null, puls: body.hr_avg, gefuehl: body.rpe, schmerz: body.pain, wo: finalWhere, seite: body.pain_side, wann: body.pain_when, schnellWeg: body.pain_gone, notiz: body.note })}`, { quiet: true, ctx });
     return reply({ ok: true, coach: ai?.reply || null, upcoming: upcoming.slice(0, 3), messages: next.messages, ampel: next.ampel });
   }
   if (path === '/run/feel' && req.method === 'POST') {
@@ -498,7 +551,7 @@ async function handle(req, env, ctx) {
     await env.DB.prepare('UPDATE runs SET rpe = COALESCE(?, rpe), pain = COALESCE(?, pain), pain_where = COALESCE(?, pain_where), pain_side = COALESCE(?, pain_side), pain_gone = COALESCE(?, pain_gone), note = COALESCE(?, note) WHERE id = ?')
       .bind(int(body.rpe), int(body.pain), where || null, str(body.pain_side, 10) || null, str(body.pain_gone, 10) || null, str(body.note) || null, id).run();
     const r = await env.DB.prepare('SELECT * FROM runs WHERE id = ?').bind(id).first();
-    const ai = await askCoach(env, date, `Janis sagt nach dem Lauf vom ${r?.date}: Gefühl ${body.rpe ?? '-'}/10, Schmerz ${body.pain ?? 0}/10${where ? ' an ' + where : ''}${body.pain_side ? ' ' + body.pain_side : ''}${body.note ? ', Notiz: ' + body.note : ''}. Lauf-Daten: ${JSON.stringify({ workout: r?.workout, km: r?.distance_m ? r.distance_m / 1000 : null, puls: r?.hr_avg, kadenz: r?.cadence })}`, { quiet: true });
+    const ai = await askCoach(env, date, `Janis sagt nach dem Lauf vom ${r?.date}: Gefühl ${body.rpe ?? '-'}/10, Schmerz ${body.pain ?? 0}/10${where ? ' an ' + where : ''}${body.pain_side ? ' ' + body.pain_side : ''}${body.note ? ', Notiz: ' + body.note : ''}. Lauf-Daten: ${JSON.stringify({ workout: r?.workout, km: r?.distance_m ? r.distance_m / 1000 : null, puls: r?.hr_avg, kadenz: r?.cadence })}`, { quiet: true, ctx });
     return reply({ ok: true, coach: ai?.reply || null });
   }
   if (path === '/run' && req.method === 'DELETE') {
@@ -528,6 +581,9 @@ async function handle(req, env, ctx) {
     const tomorrow = addDays(date, 1);
     const t = (await dayFor(env, tomorrow, mvData, mvSettings)).day;
     if (day.type !== 'run' && day.type !== 'strength') return reply({ error: 'Heute gibt es nichts zu verschieben.' }, 400);
+    if (mvData.manual.some((m) => m.date === date && ['moved', 'addRun', 'addSession'].includes(m.field))) {
+      return reply({ error: 'Das wurde schon einmal verschoben. Nochmal verschieben geht nicht – mach heute die 15-min-Version oder lass es aus.' }, 400);
+    }
     const kind = day.type === 'run' ? PLAN.workouts[day.workout].kind : 'strength';
     const t2 = (await dayFor(env, addDays(date, 2), mvData, mvSettings)).day;
     const nextHard = t2.type === 'run' && ['tempo', 'long'].includes(PLAN.workouts[t2.workout].kind);

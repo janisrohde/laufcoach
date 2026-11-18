@@ -134,7 +134,15 @@ export function adjust(date, data = {}) {
   const feedback = data.feedback || [];
   const ov = { reasons: [] };
   const messages = [];
-  const planned = plannedRun(date);
+  // Verschobene Läufe zählen mit: „moved“ = heute kein Lauf, „addRun“ = heute dieser Lauf
+  const manToday = (data.manual || []).filter((x) => x.date === date);
+  const movedAway = manToday.some((m) => m.field === 'moved');
+  const addedRun = [...manToday].reverse().find((m) => m.field === 'addRun' && PLAN.workouts[m.value])?.value || null;
+  const planned = movedAway ? addedRun : plannedRun(date) || addedRun;
+  const baseType = getDay(date).type;
+  const addedSession = manToday.some((m) => m.field === 'addSession');
+  // Echter Tagestyp nach Verschieben: weg verschoben = frei, Lauf/Kraft dazu = Lauf/Kraft
+  const effType = planned ? 'run' : movedAway ? (addedSession ? 'strength' : 'rest') : addedSession && baseType === 'rest' ? 'strength' : baseType;
   const plannedKind = kindOf(planned);
   const past = (arr, days) => arr.filter((x) => x.date <= date && diffDays(date, x.date) <= days);
 
@@ -194,7 +202,7 @@ export function adjust(date, data = {}) {
   }
   if (lastBone && diffDays(date, lastBone.date) <= 7) {
     ov.bone = true;
-    messages.push({ type: 'warn', text: `Punkt am Knochen: Drück ${getDay(date).type === 'run' ? 'vor dem Lauf ' : ''}mit dem Finger auf die Stelle. Tut ein Punkt richtig weh, ${getDay(date).type === 'run' ? 'lauf heute nicht' : 'lass Laufen und Sprünge weg'} und sag es deinen Eltern – das sollte sich ein Arzt anschauen.` });
+    messages.push({ type: 'warn', text: `Punkt am Knochen: Drück ${effType === 'run' ? 'vor dem Lauf ' : ''}mit dem Finger auf die Stelle. Tut ein Punkt richtig weh, ${effType === 'run' ? 'lauf heute nicht' : 'lass Laufen und Sprünge weg'} und sag es deinen Eltern – das sollte sich ein Arzt anschauen.` });
   }
   if (ampel === 'gruen') {
     const c = freshCheck;
@@ -244,7 +252,12 @@ export function adjust(date, data = {}) {
         ? 'Lauf flach und locker. Halte den Puls unter 158.'
         : 'Lauf heute ein Drittel kürzer als sonst. Lauf flach. Halte den Puls unter 158.';
     }
-    ov.reasons.push(`Heute angepasst, weil ${why}. Mach die Kraft heute leichter und ohne Sprünge.`);
+    // Nur sagen, was für HEUTE gilt: an Lauftagen der Lauf-Hinweis, an Kraft-Tagen nur „leichter, ohne Sprünge“
+    const todayType = effType;
+    const whyToday = todayType === 'run' ? why : why.replace(/, läufst du nur locker$/, ', sind Laufen und Kraft nur leicht');
+    ov.reasons.push(todayType === 'run' ? `Heute angepasst, weil ${whyToday}.`
+      : todayType === 'strength' ? `Heute leichter und ohne Sprünge, weil ${whyToday}.`
+        : `Achtung, weil ${whyToday}.`);
   }
 
   if (ampel === 'gruen' && ov.lowSleep && planned && plannedKind === 'tempo') {
@@ -376,8 +389,8 @@ export function adjust(date, data = {}) {
     ov.extras = extras.slice(0, 4);
     {
       ov.extraReasons = ov.extraReasons || [];
-      ov.extraReasons.push(focus.map((f) => `${f.side ? `Dein${f.side === 'rechte' ? ' rechtes' : ' linkes'} ` : 'Dein '}${AREAS[f.area].label} hat am ${fmtDate(f.last)} gezwickt${f.count > 1 ? ` (${f.count}× in 3 Wochen)` : ''}`).join('. ')
-        + '. Darum machst du heute Extra-Übungen dafür. Bei passenden Übungen machst du 1 Satz mehr. So wird die Stelle stärker.');
+      ov.extraReasons.push(focus.map((f) => `${['wade', 'ferse', 'huefte', 'schulter', 'grosszehe'].includes(f.area) ? (f.side ? `Deine ${f.side === 'rechte' ? 'rechte' : 'linke'} ` : 'Deine ') : f.side ? `Dein${f.side === 'rechte' ? ' rechtes' : ' linkes'} ` : 'Dein '}${AREAS[f.area].label} hat am ${fmtDate(f.last)} gezwickt${f.count > 1 ? ` (${f.count}× in 3 Wochen)` : ''}`).join('. ')
+        + '. Darum gibt es heute 1 Satz mehr bei der passenden Übung und höchstens 2 Extra-Übungen – alles ist unten schon eingeplant.');
     }
   }
 
@@ -432,7 +445,11 @@ export function adjust(date, data = {}) {
   // ---------- Manuelle Overrides (Verschieben, Claude) ----------
   for (const m of (data.manual || []).filter((x) => x.date === date)) {
     if (m.field === 'workout') ov.workout = m.value;
-    if (m.field === 'pause') ov.pause = m.value === '1';
+    // „0“ hebt eine Absage nur auf, wenn kein echter Grund da ist (krank, Schmerz ≥ 5, Hinken, Knochen, Pause gewünscht)
+    if (m.field === 'pause') {
+      if (m.value === '1') ov.pause = true;
+      else if (!(hard || sickToday || wantsPauseToday || ampel === 'rot')) ov.pause = false;
+    }
     if (m.field === 'moved') ov.moved = true;
     if (m.field === 'addSession') { try { ov.addSession = JSON.parse(m.value); } catch { /* alt */ } }
     if (m.field === 'addRun' && PLAN.workouts[m.value]) ov.addRun = m.value;
@@ -442,6 +459,8 @@ export function adjust(date, data = {}) {
     if (m.reason) ov.reasons.push(m.reason);
   }
 
+  // Verschobener Lauf + Anpassung (z. B. gelb: Tempo → Locker) → angepassten Lauf einsetzen
+  if (ov.addRun && addedRun && planned === addedRun && ov.workout && PLAN.workouts[ov.workout]) ov.addRun = ov.workout;
   return { ampel, overrides: ov, messages };
 }
 

@@ -13,7 +13,7 @@ export const ANSWERS = {
 
 const LABEL = {
   knie: ['Knie', 'n'], schienbein: ['Schienbein', 'n'], innenknoechel: ['Innenknöchel', 'm'], aussenknoechel: ['Außenknöchel', 'm'],
-  grosszehe: ['Großzeh', 'm'], wade: ['Wade', 'f'], huefte: ['Hüfte', 'f'], schulter: ['Schulter', 'f'],
+  grosszehe: ['Großzeh', 'm'], wade: ['Wade', 'f'], huefte: ['Hüfte', 'f'], schulter: ['Schulter', 'f'], ferse: ['Ferse', 'f'],
 };
 
 /** „deinem rechten Schienbein“ / „deiner Wade“ (Dativ) */

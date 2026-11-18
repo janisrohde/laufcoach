@@ -7,3 +7,4 @@ worker/.dev.vars
 ANLEITUNG-START.html
 .claude/
 *.log
+chats-export/

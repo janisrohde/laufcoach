@@ -1,5 +1,12 @@
 # Fortschritt Laufcoach-App
 
+## Stand 18.11.2026 abends: Auftrag „verbessere die Laufcoach-App“ (AUFTRAG-18-11.md) umgesetzt
+- Chats exportieren: `node scripts/chats-export.mjs 2026-11-12 2026-11-18` → `chats-export/` (privat, nicht in Git). Tagesansicht als Text: `node scripts/zeige-tag.mjs JJJJ-MM-TT`.
+- Coach-Zeiten an einer Stelle: `shared/config.js` (UTC 6,9,12,17,19,21 = 7/10/13/18/20/22 Uhr). Sofort-Antwort = 1 Satz mit richtiger Uhrzeit.
+- Chat: ganzer Verlauf (Datum-Trenner, „Ältere laden“, `/chat`). Coach-Karte zeigt nur, was für heute gilt.
+- Kraft: Sätze einzeln (Rechts – Satz 1 – 15×), Extras max. 2, „+1 Satz“ max. 2 bei der Hauptübung, Dauer berechnet, nie über 60 min (Test für alle 84 Tage). Übungstexte neu (Physio/Sportwissenschaftler/Richter, Berichte in `chats-export/agenten/`).
+- Coach kann Übungstexte in der App verbessern: `POST /coach/exercise` (mit `undo`). Routine-Prompt = `COACH-PROMPT-NEU.txt`.
+
 Auftrag: Obsidian `Projekte/Laufcoach-App Auftrag.md` · Projektordner: `Desktop\Lauftraining`
 
 ## Entscheidung 14.11. abends (Janis)

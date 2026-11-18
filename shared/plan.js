@@ -1,6 +1,7 @@
 // Gemeinsame Plan-Logik für App und Worker.
 // Alle Datumswerte sind Strings "JJJJ-MM-TT" in Europe/Berlin.
 import PLAN from '../src/data/plan.json' with { type: 'json' };
+import { SESSION_MAX_MIN } from './config.js';
 
 export { PLAN };
 
@@ -102,6 +103,10 @@ function buildExercise(ex, week, ctx, prefix) {
     hold: dose.holds ? dose.holds[0] : dose.hold || null,
     holds: dose.holds || null,
     weight: dose.weight || 'ohne Gewicht',
+    reps: dose.reps || null,
+    easier: v.easier || ex.easier || null,
+    careful: v.careful || ex.careful || null,
+    blockSides: !!ex.blockSides,
     perSide: !!dose.perSide,
     fp: !!dose.fp,
     shift,
@@ -117,21 +122,6 @@ export function probeText(t) {
   return t.replace(/^\d\s?×\s?/, '1× ').replace(/^\d Runden/, '1 Runde').replace(/^1× (\d)/, '1×$1');
 }
 
-const SPOT_DE = {
-  'Gluteus Medius': 'Po seitlich oben (Gluteus Medius): seitlich auf den Ball legen, Stelle zwischen Hüftknochen und Po',
-  Waden: 'Waden auf Ball oder Rolle',
-  Innenwade: 'Innenwade auf dem Ball',
-  'Fußsohle': 'Fußsohle im Stehen auf dem Ball',
-};
-
-function midweekSpots(week) {
-  const f = fpPlanFor(week);
-  if (!f) return null;
-  if (f.midweek) return f.midweek;
-  if (f.fpWeek) return PLAN.fp.weeks[String(f.fpWeek)].midweek;
-  return null;
-}
-
 /** Kraft-Einheit zusammenbauen. */
 export function strengthSession(key, week, ctx = {}) {
   const def = PLAN.strength[key];
@@ -139,44 +129,200 @@ export function strengthSession(key, week, ctx = {}) {
   const fpFree = ctx.fpFree ?? expectedFpWeek(week);
   const c = { ...ctx, fpFree };
   let items = def.exercises.map((ex) => buildExercise(ex, week, c, prefix)).filter(Boolean);
-  const spots = midweekSpots(week);
-  if (spots && items[0] && items[0].exId.endsWith('0')) {
-    items[0] = {
-      ...items[0],
-      name: items[0].name.replace(/\((\d+) min\)/, (_, m) => `(ca. ${Number(m) + 4} min)`),
-      steps: [...items[0].steps, `Functional Patterns diese Woche: ${spots.map((s) => SPOT_DE[s] || s).join(' · ')}. Roll jede Seite 1 min. Nie direkt hinter dem Innenknöchel. Nie auf der Schienbeinkante.`],
-    };
-  }
+  // 18.11.: Kein Ball-Rollen mehr im Aufwärmen an Kraft-Tagen (war unverständlich, kostet Zeit, macht nicht stärker).
+  // Die Rollen-Stellen gibt es am Montag beim Lockern.
   if (ctx.mini) {
     items = items.filter((it) => def.mini.includes(it.exId)).map((it) => (it.exId.endsWith('0') ? it : { ...it, sets: Math.min(it.sets, 2) }));
   }
-  // Schwachstellen-Extras (vom Coach): zusätzliche Übungen für betroffene Stellen
-  for (const ext of ctx.extras || []) {
-    const list = PLAN.extraExercises[ext.area] || [];
-    for (const x0 of list.slice(0, ext.count || 1)) {
-      if (items.some((it) => it.exId === x0.id)) continue;
+  const rules = PLAN.extraRules || {};
+  // Grundprogramm zu lang (ab Woche 5)? Erst Sätze bei weniger wichtigen Übungen kürzen, dann weniger wichtige weglassen.
+  if (!ctx.mini && !ctx.probe) items = trimToLimit(items, (rules.trimOrder || {})[key] || [], rules.baseMaxMin ?? 55);
+  const extras = ctx.extras || [];
+  const pref = (rules.sessionAreas || {})[key] || [];
+  const rank = (area) => (pref.includes(area) ? pref.indexOf(area) : 99);
+  // Pro Bereich zählt der höchste Wert (nie die Summe), wichtigste Bereiche zuerst
+  const merged = [];
+  for (const e of extras) {
+    const m = merged.find((x) => x.area === e.area);
+    if (m) { m.count = Math.max(m.count || 1, e.count || 1); m.level = Math.max(m.level || 1, e.level || 1); m.side = m.side || e.side; } else merged.push({ ...e });
+  }
+  const ordered = merged.sort((a, b) => rank(a.area) - rank(b.area));
+  if (!ctx.mini && !ctx.probe) {
+    // 1) Erst die Hauptübung des Bereichs um 1 Satz verlängern (höchstens 2× pro Einheit, 1× pro Übung)
+    const main = (rules.mainExercise || {})[key] || {};
+    let extraSets = 0;
+    const setAreas = new Set();
+    for (const ext of ordered) {
+      if (extraSets >= (rules.maxExtraSets ?? 2)) break;
+      const id = main[ext.area];
+      const i = items.findIndex((it) => it.exId === id && !it.extraSet);
+      if (i < 0) continue;
+      const tryIt = items.map((it, k) => (k === i ? addExtraSet(it, ext.side) : it));
+      if (sessionMinutes(tryIt) > SESSION_MAX_MIN) continue;
+      items = tryIt;
+      extraSets++;
+      // Wade/Ferse: Extra-Übung wäre an derselben Stufe → dann nur der Extra-Satz
+      if (['wade', 'ferse'].includes(ext.area)) setAreas.add(ext.area);
+    }
+    // 2) Dann höchstens 2 Extra-Übungen, nur aus Bereichen dieses Tages und nur solange die Einheit ≤ 50 min bleibt
+    const queue = [];
+    for (let round = 0; round < 3; round++) {
+      for (const ext of ordered) {
+        // Ein Bereich bekommt entweder 1 Satz mehr bei der Hauptübung ODER eine Extra-Übung (nicht beides, z. B. nicht 2× Wade)
+        if (round >= (ext.count || 1) || !pref.includes(ext.area) || setAreas.has(ext.area)) continue;
+        const x0 = (PLAN.extraExercises[ext.area] || [])[round];
+        if (x0) queue.push({ x0, ext });
+      }
+    }
+    let added = 0;
+    for (const { x0, ext } of queue) {
+      if (added >= (rules.maxPerSession ?? 2)) break;
+      if (items.some((it) => it.exId === x0.id || it.name === x0.name)) continue;
       const lv = Math.max(1, Math.min(3, ext.level || 1));
       const dose = (lv > 1 && x0.levels && x0.levels[lv - 2]) || x0.dose;
       const x = { ...x0, dose };
-      items.push({ level: lv,
-        id: `${prefix}:${x.id}`, kind: 'exercise', exId: x.id, extra: true, area: ext.area, side: ext.side || null,
-        name: x.name, why: x.why, start: x.start, steps: x.steps, watch: x.watch, mistake: x.mistake, tool: x.tool, focus: [ext.area],
-        doseText: ext.side && /je (Seite|Bein|Fuß)/.test(x.dose.text)
-          ? `${x.dose.text} – beide Seiten! ${ext.side[0].toUpperCase() + ext.side.slice(1)} Seite zuerst und 1 Satz mehr.`
-          : x.dose.text,
-        cue: x.cue || null,
-        sideExtra: !!ext.side && /je (Seite|Bein|Fuß)/.test(x.dose.text),
-        sets: x.dose.sets, hold: x.dose.hold || null, weight: x.dose.weight, perSide: !!x.dose.perSide, fp: false,
-      });
+      const item = { level: lv,
+        id: `${prefix}:${x.id}`, kind: 'exercise', exId: x.id, extra: true, area: ext.area, side: normSide(ext.side),
+        name: x.name, why: x.why, start: x.start, steps: x.steps, watch: x.watch, mistake: x.mistake, tool: x.tool, easier: x.easier || null, focus: [ext.area],
+        doseText: x.dose.text, cue: x.cue || null, blockSides: !!x.blockSides,
+        sets: x.dose.sets, hold: x.dose.hold || null, reps: x.dose.reps || null, weight: x.dose.weight, perSide: !!x.dose.perSide, fp: false,
+      };
+      // Betroffene Seite zuerst; 1 Satz mehr nur, solange die Grenze (2 pro Einheit) nicht erreicht ist
+      if (item.side && item.perSide && extraSets < (rules.maxExtraSets ?? 2)) item.extraSide = item.side;
+      if (sessionMinutes([...items, item]) > (rules.extrasUntilMin ?? 50)) continue;
+      if (item.extraSide) extraSets++;
+      // Direkt hinter die Grundübung mit dem gleichen Gerät/Bereich, sonst ans Ende
+      const mainId = ((rules.mainExercise || {})[key] || {})[ext.area];
+      const at = items.findIndex((it) => it.exId === mainId);
+      if (at >= 0) items.splice(at + 1, 0, item); else items.push(item);
+      added++;
     }
   }
-  // Extra-Satz auf der betroffenen Seite bei passenden Übungen
-  for (const ext of ctx.extras || []) {
-    items = items.map((it) => (!it.extra && !it.extraSet && it.focus.includes(ext.area) && !it.exId.endsWith('0') && !ctx.mini
-      ? { ...it, extraSet: ext.side && it.perSide ? `Beide Seiten wie immer, auf der ${ext.side}n Seite 1 Satz mehr` : '+1 Satz extra', sets: it.sets + 1 }
-      : it));
+  items = items.map((it) => ({ ...it, setList: setList(it), seconds: exerciseSeconds(it) }));
+  const minutes = ctx.probe ? 15 : sessionMinutes(items);
+  return { title: def.title, minutes, general: def.general, items };
+}
+
+/** Einheit auf höchstens `limit` Minuten bringen, ohne Pausen zu streichen. */
+function trimToLimit(items, order, limit) {
+  let out = items;
+  for (const id of order) {
+    if (sessionMinutes(out) <= limit) return out;
+    out = out.map((it) => (it.exId === id && it.sets >= 3 ? { ...it, sets: it.sets - 1, doseText: setCountText(it.doseText, it.sets - 1), trimmed: true } : it));
   }
-  return { title: def.title, minutes: ctx.probe ? 15 : ctx.mini ? 15 : def.minutes, general: def.general, items };
+  for (const id of order) {
+    if (sessionMinutes(out) <= limit) return out;
+    out = out.filter((it) => it.exId !== id);
+  }
+  return out;
+}
+
+const normSide = (s) => (!s ? null : /^r/i.test(s) ? 'rechts' : /^l/i.test(s) ? 'links' : null);
+
+/** 1 Satz mehr: bei Seiten-Übungen nur auf der betroffenen Seite, sonst +1 Satz. */
+function addExtraSet(it, side) {
+  const s = normSide(side);
+  if (it.perSide && s) return { ...it, extraSide: s, extraSet: `${s === 'rechts' ? 'Rechts' : 'Links'} 1 Satz mehr`, doseText: `${it.doseText}, ${s} 1 Satz mehr` };
+  if (it.holds || it.perSide) return { ...it, sets: it.sets + 1, extraSet: '1 Satz mehr', extraLast: true, doseText: setCountText(it.doseText, it.sets + 1) };
+  return { ...it, sets: it.sets + 1, extraSet: '1 Satz mehr', extraLast: true, doseText: setCountText(it.doseText, it.sets + 1) };
+}
+/** „2×15 beidbeinig“ → „3×15 beidbeinig“ */
+const setCountText = (t, n) => String(t).replace(/^(\D*?)(\d+)\s?×/, (_, a) => `${a}${n}×`).replace(/^(\d+) Runden/, `${n} Runden`);
+
+/** Wiederholungen oder Haltezeit pro Satz als kurzer Text: „15×“, „30 s“. */
+export function repsOf(it) {
+  if (it.holds) return it.holds.map((h) => `${h} s`).join(' + ');
+  if (it.hold) return it.hold >= 90 ? `${Math.round(it.hold / 60)} min` : `${it.hold} s`;
+  if (it.reps) return it.reps;
+  const m = String(it.doseText || '').match(/\d+\s?×\s?(\d+(?:–\d+)?)(\s*(Schritte|Runden))?/);
+  if (m) return m[3] ? `${m[1]} ${m[3]}` : `${m[1]}×`;
+  return '';
+}
+
+/**
+ * Sätze einzeln zum Abhaken, in genau der Reihenfolge.
+ * Je Seite: betroffene Seite zuerst (sonst rechts), dann die andere = 1 Satz. Danach Pause.
+ * Betroffene Seite bekommt bei extraSide am Ende 1 Satz mehr.
+ */
+export function setList(it) {
+  if (it.exId?.endsWith('0') && !it.extra) return [];
+  const reps = repsOf(it);
+  const n = it.sets || 1;
+  const out = [];
+  const PAUSE = pauseOf(it);
+  const R = PLAN.extraRules || {};
+  const SWITCH = R.switchSec ?? 15;
+  const PAIR = R.pairPauseSec ?? 15;
+  if (it.perSide && !it.holds) {
+    const first = it.extraSide || it.side || 'rechts';
+    const second = first === 'rechts' ? 'links' : 'rechts';
+    const cap = (x) => x[0].toUpperCase() + x.slice(1);
+    const nFirst = n + (it.extraSide ? 1 : 0);
+    const lab = (side, k, extra) => `${cap(side)} – Satz ${k}${extra ? ' (extra)' : ''} – ${reps}`;
+    if (it.blockSides) {
+      // Band am Tischbein: erst alle Sätze einer Seite, dann einmal umbauen
+      for (let k = 1; k <= nFirst; k++) out.push({ side: first, set: k, label: lab(first, k, k > n), hold: it.hold || null, pause: k < nFirst ? PAUSE : 0 });
+      out[out.length - 1].pause = R.switchSec ?? 15;
+      out[out.length - 1].switchSide = true;
+      for (let k = 1; k <= n; k++) out.push({ side: second, set: k, label: lab(second, k, false), hold: it.hold || null, pause: k < n ? PAUSE : 0 });
+    } else {
+      for (let k = 1; k <= n; k++) {
+        out.push({ side: first, set: k, label: lab(first, k, false), hold: it.hold || null, pause: it.hold ? 0 : 0, switchSec: SWITCH });
+        out.push({ side: second, set: k, label: lab(second, k, false), hold: it.hold || null, pause: PAIR });
+      }
+      if (it.extraSide) out.push({ side: first, set: n + 1, label: lab(first, n + 1, true), hold: it.hold || null, pause: 0 });
+    }
+  } else {
+    for (let k = 1; k <= n; k++) out.push({ side: null, set: k, label: `Satz ${k} von ${n}${it.extraLast && k === n ? ' (extra)' : ''} – ${reps}`, hold: it.holds ? null : it.hold || null, holds: it.holds || null, pause: PAUSE });
+  }
+  if (out.length) out[out.length - 1].pause = 0;
+  return out;
+}
+
+/** Pause zwischen zwei Sätzen: 60 s für Wade/Oberschenkel, sonst 45 s (oder aus plan.json). */
+export function pauseOf(it) {
+  const R = PLAN.extraRules || {};
+  if (it.pauseSec) return it.pauseSec;
+  const light = /stehen|Einbein|Zehe|Fußspitzen|Fuß nach|Gleichgewicht|Muschel|Stern/i.test(it.name) || (it.focus || []).every((f) => ['fuss', 'grosszehe', 'innenknoechel', 'aussenknoechel', 'schienbein'].includes(f));
+  return light ? (R.pauseLightSec ?? 45) : (R.pauseHeavySec ?? 60);
+}
+/** Aufbauzeit: Band am Tischbein 90 s, Matte/Stufe 60 s, sonst 30 s. */
+function setupOf(it) {
+  const t = String(it.tool || '');
+  return /Tischbein|Türanker|Klimmzug/.test(t) ? 90 : /Matte|Stufe|Band|Stuhl|Buch/.test(t) ? 60 : 30;
+}
+
+/** Geschätzte echte Dauer einer Übung in Sekunden (inkl. Aufbau, Seitenwechsel, Pausen). */
+export function exerciseSeconds(it) {
+  const R = PLAN.extraRules || {};
+  if (it.exId?.endsWith('0') && !it.extra) {
+    const m = String(it.name).match(/(\d+)\s*min/);
+    return (m ? Number(m[1]) : R.warmupMin ?? 6) * 60;
+  }
+  const list = it.setList || setList(it);
+  const text = `${it.doseText} ${(it.steps || []).join(' ')}`;
+  const slow = /in [34] s|langsam/.test(text);
+  const perRep = /Schritte|je Richtung/.test(it.doseText) ? 2 : /Runden/.test(it.doseText) ? 20 : slow ? (R.secPerRepSlow ?? 5) : (R.secPerRep ?? 4);
+  let total = setupOf(it);
+  for (const st of list) {
+    let work;
+    if (st.holds) work = st.holds.reduce((a, b) => a + b, 0) + 10 * (st.holds.length - 1);
+    else if (/Runden/.test(it.doseText) && !st.hold) work = 60;
+    else if (st.hold) work = st.hold;
+    else {
+      const m = String(st.label).match(/(\d+)(?:–(\d+))?(×| Schritte| Runden)/);
+      const reps = m ? Number(m[2] || m[1]) : 10;
+      work = reps * perRep * (/je Richtung/.test(it.doseText) ? 2 : 1);
+    }
+    total += work + (st.pause || 0) + (st.switchSec || 0);
+  }
+  return Math.round(total);
+}
+
+/** Minuten einer ganzen Einheit (gerundet auf 5). */
+export function sessionMinutes(items) {
+  const s = items.filter((it) => it.kind === 'exercise').reduce((a, it) => a + exerciseSeconds(it), 0);
+  return Math.ceil(s / 60 / 5) * 5;
 }
 
 function fpMonday(week, fpFree, ov = {}) {
@@ -324,7 +470,7 @@ export function getDay(date, ctx = {}) {
   // Morgen-Check jeden Tag (für Ampel, Montags-Hocke, Rückkehr nach Rot)
   if (!d.items.some((i) => i.kind === 'check')) d = { ...d, items: [CHECK_ITEM(), ...d.items] };
   // Gründe für Extra-Übungen nur, wenn heute wirklich welche drin sind
-  if (ov.extraReasons?.length && d.items.some((i) => i.extra)) d = { ...d, reasons: [...d.reasons, ...ov.extraReasons.map((r, i) => (i === 0 ? r : r))] };
+  if (ov.extraReasons?.length && d.items.some((i) => i.extra || i.extraSet)) d = { ...d, reasons: [...d.reasons, ...ov.extraReasons.map((r, i) => (i === 0 ? r : r))] };
   return d;
 }
 

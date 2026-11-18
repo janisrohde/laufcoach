@@ -71,10 +71,18 @@ describe('Nachricht an den Coach', () => {
 describe('Extra-Übungen immer beidseitig', () => {
   it('rechtes Knie → beide Beine, rechts 1 Satz mehr', () => {
     const d = getDay('2026-11-18', { overrides: { extras: [{ area: 'knie', side: 'rechte', count: 2 }] } });
-    const ex = d.items.filter((i) => i.extra);
-    expect(ex.length).toBe(2);
-    for (const i of ex.filter((x) => /je (Seite|Bein|Fuß)/.test(x.doseText))) expect(i.doseText).toContain('beide Seiten');
-    expect(ex.some((x) => x.doseText.includes('Rechte Seite zuerst'))).toBe(true);
+    // Knie → zuerst +1 Satz beim Wandsitz (Hauptübung), dann Extra-Übung. Je Seite: rechts zuerst, rechts 1 Satz mehr, links auch dran.
+    expect(d.items.find((i) => i.exId === 'A3').extraSet).toBeTruthy();
+    const ex = d.items.filter((i) => i.extra && i.perSide);
+    expect(ex.length).toBeGreaterThan(0);
+    for (const i of ex) {
+      expect(i.setList[0].side).toBe('rechts');
+      expect(i.setList.some((s) => s.side === 'links')).toBe(true);
+      const r = i.setList.filter((s) => s.side === 'rechts').length; const l = i.setList.filter((s) => s.side === 'links').length;
+      expect(r - l).toBe(i.extraSide ? 1 : 0);
+    }
+    // höchstens 2× „1 Satz mehr“ pro Einheit
+    expect(d.items.filter((i) => i.extraSet || i.extraSide).length).toBeLessThanOrEqual(2);
   });
 });
 

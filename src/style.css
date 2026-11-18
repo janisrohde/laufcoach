@@ -319,3 +319,21 @@ body.has-timer #app { padding-bottom: calc(var(--safe-b) + 260px); }
 .fp-videos { margin: 6px 0; padding-left: 20px; font-size: 14.5px; }
 .fp-videos li { margin: 4px 0; }
 details.card.how summary { color: var(--accent); }
+
+/* 18.11.: Datum groß, Satzliste, ganzer Chat */
+.head-date { font-family: var(--display); font-size: 26px; font-weight: 800; line-height: 1.1; margin: 4px 0 2px; }
+.setlist { list-style: none; margin: 0 0 10px; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.setlist li { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 10px; font-size: 15.5px; font-weight: 600; background: var(--card); }
+.setlist li .box { width: 22px; height: 22px; flex: 0 0 22px; border-radius: 6px; border: 2px solid var(--line); display: inline-flex; align-items: center; justify-content: center; font-size: 14px; color: #fff; }
+.setlist li.on { color: var(--muted); text-decoration: line-through; }
+.setlist li.on .box { background: var(--ok); border-color: var(--ok); }
+.setlist li.cur { outline: 2px solid var(--accent); }
+.setlist li.cur .box { border-color: var(--accent); }
+.setlist li small { margin-left: auto; color: var(--muted); font-weight: 500; font-size: 12.5px; }
+.ask-ex { margin-top: 8px; }
+.bubbles { max-height: 60vh; overflow-y: auto; overscroll-behavior: contain; padding-right: 2px; }
+.bubble { white-space: pre-wrap; overflow-wrap: anywhere; }
+.bubble small { display: block; margin-top: 3px; font-size: 11.5px; opacity: .7; text-align: right; }
+.bubble.sys { align-self: center; background: transparent; border: 1px dashed var(--line); color: var(--muted); font-size: 14px; }
+.chat-day { align-self: center; font-size: 12.5px; font-weight: 700; color: var(--muted); margin: 8px 0 2px; text-transform: uppercase; letter-spacing: .04em; }
+.tag.good { background: var(--ok-soft, #e3f5ec); color: var(--ok); }
